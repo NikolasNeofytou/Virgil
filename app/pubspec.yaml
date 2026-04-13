@@ -1,0 +1,64 @@
+name: tichu_cyprus
+description: A modern mobile Tichu card game & scoring companion for the Cyprus community.
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+
+  # Models / codegen
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
+
+  # Routing
+  go_router: ^14.0.0
+
+  # Backend
+  supabase_flutter: ^2.5.0
+
+  # Game engine (Phase B) — uncomment when needed
+  # flame: ^1.18.0
+
+  # Real-time transport (Phase B)
+  # web_socket_channel: ^3.0.0
+
+  # Notifications (Phase B)
+  # firebase_core: ^3.1.0
+  # firebase_messaging: ^15.0.0
+
+  # Error tracking (A3)
+  # sentry_flutter: ^8.3.0
+
+  # Utility
+  intl: ^0.20.2
+  collection: ^1.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+  # Codegen
+  build_runner: ^2.4.9
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
+  riverpod_generator: ^2.4.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - assets/images/
+    - assets/cards/
+    - assets/fonts/

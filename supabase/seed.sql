@@ -1,0 +1,2 @@
+-- Development seed data. Populated by `supabase db reset`.
+-- Keep empty until we have stable fixtures.

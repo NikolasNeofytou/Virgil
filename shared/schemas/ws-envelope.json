@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tichu-cyprus/schemas/ws-envelope.json",
+  "title": "WebSocket message envelope",
+  "type": "object",
+  "required": ["type", "payload", "seq"],
+  "properties": {
+    "type": { "type": "string", "minLength": 1 },
+    "payload": { "type": "object" },
+    "seq": { "type": "integer", "minimum": 0 }
+  },
+  "additionalProperties": false
+}
