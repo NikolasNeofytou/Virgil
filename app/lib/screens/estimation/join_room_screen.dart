@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../services/estimation_service.dart';
+import '../../theme/app_background.dart';
 import '../../theme/app_theme.dart';
 import 'room_lobby_screen.dart';
 
@@ -43,7 +44,9 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
         ),
       );
     } on Object catch (e) {
-      if (mounted) setState(() => _error = e.toString().replaceFirst('Bad state: ', ''));
+      if (mounted) {
+        setState(() => _error = e.toString().replaceFirst('Bad state: ', ''));
+      }
     } finally {
       if (mounted) setState(() => _joining = false);
     }
@@ -51,76 +54,106 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Μπες σε δωμάτιο')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Βάλε τον 4-ψήφιο κωδικό',
-              style: Theme.of(context).textTheme.titleMedium,
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(title: const Text('Μπες σε δωμάτιο')),
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 460),
+              child: Padding(
+                padding: const EdgeInsets.all(AppTheme.space5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: AppTheme.space6),
+                    const AppSectionLabel('Κωδικός δωματίου'),
+                    const SizedBox(height: AppTheme.space3),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppTheme.space4,
+                        vertical: AppTheme.space4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surface,
+                        borderRadius:
+                            BorderRadius.circular(AppTheme.radiusLg),
+                        border: Border.all(color: AppTheme.border),
+                      ),
+                      child: TextField(
+                        controller: _controller,
+                        autofocus: true,
+                        maxLength: 4,
+                        textCapitalization: TextCapitalization.characters,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 16,
+                          color: AppTheme.gold,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[A-Za-z0-9]'),
+                          ),
+                          _UpperCaseFormatter(),
+                        ],
+                        decoration: const InputDecoration(
+                          counterText: '',
+                          hintText: '----',
+                          hintStyle: TextStyle(
+                            fontSize: 48,
+                            letterSpacing: 16,
+                            color: AppTheme.textTertiary,
+                            fontWeight: FontWeight.w900,
+                          ),
+                          filled: false,
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    FilledButton(
+                      onPressed: _joining ? null : _join,
+                      child: _joining
+                          ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Συμμετοχή'),
+                    ),
+                    if (_error != null) ...[
+                      const SizedBox(height: AppTheme.space3),
+                      Text(
+                        _error!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: AppTheme.danger,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _controller,
-              autofocus: true,
-              maxLength: 4,
-              textCapitalization: TextCapitalization.characters,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 42,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 12,
-                color: AppTheme.gold,
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
-                UpperCaseTextFormatter(),
-              ],
-              decoration: const InputDecoration(
-                counterText: '',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _joining ? null : _join,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppTheme.gold,
-                foregroundColor: AppTheme.background,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: _joining
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Συμμετοχή'),
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 16),
-              Text(
-                _error!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppTheme.danger),
-              ),
-            ],
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class UpperCaseTextFormatter extends TextInputFormatter {
+class _UpperCaseFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
-  ) {
-    return newValue.copyWith(text: newValue.text.toUpperCase());
-  }
+  ) =>
+      newValue.copyWith(text: newValue.text.toUpperCase());
 }

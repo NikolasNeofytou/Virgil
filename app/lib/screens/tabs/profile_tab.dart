@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../models/player_profile.dart';
 import '../../providers/auth_providers.dart';
 import '../../services/auth_service.dart';
 import '../../services/supabase_client.dart';
+import '../../theme/app_background.dart';
 import '../../theme/app_theme.dart';
 
 class ProfileTab extends ConsumerWidget {
@@ -14,171 +16,179 @@ class ProfileTab extends ConsumerWidget {
     final profile = ref.watch(currentPlayerProfileProvider);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(title: const Text('Προφίλ')),
       body: profile.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Σφάλμα: $e')),
         data: (p) {
-          if (p == null) return const Center(child: Text('—'));
-          return ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              // Avatar
-              Center(
-                child: CircleAvatar(
-                  radius: 52,
-                  backgroundColor: AppTheme.surfaceElevated,
-                  backgroundImage:
-                      p.avatarUrl != null ? NetworkImage(p.avatarUrl!) : null,
-                  child: p.avatarUrl == null
-                      ? Text(
-                          p.username.substring(0, 1).toUpperCase(),
-                          style: const TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme.gold,
-                          ),
-                        )
-                      : null,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Username
-              Text(
-                '@${p.username}',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-              if (p.displayName != null && p.displayName!.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Text(
-                  p.displayName!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppTheme.textSecondary),
-                ),
-              ],
-              const SizedBox(height: 24),
-
-              // Stat cards
-              Row(
-                children: [
-                  _StatCard(label: 'ELO', value: '${p.elo}', icon: Icons.emoji_events),
-                  const SizedBox(width: 10),
-                  _StatCard(label: 'Level', value: '${p.level}', icon: Icons.star),
-                  const SizedBox(width: 10),
-                  _StatCard(label: 'XP', value: '${p.xp}', icon: Icons.bolt),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  _StatCard(
-                    label: 'Παιχνίδια',
-                    value: '${p.gamesPlayed}',
-                    icon: Icons.style,
-                  ),
-                  const SizedBox(width: 10),
-                  _StatCard(
-                    label: 'Γλώσσα',
-                    value: p.locale == 'el' ? 'Ελληνικά' : 'English',
-                    icon: Icons.language,
-                  ),
-                  const SizedBox(width: 10),
-                  const Spacer(),
-                ],
-              ),
-
-              const SizedBox(height: 28),
-
-              // Locale toggle
-              _SettingsTile(
-                icon: Icons.language,
-                title: 'Γλώσσα / Language',
-                trailing: SegmentedButton<String>(
-                  segments: const [
-                    ButtonSegment(value: 'el', label: Text('EL')),
-                    ButtonSegment(value: 'en', label: Text('EN')),
-                  ],
-                  selected: {p.locale},
-                  onSelectionChanged: (s) async {
-                    final locale = s.first;
-                    await SupabaseBootstrap.client
-                        .from('players')
-                        .update({'locale': locale})
-                        .eq('id', p.id);
-                    ref.invalidate(currentPlayerProfileProvider);
-                  },
-                  style: const ButtonStyle(
-                    visualDensity: VisualDensity.compact,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // Sign out
-              _SettingsTile(
-                icon: Icons.logout,
-                title: 'Αποσύνδεση',
-                onTap: () => AuthService().signOut(),
-                trailing: const Icon(
-                  Icons.chevron_right,
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-            ],
-          );
+          if (p == null) return const SizedBox.shrink();
+          return _ProfileBody(profile: p);
         },
       ),
     );
   }
 }
 
-class _StatCard extends StatelessWidget {
-  const _StatCard({
-    required this.label,
-    required this.value,
-    required this.icon,
-  });
+class _ProfileBody extends ConsumerWidget {
+  const _ProfileBody({required this.profile});
+
+  final PlayerProfile profile;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final p = profile;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(
+        AppTheme.space5,
+        AppTheme.space4,
+        AppTheme.space5,
+        AppTheme.space6,
+      ),
+      children: [
+        // ── Identity ──
+        Center(
+          child: Column(
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceElevated,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppTheme.gold.withValues(alpha: 0.3),
+                    width: 2,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: p.avatarUrl != null
+                    ? ClipOval(
+                        child: Image.network(p.avatarUrl!, fit: BoxFit.cover),
+                      )
+                    : Text(
+                        p.username.substring(0, 1).toUpperCase(),
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.gold,
+                        ),
+                      ),
+              ),
+              const SizedBox(height: AppTheme.space4),
+              Text(
+                '@${p.username}',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              if (p.displayName?.isNotEmpty ?? false) ...[
+                const SizedBox(height: 2),
+                Text(
+                  p.displayName!,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondary,
+                      ),
+                ),
+              ],
+            ],
+          ),
+        ),
+
+        const SizedBox(height: AppTheme.space6),
+
+        // ── Stats ──
+        Row(
+          children: [
+            _StatTile(label: 'ELO', value: '${p.elo}'),
+            const SizedBox(width: AppTheme.space3),
+            _StatTile(label: 'LEVEL', value: '${p.level}'),
+            const SizedBox(width: AppTheme.space3),
+            _StatTile(label: 'XP', value: '${p.xp}'),
+            const SizedBox(width: AppTheme.space3),
+            _StatTile(label: 'GAMES', value: '${p.gamesPlayed}'),
+          ],
+        ),
+
+        const SizedBox(height: AppTheme.space6),
+
+        // ── Settings ──
+        const AppSectionLabel('Ρυθμίσεις'),
+        const SizedBox(height: AppTheme.space3),
+        _SettingsRow(
+          icon: Icons.language_outlined,
+          title: 'Γλώσσα',
+          trailing: SegmentedButton<String>(
+            segments: const [
+              ButtonSegment(value: 'el', label: Text('EL')),
+              ButtonSegment(value: 'en', label: Text('EN')),
+            ],
+            selected: {p.locale},
+            onSelectionChanged: (s) async {
+              await SupabaseBootstrap.client
+                  .from('players')
+                  .update({'locale': s.first}).eq('id', p.id);
+              ref.invalidate(currentPlayerProfileProvider);
+            },
+            showSelectedIcon: false,
+            style: const ButtonStyle(
+              visualDensity: VisualDensity.compact,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.space2),
+        _SettingsRow(
+          icon: Icons.logout_outlined,
+          title: 'Αποσύνδεση',
+          onTap: () => AuthService().signOut(),
+          trailing: const Icon(
+            Icons.chevron_right,
+            color: AppTheme.textTertiary,
+            size: 18,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StatTile extends StatelessWidget {
+  const _StatTile({required this.label, required this.value});
 
   final String label;
   final String value;
-  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppTheme.space4,
+          horizontal: AppTheme.space2,
+        ),
         decoration: BoxDecoration(
           color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppTheme.gold.withValues(alpha: 0.15),
-          ),
+          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+          border: Border.all(color: AppTheme.border),
         ),
         child: Column(
           children: [
-            Icon(icon, color: AppTheme.gold, size: 20),
-            const SizedBox(height: 6),
             Text(
               value,
               style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 18,
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
                 color: AppTheme.textPrimary,
+                letterSpacing: -0.5,
               ),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 4),
             Text(
               label,
               style: const TextStyle(
-                fontSize: 11,
-                color: AppTheme.textSecondary,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textTertiary,
+                letterSpacing: 1.0,
               ),
             ),
           ],
@@ -188,8 +198,8 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-class _SettingsTile extends StatelessWidget {
-  const _SettingsTile({
+class _SettingsRow extends StatelessWidget {
+  const _SettingsRow({
     required this.icon,
     required this.title,
     required this.trailing,
@@ -203,29 +213,41 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: AppTheme.textSecondary, size: 22),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(fontSize: 15),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.space4,
+            vertical: AppTheme.space4,
+          ),
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+            border: Border.all(color: AppTheme.border),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 18, color: AppTheme.textSecondary),
+              const SizedBox(width: AppTheme.space3),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
               ),
-            ),
-            trailing,
-          ],
+              trailing,
+            ],
+          ),
         ),
       ),
     );
   }
 }
+

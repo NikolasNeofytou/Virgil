@@ -14,25 +14,40 @@
 - [x] Room lobby with realtime player list, usernames, host badge, leave/back
 - [x] Start game button (host only, when full)
 
-## A2 — Core Companion Flow
-- [ ] Prediction screen (stepper 0→N, lock-in, wait for others, simultaneous reveal)
-- [ ] Play phase screen (passive — show all predictions as reference, dealer badge, round progress)
-- [ ] Submit results screen (stepper 0→N for tricks won, sanity check: total must equal N)
-- [ ] Validation screen (show all results: name, predicted, actual, score — Confirm/Dispute buttons, 3/4 threshold)
-- [ ] Round progression logic (up-then-down card count, auto-advance round, rotate dealer)
-- [ ] Auto-scoring (tricks + bonus if prediction === actual)
-- [ ] Game over detection (after last round)
-- [ ] Wire phase transitions via Supabase Realtime (predicting→playing→submitting→validating→next round)
+## A2 — Core Companion Flow [DONE]
+- [x] Prediction screen (NumberPicker, lock-in, wait for others, simultaneous reveal)
+- [x] Play phase screen (passive — show all predictions as reference, dealer badge, round progress)
+- [x] Submit results screen (NumberPicker for tricks won, sanity check: total must equal N)
+- [x] Validation screen (name, predicted, actual, score — Confirm/Dispute, 3/4 threshold)
+- [x] Round progression logic (up-then-down card count, auto-advance round, rotate dealer)
+- [x] Auto-scoring (tricks + bonus if prediction === actual)
+- [x] Game over detection (after last round)
+- [x] Wire phase transitions via Supabase Realtime (ref.listen + auto-advance)
+- [x] Email + password sign-in fallback (OTP rate limit workaround)
+- [x] Fix RLS recursion + SELECT permissions for INSERT RETURNING
+- [x] Handle "already joined" gracefully in joinGameByCode
 
-## A3 — Polish + Scoreboard
-- [ ] Live leaderboard with animated rank changes
-- [ ] Score graph (line chart, one line per player across rounds)
-- [ ] Prediction accuracy tracker (hit rate per player)
-- [ ] Dealer rotation indicator on play screen
-- [ ] Game summary screen (winner highlight, fun awards: "Best Predictor", "Biggest Upset")
-- [ ] Game history stored in Supabase
-- [ ] Premium dark theme polish (glass-morphic panels, subtle animations)
-- [ ] i18n setup (Greek default + English)
+## Aesthetic Overhaul [DONE]
+- [x] Refined Linear/Notion-inspired dark theme (near-black surfaces, muted gold)
+- [x] Global `ThemeData` config (inputs, buttons, navbar, dialogs, segmented, progress)
+- [x] Inter typography scale with negative letter-spacing
+- [x] `AppBackground` subtle radial gold glow wrapper
+- [x] Sign-in / username picker / home / tabs / lobby / game screens all polished
+- [x] `_LockedCard` + `_SubmittedCard` prominent displays after lock-in
+- [x] Scalable dot progress bar (compresses for 51-round games)
+- [x] "εσύ" badge on your own player row
+- [x] `AnimatedSwitcher` between game phases
+
+## Day 3+ — Leaderboard · Animations · Memorable Moments
+See [`docs/roadmap/day-3-leaderboard-animations-memories.md`](./docs/roadmap/day-3-leaderboard-animations-memories.md) for the full plan.
+
+Highlights:
+- **Track 1 (Leaderboard):** stats view, top-10, your rank, in-game live scoreboard, score graph
+- **Track 2 (Animations):** score count-up, gold shimmer, tile bounce, prediction reveal flip, rank change, page transitions, error shake, confetti
+- **Track 3 (Memorable Moments):** BeReal-style winner photo, fun awards, session name, shareable summary card, game history, sound + haptics, memorable quotes
+
+## A3 — Final Polish
+- [ ] i18n setup (Greek default + English toggle)
 - [ ] Deep linking for auth (magic links + OAuth redirects)
 - [ ] Google/Apple OAuth provider setup
 - [ ] Sentry error tracking integration

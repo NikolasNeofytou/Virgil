@@ -11,6 +11,13 @@ class AuthService {
 
   final GoTrueClient _auth;
 
+  Future<AuthResponse> signInWithPassword({
+    required String email,
+    required String password,
+  }) {
+    return _auth.signInWithPassword(email: email, password: password);
+  }
+
   Future<void> signInWithEmailOtp(String email) async {
     await _auth.signInWithOtp(
       email: email,

@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/auth_service.dart';
+import '../theme/app_background.dart';
 import '../theme/app_theme.dart';
 
-/// Sign-in screen: email → 6-digit OTP code → signed in.
-/// No deep linking required — works perfectly on emulators.
+/// Sign-in screen: email + password (primary) or email OTP (fallback).
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
 
@@ -16,9 +16,11 @@ class SignInScreen extends ConsumerStatefulWidget {
 
 class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _otpController = TextEditingController();
   bool _loading = false;
   String? _error;
+  bool _useOtp = false;
   bool _codeSent = false;
 
   final _auth = AuthService();
@@ -26,8 +28,33 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   @override
   void dispose() {
     _emailController.dispose();
+    _passwordController.dispose();
     _otpController.dispose();
     super.dispose();
+  }
+
+  Future<void> _signInWithPassword() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    if (email.isEmpty || !email.contains('@')) {
+      setState(() => _error = 'Βάλε ένα έγκυρο email');
+      return;
+    }
+    if (password.isEmpty) {
+      setState(() => _error = 'Βάλε τον κωδικό σου');
+      return;
+    }
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      await _auth.signInWithPassword(email: email, password: password);
+    } catch (_) {
+      if (mounted) setState(() => _error = 'Λάθος email ή κωδικός');
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   Future<void> _sendOtp() async {
@@ -66,11 +93,8 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         email: _emailController.text.trim(),
         token: code,
       );
-      // Auth state change is picked up by authStateProvider → auth gate.
-    } catch (e) {
-      if (mounted) {
-        setState(() => _error = 'Λάθος κωδικός. Δοκίμασε ξανά.');
-      }
+    } catch (_) {
+      if (mounted) setState(() => _error = 'Λάθος κωδικός. Δοκίμασε ξανά.');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -78,170 +102,289 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-
-              // Title
-              Text(
-                'Tichu Cyprus',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      color: AppTheme.gold,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.2,
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Το παιχνίδι καρτών της Κύπρου',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.textSecondary,
-                    ),
-              ),
-              const Spacer(),
-
-              if (_codeSent) ...[
-                // Step 2: Enter 6-digit OTP code
-                const Icon(Icons.mark_email_read, color: AppTheme.gold, size: 56),
-                const SizedBox(height: 16),
-                Text(
-                  'Στείλαμε κωδικό στο\n${_emailController.text.trim()}',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge,
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.space6,
+                  vertical: AppTheme.space5,
                 ),
-                const SizedBox(height: 24),
-                TextField(
-                  controller: _otpController,
-                  autofocus: true,
-                  maxLength: 6,
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 12,
-                    color: AppTheme.gold,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                  decoration: const InputDecoration(
-                    counterText: '',
-                    hintText: '------',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: _loading ? null : _verifyOtp,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppTheme.gold,
-                    foregroundColor: AppTheme.background,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: _loading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Επιβεβαίωση'),
-                ),
-                const SizedBox(height: 12),
-                TextButton(
-                  onPressed: () => setState(() {
-                    _codeSent = false;
-                    _otpController.clear();
-                    _error = null;
-                  }),
-                  child: const Text('Χρήση άλλου email'),
-                ),
-              ] else ...[
-                // Step 1: Enter email
-                TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  autocorrect: false,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: _loading ? null : _sendOtp,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppTheme.gold,
-                    foregroundColor: AppTheme.background,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: _loading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Αποστολή κωδικού'),
-                ),
-                const SizedBox(height: 24),
-                Row(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: Divider(
-                        color: AppTheme.textSecondary.withValues(alpha: 0.3),
+                    // ── Brand ──
+                    _Brand(),
+                    const SizedBox(height: AppTheme.space7),
+
+                    if (_useOtp && _codeSent)
+                      _OtpForm(
+                        emailController: _emailController,
+                        otpController: _otpController,
+                        loading: _loading,
+                        onVerify: _verifyOtp,
+                        onBack: () => setState(() {
+                          _codeSent = false;
+                          _otpController.clear();
+                          _error = null;
+                        }),
+                      )
+                    else
+                      _PrimaryForm(
+                        emailController: _emailController,
+                        passwordController: _passwordController,
+                        useOtp: _useOtp,
+                        loading: _loading,
+                        onSubmit: _useOtp ? _sendOtp : _signInWithPassword,
+                        onToggleMode: () => setState(() {
+                          _useOtp = !_useOtp;
+                          _error = null;
+                        }),
                       ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child:
-                          Text('ή', style: TextStyle(color: AppTheme.textSecondary)),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color: AppTheme.textSecondary.withValues(alpha: 0.3),
-                      ),
-                    ),
+
+                    if (_error != null) ...[
+                      const SizedBox(height: AppTheme.space4),
+                      _ErrorBanner(message: _error!),
+                    ],
                   ],
                 ),
-                const SizedBox(height: 24),
-                OutlinedButton.icon(
-                  onPressed: () => _auth.signInWithGoogle(),
-                  icon: const Icon(Icons.g_mobiledata, size: 28),
-                  label: const Text('Συνέχεια με Google'),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: () => _auth.signInWithApple(),
-                  icon: const Icon(Icons.apple),
-                  label: const Text('Συνέχεια με Apple'),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
-              ],
-
-              if (_error != null) ...[
-                const SizedBox(height: 16),
-                Text(
-                  _error!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: AppTheme.danger),
-                ),
-              ],
-              const Spacer(),
-            ],
+              ),
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _Brand extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: 64,
+          height: 64,
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceElevated,
+            borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+            border: Border.all(color: AppTheme.border),
+            boxShadow: AppTheme.glow(AppTheme.gold, opacity: 0.15),
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.style_outlined,
+              size: 32,
+              color: AppTheme.gold,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.space5),
+        Text(
+          'Tichu Cyprus',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.displaySmall,
+        ),
+        const SizedBox(height: AppTheme.space2),
+        Text(
+          'Το παιχνίδι καρτών της Κύπρου',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppTheme.textSecondary,
+              ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PrimaryForm extends StatelessWidget {
+  const _PrimaryForm({
+    required this.emailController,
+    required this.passwordController,
+    required this.useOtp,
+    required this.loading,
+    required this.onSubmit,
+    required this.onToggleMode,
+  });
+
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final bool useOtp;
+  final bool loading;
+  final VoidCallback onSubmit;
+  final VoidCallback onToggleMode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextField(
+          controller: emailController,
+          keyboardType: TextInputType.emailAddress,
+          autocorrect: false,
+          decoration: const InputDecoration(
+            labelText: 'Email',
+            prefixIcon: Icon(Icons.mail_outline, size: 18),
+          ),
+        ),
+        if (!useOtp) ...[
+          const SizedBox(height: AppTheme.space3),
+          TextField(
+            controller: passwordController,
+            obscureText: true,
+            decoration: const InputDecoration(
+              labelText: 'Κωδικός',
+              prefixIcon: Icon(Icons.lock_outline, size: 18),
+            ),
+          ),
+        ],
+        const SizedBox(height: AppTheme.space5),
+        FilledButton(
+          onPressed: loading ? null : onSubmit,
+          child: loading
+              ? const SizedBox(
+                  height: 18,
+                  width: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(useOtp ? 'Αποστολή κωδικού' : 'Σύνδεση'),
+        ),
+        const SizedBox(height: AppTheme.space3),
+        TextButton(
+          onPressed: onToggleMode,
+          child: Text(
+            useOtp ? 'Σύνδεση με κωδικό' : 'Σύνδεση με email OTP',
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _OtpForm extends StatelessWidget {
+  const _OtpForm({
+    required this.emailController,
+    required this.otpController,
+    required this.loading,
+    required this.onVerify,
+    required this.onBack,
+  });
+
+  final TextEditingController emailController;
+  final TextEditingController otpController;
+  final bool loading;
+  final VoidCallback onVerify;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          width: 56,
+          height: 56,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppTheme.goldMuted,
+            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+          ),
+          child: const Icon(Icons.mark_email_read_outlined,
+              color: AppTheme.gold, size: 28,),
+        ),
+        const SizedBox(height: AppTheme.space4),
+        Text(
+          'Έλεγξε το email σου',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: AppTheme.space1),
+        Text(
+          emailController.text.trim(),
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppTheme.textSecondary,
+              ),
+        ),
+        const SizedBox(height: AppTheme.space5),
+        TextField(
+          controller: otpController,
+          autofocus: true,
+          maxLength: 6,
+          keyboardType: TextInputType.number,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 10,
+            color: AppTheme.gold,
+          ),
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          decoration: const InputDecoration(
+            counterText: '',
+            hintText: '------',
+            hintStyle: TextStyle(
+              fontSize: 28,
+              letterSpacing: 10,
+              color: AppTheme.textTertiary,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.space4),
+        FilledButton(
+          onPressed: loading ? null : onVerify,
+          child: loading
+              ? const SizedBox(
+                  height: 18,
+                  width: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Επιβεβαίωση'),
+        ),
+        const SizedBox(height: AppTheme.space2),
+        TextButton(onPressed: onBack, child: const Text('Πίσω')),
+      ],
+    );
+  }
+}
+
+class _ErrorBanner extends StatelessWidget {
+  const _ErrorBanner({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.space4,
+        vertical: AppTheme.space3,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0x1AE5484D),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(color: const Color(0x33E5484D)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: AppTheme.danger, size: 18),
+          const SizedBox(width: AppTheme.space2),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(color: AppTheme.danger, fontSize: 13),
+            ),
+          ),
+        ],
       ),
     );
   }
