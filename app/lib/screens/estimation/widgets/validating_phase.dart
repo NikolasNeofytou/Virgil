@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../models/estimation_round.dart';
 import '../../../providers/auth_providers.dart';
@@ -86,6 +87,7 @@ class _ValidatingPhaseState extends ConsumerState<ValidatingPhase> {
       maxCards: game.maxCards,
       playerCount: game.playerCount,
       dealerSeat: game.dealerSeat,
+      roundStarterSeat: game.roundStarterSeat ?? game.dealerSeat,
       entries: rawEntries,
     );
   }
@@ -274,6 +276,8 @@ class _ValidatingPhaseState extends ConsumerState<ValidatingPhase> {
   }
 }
 
+/// Reveal row — prediction vs actual as Gloock numerals, terracotta
+/// underline beneath, Caveat "★ match · +N" floater when bonus.
 class _ResultRow extends StatelessWidget {
   const _ResultRow({
     required this.username,
@@ -298,19 +302,21 @@ class _ResultRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 3),
+      margin: const EdgeInsets.symmetric(vertical: 4),
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.space4,
         vertical: AppTheme.space3,
       ),
       decoration: BoxDecoration(
-        color: isMe ? AppTheme.goldMuted : AppTheme.surface,
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         border: Border.all(
           color: isMe
-              ? AppTheme.gold.withValues(alpha: 0.35)
+              ? AppTheme.terra.withValues(alpha: 0.55)
               : AppTheme.border,
+          width: isMe ? 1.2 : 1,
         ),
+        boxShadow: AppTheme.shadowSm,
       ),
       child: Row(
         children: [
@@ -320,11 +326,11 @@ class _ResultRow extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    '@$username',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isMe ? AppTheme.gold : AppTheme.textPrimary,
+                    username,
+                    style: GoogleFonts.caveat(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: isMe ? AppTheme.terra : AppTheme.ink,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -333,19 +339,20 @@ class _ResultRow extends StatelessWidget {
                   const SizedBox(width: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
+                      horizontal: 6,
                       vertical: 1,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.gold.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(3),
+                      color: AppTheme.terraMuted,
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                    child: const Text(
-                      'εσύ',
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.gold,
+                    child: Text(
+                      'ΕΣΥ',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 8,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 2,
+                        color: AppTheme.terra,
                       ),
                     ),
                   ),
@@ -353,22 +360,29 @@ class _ResultRow extends StatelessWidget {
               ],
             ),
           ),
-          _Stat(label: 'Πρ', value: '$predicted'),
-          const SizedBox(width: AppTheme.space2),
-          _Stat(label: 'Μπ', value: '$actual', highlight: isBonus),
-          const SizedBox(width: AppTheme.space2),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: isBonus ? AppTheme.gold : AppTheme.surfaceElevated,
-              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-            ),
+          _RevealNumeral(value: predicted, highlight: false),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Text(
-              '+$score',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                color: isBonus ? AppTheme.background : AppTheme.textPrimary,
+              '→',
+              style: GoogleFonts.gloock(
+                fontSize: 18,
+                color: AppTheme.inkFaint,
+                height: 1.0,
+              ),
+            ),
+          ),
+          _RevealNumeral(value: actual, highlight: isBonus),
+          const SizedBox(width: AppTheme.space2),
+          SizedBox(
+            width: 56,
+            child: Text(
+              isBonus ? '★ +$score' : '+$score',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.caveat(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: isBonus ? AppTheme.olive : AppTheme.inkSoft,
               ),
             ),
           ),
@@ -379,14 +393,14 @@ class _ResultRow extends StatelessWidget {
                 ? const Icon(
                     Icons.check_circle,
                     size: 16,
-                    color: AppTheme.success,
+                    color: AppTheme.olive,
                   )
                 : onDispute != null
                     ? IconButton(
                         onPressed: onDispute,
                         icon: const Icon(Icons.flag_outlined),
                         iconSize: 14,
-                        color: AppTheme.textTertiary,
+                        color: AppTheme.inkFaint,
                         visualDensity: VisualDensity.compact,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
@@ -400,39 +414,36 @@ class _ResultRow extends StatelessWidget {
   }
 }
 
-class _Stat extends StatelessWidget {
-  const _Stat({
-    required this.label,
-    required this.value,
-    this.highlight = false,
-  });
+/// Single Gloock numeral with a hairline underline — the "reveal" mark.
+class _RevealNumeral extends StatelessWidget {
+  const _RevealNumeral({required this.value, required this.highlight});
 
-  final String label;
-  final String value;
+  final int value;
   final bool highlight;
 
   @override
   Widget build(BuildContext context) {
+    final color = highlight ? AppTheme.olive : AppTheme.ink;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          label,
-          style: const TextStyle(
-            fontSize: 9,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textTertiary,
-            letterSpacing: 0.4,
+          '$value',
+          style: GoogleFonts.gloock(
+            fontSize: 26,
+            color: color,
+            height: 1.0,
+            letterSpacing: -0.5,
           ),
         ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: highlight ? AppTheme.success : AppTheme.textPrimary,
-          ),
+        const SizedBox(height: 2),
+        Container(
+          height: 1,
+          width: 20,
+          color: highlight
+              ? AppTheme.olive.withValues(alpha: 0.6)
+              : AppTheme.terra.withValues(alpha: 0.5),
         ),
       ],
     );

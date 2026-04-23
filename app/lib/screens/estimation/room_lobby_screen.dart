@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../providers/auth_providers.dart';
 import '../../services/estimation_service.dart';
@@ -85,17 +86,15 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
     setState(() => _starting = true);
     try {
       final playerIds = _seats.map((s) => s['player_id'] as String).toList();
-      await EstimationService().createRoundEntries(
+      final seats = _seats.map((s) => s['seat'] as int).toList();
+      final playerCount = _game!['player_count'] as int;
+
+      await EstimationService().startGame(
         gameId: widget.gameId,
-        roundNumber: 1,
-        cardsThisRound: 1,
+        playerCount: playerCount,
+        seats: seats,
         playerIds: playerIds,
       );
-
-      await SupabaseBootstrap.client
-          .from('estimation_games')
-          .update({'status': 'active'})
-          .eq('id', widget.gameId);
     } on Object catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -214,15 +213,15 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                             // ── Players header ──
                             Row(
                               children: [
-                                const AppSectionLabel('Παίκτες'),
+                                const AppSectionLabel('ΠΑΙΚΤΕΣ · SEATED'),
                                 const Spacer(),
                                 Text(
                                   '${_seats.length} / $playerCount',
-                                  style: const TextStyle(
+                                  style: GoogleFonts.jetBrainsMono(
                                     fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppTheme.gold,
-                                    letterSpacing: 0.6,
+                                    fontWeight: FontWeight.w500,
+                                    letterSpacing: 2,
+                                    color: AppTheme.terra,
                                   ),
                                 ),
                               ],
@@ -275,27 +274,28 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
       padding: const EdgeInsets.symmetric(vertical: AppTheme.space4),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         border: Border.all(color: AppTheme.border),
+        boxShadow: AppTheme.shadowSm,
       ),
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 14,
             height: 14,
             child: CircularProgressIndicator(
               strokeWidth: 1.5,
-              color: AppTheme.textTertiary,
+              color: AppTheme.inkFaint,
             ),
           ),
-          SizedBox(width: AppTheme.space3),
+          const SizedBox(width: AppTheme.space3),
           Text(
-            'Περιμένοντας τον host…',
-            style: TextStyle(
-              color: AppTheme.textSecondary,
-              fontSize: 13,
+            'περιμένοντας τον host…',
+            style: GoogleFonts.caveat(
+              fontSize: 18,
+              color: AppTheme.inkSoft,
             ),
           ),
         ],
@@ -322,65 +322,76 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
         vertical: AppTheme.space3,
       ),
       decoration: BoxDecoration(
-        color: isMe ? AppTheme.goldMuted : AppTheme.surface,
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         border: Border.all(
           color: isMe
-              ? AppTheme.gold.withValues(alpha: 0.4)
+              ? AppTheme.terra.withValues(alpha: 0.55)
               : isEmpty
                   ? AppTheme.border
                   : AppTheme.borderAccent,
-          width: 1,
+          width: isMe ? 1.2 : 1,
         ),
+        boxShadow: isEmpty ? null : AppTheme.shadowSm,
       ),
       child: Row(
         children: [
-          Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: isEmpty
-                  ? AppTheme.surfaceElevated
-                  : AppTheme.gold.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-            ),
-            alignment: Alignment.center,
+          SizedBox(
+            width: 32,
             child: Text(
               '${seatIndex + 1}',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: isEmpty ? AppTheme.textTertiary : AppTheme.gold,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.gloock(
+                fontSize: 22,
+                color: isEmpty ? AppTheme.inkFaint : AppTheme.terra,
+                height: 1.0,
+                letterSpacing: -0.3,
               ),
             ),
           ),
           const SizedBox(width: AppTheme.space3),
           Expanded(
             child: isEmpty
-                ? const Text(
-                    'Αναμονή…',
-                    style: TextStyle(
-                      color: AppTheme.textTertiary,
-                      fontSize: 14,
+                ? Text(
+                    'αναμονή…',
+                    style: GoogleFonts.caveat(
+                      fontSize: 18,
+                      color: AppTheme.inkFaint,
                     ),
                   )
                 : Row(
                     children: [
-                      Text(
-                        username != null ? '@$username' : '…',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: isMe ? AppTheme.gold : AppTheme.textPrimary,
+                      Flexible(
+                        child: Text(
+                          username ?? '…',
+                          style: GoogleFonts.caveat(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: isMe ? AppTheme.terra : AppTheme.ink,
+                            height: 1.1,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (isMe) ...[
-                        const SizedBox(width: AppTheme.space2),
-                        const Text(
-                          'εσύ',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: AppTheme.textTertiary,
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 1,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.terraMuted,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          child: Text(
+                            'ΕΣΥ',
+                            style: GoogleFonts.jetBrainsMono(
+                              fontSize: 8,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 2,
+                              color: AppTheme.terra,
+                            ),
                           ),
                         ),
                       ],
@@ -394,16 +405,16 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                 vertical: 3,
               ),
               decoration: BoxDecoration(
-                color: AppTheme.gold.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                color: AppTheme.oliveMuted,
+                borderRadius: BorderRadius.circular(2),
               ),
-              child: const Text(
+              child: Text(
                 'HOST',
-                style: TextStyle(
+                style: GoogleFonts.jetBrainsMono(
                   fontSize: 9,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.gold,
-                  letterSpacing: 0.8,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 2,
+                  color: AppTheme.olive,
                 ),
               ),
             ),
@@ -411,7 +422,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
             const Icon(
               Icons.check_circle,
               size: 16,
-              color: AppTheme.success,
+              color: AppTheme.olive,
             ),
         ],
       ),
@@ -434,19 +445,20 @@ class _RoomCodeCard extends StatelessWidget {
         vertical: AppTheme.space5,
       ),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(AppTheme.radiusLg),
         border: Border.all(color: AppTheme.border),
+        boxShadow: AppTheme.shadowMd,
       ),
       child: Column(
         children: [
-          const Text(
-            'ΚΩΔΙΚΟΣ ΔΩΜΑΤΙΟΥ',
-            style: TextStyle(
+          Text(
+            'ROOM · ΚΩΔΙΚΟΣ',
+            style: GoogleFonts.jetBrainsMono(
               fontSize: 10,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1.2,
-              color: AppTheme.textTertiary,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 3,
+              color: AppTheme.terra,
             ),
           ),
           const SizedBox(height: AppTheme.space3),
@@ -458,7 +470,7 @@ class _RoomCodeCard extends StatelessWidget {
                 Clipboard.setData(ClipboardData(text: code));
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Αντιγράφτηκε'),
+                    content: Text('αντιγράφτηκε'),
                     duration: Duration(seconds: 1),
                   ),
                 );
@@ -473,19 +485,19 @@ class _RoomCodeCard extends StatelessWidget {
                   children: [
                     Text(
                       code,
-                      style: const TextStyle(
-                        fontSize: 52,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 14,
-                        color: AppTheme.gold,
-                        height: 1,
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 44,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 10,
+                        color: AppTheme.ink,
+                        height: 1.0,
                       ),
                     ),
                     const SizedBox(width: AppTheme.space3),
                     const Icon(
                       Icons.copy_outlined,
-                      size: 18,
-                      color: AppTheme.textTertiary,
+                      size: 16,
+                      color: AppTheme.inkFaint,
                     ),
                   ],
                 ),
@@ -493,11 +505,17 @@ class _RoomCodeCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppTheme.space2),
-          const Text(
-            'Μοιράσου με τους παίκτες',
-            style: TextStyle(
-              color: AppTheme.textTertiary,
-              fontSize: 12,
+          Container(
+            height: 1,
+            width: 60,
+            color: AppTheme.terra.withValues(alpha: 0.5),
+          ),
+          const SizedBox(height: AppTheme.space2),
+          Text(
+            'μοιράσου με τους παίκτες',
+            style: GoogleFonts.caveat(
+              fontSize: 18,
+              color: AppTheme.inkSoft,
             ),
           ),
         ],

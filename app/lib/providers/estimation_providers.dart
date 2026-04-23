@@ -3,11 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/estimation_game.dart';
 import '../models/estimation_player.dart';
 import '../models/estimation_round.dart';
+import '../models/estimation_trick.dart';
 import '../providers/auth_providers.dart';
 import '../services/supabase_client.dart';
 
 /// Currently active game id — set when entering the game screen.
 final selectedGameIdProvider = StateProvider<String?>((ref) => null);
+
+/// Has this device already watched the round-1 dealer reveal for the given
+/// game? Session-scoped (resets on app relaunch, which is fine — if the
+/// dealer is still unknown when the user re-enters, they'd want to see it).
+final dealerRevealDismissedProvider =
+    StateProvider.family<bool, String>((ref, gameId) => false);
 
 /// Streams the estimation_games row for the selected game.
 final estimationGameStreamProvider =
@@ -116,6 +123,112 @@ final validationThresholdProvider =
   final game = ref.watch(estimationGameStreamProvider(gameId)).valueOrNull;
   if (game == null) return 0;
   return game.playerCount == 4 ? 3 : game.playerCount;
+});
+
+// ── Sequential bidding providers ─────────────────────────────────────────────
+
+/// Seats in bid order for the current round — starter first, then clockwise
+/// through every seat once. Empty until [EstimationGame.roundStarterSeat] is
+/// set (happens at game start).
+final bidOrderProvider = Provider.family<List<int>, String>((ref, gameId) {
+  final game = ref.watch(estimationGameStreamProvider(gameId)).valueOrNull;
+  return game?.bidOrder ?? const [];
+});
+
+/// The seat whose turn it is to bid right now. `-1` if every seat has
+/// already locked a prediction (or the game isn't ready yet).
+final currentBidderSeatProvider =
+    Provider.family<int, String>((ref, gameId) {
+  final order = ref.watch(bidOrderProvider(gameId));
+  final entries = ref.watch(activeRoundEntriesProvider(gameId));
+  final players =
+      ref.watch(estimationPlayersStreamProvider(gameId)).valueOrNull ?? [];
+  if (order.isEmpty || players.isEmpty) return -1;
+  final seatToEntry = {
+    for (final p in players)
+      p.seat: entries.firstWhere(
+        (e) => e.playerId == p.playerId,
+        orElse: () => const EstimationRound(
+          id: '',
+          gameId: '',
+          playerId: '',
+          roundNumber: 0,
+          cardsThisRound: 0,
+          validated: false,
+        ),
+      ),
+  };
+  for (final seat in order) {
+    final entry = seatToEntry[seat];
+    if (entry == null || entry.prediction == null) return seat;
+  }
+  return -1;
+});
+
+/// My seat in this game, or -1 if I'm not a participant (shouldn't happen).
+final mySeatProvider = Provider.family<int, String>((ref, gameId) {
+  final userId = ref.watch(currentUserIdProvider);
+  final players =
+      ref.watch(estimationPlayersStreamProvider(gameId)).valueOrNull ?? [];
+  if (userId == null) return -1;
+  final me = players.where((p) => p.playerId == userId);
+  return me.isEmpty ? -1 : me.first.seat;
+});
+
+/// Convenience: is it my turn to bid?
+final isMyTurnToBidProvider = Provider.family<bool, String>((ref, gameId) {
+  final mySeat = ref.watch(mySeatProvider(gameId));
+  final current = ref.watch(currentBidderSeatProvider(gameId));
+  return mySeat >= 0 && mySeat == current;
+});
+
+// ── Per-trick providers ──────────────────────────────────────────────────────
+
+/// Stream of every [EstimationTrick] for a game. Filtered client-side per
+/// round to match how `estimation_rounds` is used.
+final allTricksStreamProvider =
+    StreamProvider.family<List<EstimationTrick>, String>((ref, gameId) {
+  return SupabaseBootstrap.client
+      .from('estimation_tricks')
+      .stream(primaryKey: ['id'])
+      .eq('game_id', gameId)
+      .map((rows) => rows.map(EstimationTrick.fromJson).toList());
+});
+
+/// Tricks for the active round, sorted by trick_number.
+final activeRoundTricksProvider =
+    Provider.family<List<EstimationTrick>, String>((ref, gameId) {
+  final game = ref.watch(estimationGameStreamProvider(gameId)).valueOrNull;
+  final all = ref.watch(allTricksStreamProvider(gameId)).valueOrNull;
+  if (game == null || all == null) return const [];
+  final filtered = all
+      .where((t) => t.roundNumber == game.currentRound)
+      .toList()
+    ..sort((a, b) => a.trickNumber.compareTo(b.trickNumber));
+  return filtered;
+});
+
+/// The row representing the currently active trick. `null` if none has been
+/// proposed yet (anyone can tap a winner to create one).
+final currentTrickProvider =
+    Provider.family<EstimationTrick?, String>((ref, gameId) {
+  final game = ref.watch(estimationGameStreamProvider(gameId)).valueOrNull;
+  final tricks = ref.watch(activeRoundTricksProvider(gameId));
+  if (game == null) return null;
+  try {
+    return tricks.firstWhere(
+      (t) => t.trickNumber == game.currentTrickNumber,
+    );
+  } catch (_) {
+    return null;
+  }
+});
+
+/// Tricks already confirmed this round — for the "past tricks" strip.
+final pastTricksProvider =
+    Provider.family<List<EstimationTrick>, String>((ref, gameId) {
+  final tricks = ref.watch(activeRoundTricksProvider(gameId));
+  return tricks.where((t) => t.isConfirmed).toList();
 });
 
 /// Fetches player_id → username map for all players in the game.

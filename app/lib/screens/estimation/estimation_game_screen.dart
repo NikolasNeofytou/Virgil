@@ -8,7 +8,7 @@ import '../../theme/app_theme.dart';
 import 'widgets/game_over_panel.dart';
 import 'widgets/playing_phase.dart';
 import 'widgets/prediction_phase.dart';
-import 'widgets/submitting_phase.dart';
+import 'widgets/short_straw_draw.dart';
 import 'widgets/validating_phase.dart';
 
 /// Main game screen. Swaps body widget based on `game.phase`.
@@ -20,6 +20,12 @@ class EstimationGameScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameAsync = ref.watch(estimationGameStreamProvider(gameId));
+    final players =
+        ref.watch(estimationPlayersStreamProvider(gameId)).valueOrNull ?? [];
+    final usernames =
+        ref.watch(playerUsernamesProvider(gameId)).valueOrNull ?? {};
+    final revealDismissed =
+        ref.watch(dealerRevealDismissedProvider(gameId));
 
     return AppBackground(
       child: PopScope(
@@ -37,46 +43,91 @@ class EstimationGameScreen extends ConsumerWidget {
             ),
           ),
           body: SafeArea(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
-                child: gameAsync.when(
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (e, _) => Center(
-                    child: Text(
-                      'Σφάλμα: $e',
-                      style: const TextStyle(color: AppTheme.danger),
+            child: Stack(
+              children: [
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 520),
+                    child: gameAsync.when(
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (e, _) => Center(
+                        child: Text(
+                          'Σφάλμα: $e',
+                          style: const TextStyle(color: AppTheme.danger),
+                        ),
+                      ),
+                      data: (game) {
+                        if (game == null) {
+                          return const Center(
+                            child: Text(
+                              'Το παιχνίδι δεν βρέθηκε',
+                              style:
+                                  TextStyle(color: AppTheme.textSecondary),
+                            ),
+                          );
+                        }
+                        return AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 240),
+                          switchInCurve: Curves.easeOut,
+                          switchOutCurve: Curves.easeIn,
+                          child: KeyedSubtree(
+                            key: ValueKey(
+                              '${game.phase}-${game.currentRound}-${game.status}',
+                            ),
+                            child: _buildPhaseBody(game),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  data: (game) {
-                    if (game == null) {
-                      return const Center(
-                        child: Text(
-                          'Το παιχνίδι δεν βρέθηκε',
-                          style: TextStyle(color: AppTheme.textSecondary),
+                ),
+                if (!revealDismissed)
+                  gameAsync.maybeWhen(
+                    data: (game) {
+                      if (game == null ||
+                          game.currentRound != 1 ||
+                          game.phase != 'predicting' ||
+                          players.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      final seats =
+                          players.map((p) => p.seat).toList()..sort();
+                      final dealerName = _seatName(
+                        players,
+                        usernames,
+                        game.dealerSeat,
+                      );
+                      return Positioned.fill(
+                        child: ShortStrawDraw(
+                          seats: seats,
+                          dealerSeat: game.dealerSeat,
+                          dealerName: dealerName ?? '…',
+                          onDone: () => ref
+                              .read(dealerRevealDismissedProvider(gameId)
+                                  .notifier,)
+                              .state = true,
                         ),
                       );
-                    }
-                    return AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 240),
-                      switchInCurve: Curves.easeOut,
-                      switchOutCurve: Curves.easeIn,
-                      child: KeyedSubtree(
-                        key: ValueKey(
-                          '${game.phase}-${game.currentRound}-${game.status}',
-                        ),
-                        child: _buildPhaseBody(game),
-                      ),
-                    );
-                  },
-                ),
-              ),
+                    },
+                    orElse: () => const SizedBox.shrink(),
+                  ),
+              ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  String? _seatName(
+    List<dynamic> players,
+    Map<String, String> usernames,
+    int seat,
+  ) {
+    final match = players.where((p) => p.seat == seat);
+    if (match.isEmpty) return null;
+    return usernames[match.first.playerId as String];
   }
 
   Widget _buildPhaseBody(EstimationGame game) {
@@ -85,9 +136,10 @@ class EstimationGameScreen extends ConsumerWidget {
       case 'predicting':
         return PredictionPhase(gameId: gameId);
       case 'playing':
-        return PlayingPhase(gameId: gameId);
+      // Legacy 'submitting' games still get routed through playing; actual
+      // tricks are now tracked in estimation_tricks.
       case 'submitting':
-        return SubmittingPhase(gameId: gameId);
+        return PlayingPhase(gameId: gameId);
       case 'validating':
         return ValidatingPhase(gameId: gameId);
       default:

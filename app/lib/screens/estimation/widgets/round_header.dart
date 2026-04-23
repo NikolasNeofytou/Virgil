@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../theme/app_theme.dart';
 
-/// Compact header showing round progress, card count, and dealer name.
-/// Displayed at the top of every phase body.
+/// Masthead for every in-game phase. Gloock round numeral, JetBrains Mono
+/// eyebrow, Caveat dealer byline.
 class RoundHeader extends StatelessWidget {
   const RoundHeader({
     super.key,
@@ -23,117 +24,97 @@ class RoundHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.space4,
-        vertical: AppTheme.space3,
+        vertical: AppTheme.space4,
       ),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         border: Border.all(color: AppTheme.border),
+        boxShadow: AppTheme.shadowSm,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Round counter
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      'ΓΥΡΟΣ · ROUND',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 3,
+                        color: AppTheme.inkSoft,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.baseline,
                       textBaseline: TextBaseline.alphabetic,
                       children: [
-                        const Text(
-                          'ΓΥΡΟΣ',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1,
-                            color: AppTheme.textTertiary,
-                          ),
-                        ),
-                        const SizedBox(width: AppTheme.space2),
                         Text(
                           '$currentRound',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: AppTheme.gold,
+                          style: GoogleFonts.gloock(
+                            fontSize: 36,
+                            color: AppTheme.ink,
+                            height: 1.0,
                             letterSpacing: -0.5,
-                            height: 1,
                           ),
                         ),
-                        const SizedBox(width: 4),
                         Text(
-                          '/ $totalRounds',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: AppTheme.textTertiary,
-                            height: 1,
+                          ' / $totalRounds',
+                          style: GoogleFonts.gloock(
+                            fontSize: 20,
+                            color: AppTheme.inkFaint,
+                            height: 1.0,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 2),
                     Text(
                       '$cardsThisRound ${cardsThisRound == 1 ? 'κάρτα' : 'κάρτες'}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.textSecondary,
+                      style: GoogleFonts.kalam(
+                        fontSize: 13,
+                        color: AppTheme.inkSoft,
+                        height: 1.2,
                       ),
                     ),
                   ],
                 ),
               ),
-              // Dealer pill
               if (dealerName != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppTheme.space3,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.background,
-                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                    border: Border.all(color: AppTheme.border),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.style_outlined,
-                        size: 13,
-                        color: AppTheme.textTertiary,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'DEALER',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 3,
+                        color: AppTheme.terra,
                       ),
-                      const SizedBox(width: 5),
-                      const Text(
-                        'Dealer',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.4,
-                          color: AppTheme.textTertiary,
-                        ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      dealerName!,
+                      style: GoogleFonts.caveat(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.ink,
+                        height: 1.0,
                       ),
-                      const SizedBox(width: 5),
-                      Text(
-                        '@$dealerName',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
             ],
           ),
           const SizedBox(height: AppTheme.space3),
-          // Dot progress — each round is a dot. Past = gold, current = filled
-          // gold, future = border. Scales to fit any round count.
           _DotProgress(current: currentRound, total: totalRounds),
         ],
       ),
@@ -153,11 +134,9 @@ class _DotProgress extends StatelessWidget {
       builder: (context, constraints) {
         const minDotWidth = 4.0;
         const gap = 2.0;
-        // Cap the dot count so we don't render hundreds at narrow widths.
         final maxDots =
             ((constraints.maxWidth + gap) / (minDotWidth + gap)).floor();
         final dotCount = total <= maxDots ? total : maxDots;
-        // Map actual round to the compressed range if needed.
         final scaledCurrent =
             (current * dotCount / total).ceil().clamp(1, dotCount);
         final dotWidth =
@@ -175,10 +154,10 @@ class _DotProgress extends StatelessWidget {
                 height: isCurrent ? 4 : 3,
                 decoration: BoxDecoration(
                   color: isCurrent
-                      ? AppTheme.gold
+                      ? AppTheme.terra
                       : isPast
-                          ? AppTheme.gold.withValues(alpha: 0.45)
-                          : AppTheme.surfaceElevated,
+                          ? AppTheme.terra.withValues(alpha: 0.5)
+                          : AppTheme.paperEdge,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),

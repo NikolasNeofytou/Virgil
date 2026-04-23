@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../theme/app_theme.dart';
 
@@ -35,13 +36,15 @@ class PlayerScoreRow extends StatelessWidget {
         vertical: AppTheme.space3,
       ),
       decoration: BoxDecoration(
-        color: isMe ? AppTheme.goldMuted : AppTheme.surface,
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         border: Border.all(
           color: isMe
-              ? AppTheme.gold.withValues(alpha: 0.35)
+              ? AppTheme.terra.withValues(alpha: 0.55)
               : AppTheme.border,
+          width: isMe ? 1.2 : 1,
         ),
+        boxShadow: AppTheme.shadowSm,
       ),
       child: Row(
         children: [
@@ -50,11 +53,12 @@ class PlayerScoreRow extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    '@$username',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isMe ? AppTheme.gold : AppTheme.textPrimary,
+                    username,
+                    style: GoogleFonts.caveat(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: isMe ? AppTheme.terra : AppTheme.ink,
+                      height: 1.1,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -63,20 +67,20 @@ class PlayerScoreRow extends StatelessWidget {
                   const SizedBox(width: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
+                      horizontal: 6,
                       vertical: 1,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.gold.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(3),
+                      color: AppTheme.terraMuted,
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                    child: const Text(
-                      'εσύ',
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.3,
-                        color: AppTheme.gold,
+                    child: Text(
+                      'ΕΣΥ',
+                      style: GoogleFonts.jetBrainsMono(
+                        fontSize: 8,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 2,
+                        color: AppTheme.terra,
                       ),
                     ),
                   ),
@@ -104,16 +108,16 @@ class PlayerScoreRow extends StatelessWidget {
                 statusIcon,
                 size: 16,
                 color: statusIcon == Icons.check_circle
-                    ? AppTheme.success
-                    : AppTheme.textTertiary,
+                    ? AppTheme.olive
+                    : AppTheme.inkFaint,
               ),
             if (statusText != null) ...[
               const SizedBox(width: 6),
               Text(
                 statusText!,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppTheme.textSecondary,
+                style: GoogleFonts.kalam(
+                  fontSize: 13,
+                  color: AppTheme.inkSoft,
                 ),
               ),
             ],
@@ -137,39 +141,31 @@ class _ValueChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(
-        color: highlight ? AppTheme.gold : AppTheme.surfaceElevated,
-        borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 9,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.3,
-              color: highlight
-                  ? AppTheme.background
-                  : AppTheme.textTertiary,
-            ),
+    final fg = highlight ? AppTheme.olive : AppTheme.ink;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.jetBrainsMono(
+            fontSize: 8,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 2,
+            color: AppTheme.inkFaint,
           ),
-          const SizedBox(width: 3),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w800,
-              color: highlight
-                  ? AppTheme.background
-                  : AppTheme.textPrimary,
-            ),
+        ),
+        const SizedBox(height: 1),
+        Text(
+          value,
+          style: GoogleFonts.gloock(
+            fontSize: 18,
+            color: fg,
+            height: 1.0,
+            letterSpacing: -0.3,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

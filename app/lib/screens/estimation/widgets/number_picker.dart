@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../theme/app_theme.dart';
 
-/// Horizontal grid of number buttons 0..max. Selected is filled gold,
-/// others are subtle surface tiles. Wraps naturally for bigger ranges.
+/// Horizontal grid of number tiles. Selected tile gets a terracotta stamp
+/// ring — overshooting at 2.4× and settling to 1.0× in 250ms, per the
+/// Virgil identity lock-in motion.
 class NumberPicker extends StatelessWidget {
   const NumberPicker({
     super.key,
@@ -25,7 +27,7 @@ class NumberPicker extends StatelessWidget {
       spacing: AppTheme.space2,
       runSpacing: AppTheme.space2,
       children: List.generate(max + 1, (i) {
-        return _NumberBox(
+        return _NumberTile(
           number: i,
           selected: i == value,
           onTap: enabled ? () => onChanged(i) : null,
@@ -35,8 +37,8 @@ class NumberPicker extends StatelessWidget {
   }
 }
 
-class _NumberBox extends StatelessWidget {
-  const _NumberBox({
+class _NumberTile extends StatelessWidget {
+  const _NumberTile({
     required this.number,
     required this.selected,
     this.onTap,
@@ -49,45 +51,77 @@ class _NumberBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final disabled = onTap == null;
+    final numeralColor = selected
+        ? AppTheme.terra
+        : disabled
+            ? AppTheme.inkFaint
+            : AppTheme.ink;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          curve: Curves.easeOut,
-          width: 52,
-          height: 52,
+        splashColor: AppTheme.terraMuted,
+        highlightColor: Colors.transparent,
+        child: Container(
+          width: 56,
+          height: 56,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: selected
-                ? AppTheme.gold
-                : disabled
-                    ? AppTheme.surface.withValues(alpha: 0.5)
-                    : AppTheme.surface,
+            color: AppTheme.paper,
             borderRadius: BorderRadius.circular(AppTheme.radiusMd),
             border: Border.all(
               color: selected
-                  ? AppTheme.gold
+                  ? AppTheme.terra.withValues(alpha: 0.6)
                   : disabled
                       ? AppTheme.border.withValues(alpha: 0.5)
                       : AppTheme.border,
-              width: 1,
+              width: selected ? 1.4 : 1,
             ),
           ),
-          child: Text(
-            '$number',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.3,
-              color: selected
-                  ? AppTheme.background
-                  : disabled
-                      ? AppTheme.textTertiary.withValues(alpha: 0.5)
-                      : AppTheme.textPrimary,
-            ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (selected)
+                TweenAnimationBuilder<double>(
+                  key: ValueKey('stamp-$number'),
+                  tween: Tween(begin: 0, end: 1),
+                  duration: const Duration(milliseconds: 260),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, t, _) {
+                    // Scale: 2.4 → 1.0, opacity: ink → settled terra
+                    final scale = 2.4 - 1.4 * t;
+                    final opacity = (t * 2).clamp(0.0, 1.0);
+                    return Opacity(
+                      opacity: 0.9 - t * 0.4,
+                      child: Transform.scale(
+                        scale: scale,
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppTheme.terra.withValues(alpha: opacity),
+                              width: 1.6,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              Text(
+                '$number',
+                style: GoogleFonts.gloock(
+                  fontSize: 22,
+                  color: numeralColor,
+                  height: 1.0,
+                  letterSpacing: -0.3,
+                ),
+              ),
+            ],
           ),
         ),
       ),
