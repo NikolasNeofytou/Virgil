@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../services/auth_service.dart';
 import '../theme/app_background.dart';
@@ -169,36 +170,68 @@ class _Brand extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            color: AppTheme.surfaceElevated,
-            borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-            border: Border.all(color: AppTheme.border),
-            boxShadow: AppTheme.glow(AppTheme.gold, opacity: 0.15),
-          ),
-          child: const Center(
-            child: Icon(
-              Icons.style_outlined,
-              size: 32,
-              color: AppTheme.gold,
+        // Masthead eyebrow — VOL. I · IDENTITY · KAFENEIO SERIES
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'VOL. I · APR 2026',
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 9,
+                letterSpacing: 3,
+                color: AppTheme.inkSoft,
+              ),
             ),
-          ),
+            Text(
+              'KAFENEIO SERIES',
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 9,
+                letterSpacing: 3,
+                color: AppTheme.inkSoft,
+              ),
+            ),
+          ],
         ),
+        const SizedBox(height: 6),
+        // Double hairline rule
+        Container(height: 2, color: AppTheme.ink),
+        const SizedBox(height: 2),
+        Container(height: 0.5, color: AppTheme.ink),
         const SizedBox(height: AppTheme.space5),
+        // Wordmark
         Text(
-          'Tichu Cyprus',
+          'Virgil',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.displaySmall,
+          style: GoogleFonts.gloock(
+            fontSize: 72,
+            color: AppTheme.ink,
+            letterSpacing: -1.5,
+            height: 1.0,
+          ),
         ),
         const SizedBox(height: AppTheme.space2),
         Text(
-          'Το παιχνίδι καρτών της Κύπρου',
+          'a guide for the table',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppTheme.textSecondary,
-              ),
+          style: GoogleFonts.caveat(
+            fontSize: 22,
+            color: AppTheme.terra,
+          ),
+        ),
+        const SizedBox(height: AppTheme.space4),
+        // Closing double rule
+        Container(height: 0.5, color: AppTheme.ink),
+        const SizedBox(height: 2),
+        Container(height: 2, color: AppTheme.ink),
+        const SizedBox(height: AppTheme.space4),
+        Text(
+          'ένας οδηγός για το τραπέζι',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.kalam(
+            fontSize: 14,
+            color: AppTheme.inkSoft,
+            height: 1.4,
+          ),
         ),
       ],
     );

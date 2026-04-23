@@ -1,55 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-/// Linear / Notion-inspired dark theme with a single gold accent.
-/// Near-black surfaces, subtle borders, generous spacing, refined typography.
+/// Virgil identity — paper & ink. A kafeneio receipt rendered as an app.
+///
+/// Fonts: Gloock (display serif), Caveat (UI voice / hand), Kalam (body),
+/// JetBrains Mono (metadata, eyebrows). Palette: paper + ink with three
+/// regional accents — terracotta (actions), olive (status / match),
+/// gold (reserved for bonuses + wins).
 class AppTheme {
   AppTheme._();
 
-  // ── Color palette ──────────────────────────────────────────────────────────
+  // ── Virgil palette ─────────────────────────────────────────────────────────
 
-  /// Near-black app background.
-  static const Color background = Color(0xFF0A0A0B);
+  /// The page under the sheet — a hair darker than paper.
+  static const Color pageBg = Color(0xFFECE1C2);
 
-  /// Base surface — card/sheet background.
-  static const Color surface = Color(0xFF121214);
+  /// Paper. Every sheet and surface sits on this.
+  static const Color paper = Color(0xFFF4ECD8);
 
-  /// Elevated surface — hover / selected / pressed states.
-  static const Color surfaceElevated = Color(0xFF1A1A1D);
+  /// Paper edge — corner folds, inset fills, input backgrounds.
+  static const Color paperEdge = Color(0xFFE8D9B0);
 
-  /// Highest elevation — modals, popovers.
-  static const Color surfaceHigh = Color(0xFF222226);
+  /// Primary ink — text, line art, strokes.
+  static const Color ink = Color(0xFF3D2817);
 
-  /// Subtle divider / border color.
-  static const Color border = Color(0xFF27272A);
+  /// Secondary ink — subtitles, captions.
+  static const Color inkSoft = Color(0xFF6B4F3A);
 
-  /// Hairline accent border (hover/selected).
-  static const Color borderAccent = Color(0xFF3A3A3F);
+  /// Tertiary ink — faint marginalia, disabled state.
+  static const Color inkFaint = Color(0xFF9A7E62);
 
-  /// Primary accent — refined gold. Less saturated than Balatro.
-  static const Color gold = Color(0xFFD4A94D);
-  static const Color goldHover = Color(0xFFE0B862);
-  static const Color goldMuted = Color(0x33D4A94D); // 20% alpha
+  /// Terracotta — actions, stamps, focus, the primary accent.
+  static const Color terra = Color(0xFFA0522D);
+  static const Color terraHover = Color(0xFFB56134);
+  static const Color terraMuted = Color(0x33A0522D); // 20% alpha
 
-  /// Secondary accent (for hover/glow effects).
-  static const Color amber = Color(0xFFE8B14A);
+  /// Olive — status, laurels, match outcomes.
+  static const Color olive = Color(0xFF5A6B3D);
+  static const Color oliveMuted = Color(0x335A6B3D);
 
-  // ── Text ──
-  static const Color textPrimary = Color(0xFFF5F5F7);
-  static const Color textSecondary = Color(0xFFA1A1A6);
-  static const Color textTertiary = Color(0xFF6E6E76);
+  /// Gold — reserved. Only for bonuses and wins.
+  static const Color goldReserved = Color(0xFFB8862E);
+  static const Color goldReservedMuted = Color(0x33B8862E);
 
-  // ── Semantic ──
-  static const Color success = Color(0xFF5EB980);
-  static const Color warning = Color(0xFFE8A84A);
-  static const Color danger = Color(0xFFE5484D);
-  static const Color info = Color(0xFF5B8DEF);
+  // ── Legacy aliases ─────────────────────────────────────────────────────────
+  // Kept so existing screens inherit the new identity without per-file edits.
+  // The names survive; the values are now the Virgil equivalents.
+
+  static const Color background = paper;
+  static const Color surface = paper;
+  static const Color surfaceElevated = Color(0xFFEFE5C9); // paper, lifted
+  static const Color surfaceHigh = ink; // inverted (snackbar, toasts)
+
+  static const Color border = Color(0x243D2817); // ink @ ~14%
+  static const Color borderAccent = Color(0x4D3D2817); // ink @ ~30%
+
+  /// Primary accent — terracotta stands in for the old "gold".
+  static const Color gold = terra;
+  static const Color goldHover = terraHover;
+  static const Color goldMuted = terraMuted;
+
+  /// Amber used to be a hover/glow tint — map to the reserved gold.
+  static const Color amber = goldReserved;
+
+  static const Color textPrimary = ink;
+  static const Color textSecondary = inkSoft;
+  static const Color textTertiary = inkFaint;
+
+  static const Color success = olive;
+  static const Color warning = goldReserved;
+  static const Color danger = Color(0xFF9E3B2B); // pompeiian rust — reads on paper
+  static const Color info = Color(0xFF3E6B7C);
 
   // ── Radius ──
-  static const double radiusSm = 6;
-  static const double radiusMd = 10;
-  static const double radiusLg = 14;
-  static const double radiusXl = 20;
+  // Paper prefers near-square corners. Softened, not rounded.
+  static const double radiusSm = 2;
+  static const double radiusMd = 4;
+  static const double radiusLg = 6;
+  static const double radiusXl = 10;
 
   // ── Spacing rhythm ──
   static const double space1 = 4;
@@ -61,189 +90,208 @@ class AppTheme {
   static const double space7 = 48;
   static const double space8 = 64;
 
-  // ── Shadows ──
+  // ── Shadows (warm, ink-tinted) ──
   static const List<BoxShadow> shadowSm = [
-    BoxShadow(
-      color: Color(0x40000000),
-      blurRadius: 4,
-      offset: Offset(0, 2),
-    ),
+    BoxShadow(color: Color(0x0D3D2817), blurRadius: 0, offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x0F3D2817), blurRadius: 4, offset: Offset(0, 2)),
   ];
 
   static const List<BoxShadow> shadowMd = [
-    BoxShadow(
-      color: Color(0x40000000),
-      blurRadius: 12,
-      offset: Offset(0, 4),
-    ),
+    BoxShadow(color: Color(0x143D2817), blurRadius: 12, offset: Offset(0, 4)),
   ];
 
   static const List<BoxShadow> shadowLg = [
-    BoxShadow(
-      color: Color(0x40000000),
-      blurRadius: 24,
-      offset: Offset(0, 8),
-    ),
+    BoxShadow(color: Color(0x1A3D2817), blurRadius: 40, offset: Offset(0, 20)),
   ];
 
-  static List<BoxShadow> glow(Color color, {double opacity = 0.3}) => [
+  /// Soft stain around an element — used for focus rings and splash highlights.
+  static List<BoxShadow> glow(Color color, {double opacity = 0.18}) => [
         BoxShadow(
           color: color.withValues(alpha: opacity),
-          blurRadius: 20,
+          blurRadius: 24,
           spreadRadius: 1,
         ),
       ];
 
+  // ── Font helpers ───────────────────────────────────────────────────────────
+
+  /// Display serif — the literary weight. Masthead, big numerals, headings.
+  static TextStyle display(
+          {double fontSize = 48,
+          double? height,
+          double letterSpacing = -0.5,
+          Color color = ink,}) =>
+      GoogleFonts.gloock(
+        fontSize: fontSize,
+        height: height,
+        letterSpacing: letterSpacing,
+        color: color,
+      );
+
+  /// UI voice — Caveat. Hand-written, warm. Buttons, labels, titles.
+  static TextStyle hand(
+          {double fontSize = 18,
+          FontWeight fontWeight = FontWeight.w700,
+          Color color = ink,
+          double? height,}) =>
+      GoogleFonts.caveat(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: color,
+        height: height,
+      );
+
+  /// Body — Kalam, casual hand. Paragraphs, descriptions.
+  static TextStyle body(
+          {double fontSize = 14,
+          FontWeight fontWeight = FontWeight.w400,
+          Color color = ink,
+          double height = 1.55,}) =>
+      GoogleFonts.kalam(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: color,
+        height: height,
+      );
+
+  /// Typewriter — JetBrains Mono. Metadata, eyebrows, room codes.
+  static TextStyle mono(
+          {double fontSize = 10,
+          FontWeight fontWeight = FontWeight.w400,
+          double letterSpacing = 3,
+          Color color = inkSoft,}) =>
+      GoogleFonts.jetBrainsMono(
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        letterSpacing: letterSpacing,
+        color: color,
+      );
+
   // ── Theme data ─────────────────────────────────────────────────────────────
 
-  static ThemeData dark() {
-    const scheme = ColorScheme.dark(
-      surface: surface,
-      primary: gold,
-      secondary: amber,
+  /// Returns the Virgil light theme. The name `dark()` is preserved for
+  /// backward compatibility with existing call sites; the theme is in fact
+  /// a warm light paper theme now.
+  static ThemeData dark() => light();
+
+  static ThemeData light() {
+    const scheme = ColorScheme.light(
+      surface: paper,
+      primary: terra,
+      secondary: olive,
+      tertiary: goldReserved,
       error: danger,
-      onSurface: textPrimary,
-      onPrimary: background,
-      onSecondary: background,
-      onError: textPrimary,
+      onSurface: ink,
+      onPrimary: paper,
+      onSecondary: paper,
+      onTertiary: paper,
+      onError: paper,
       outline: border,
     );
 
-    const fontFamily = 'Inter';
-
-    const textTheme = TextTheme(
-      displayLarge: TextStyle(
-        fontSize: 48,
-        fontWeight: FontWeight.w800,
-        letterSpacing: -1.0,
-        color: textPrimary,
+    final textTheme = TextTheme(
+      // Display — Gloock, literary
+      displayLarge: GoogleFonts.gloock(
+        fontSize: 56, height: 1.0, letterSpacing: -1.2, color: ink,
       ),
-      displayMedium: TextStyle(
-        fontSize: 36,
-        fontWeight: FontWeight.w800,
-        letterSpacing: -0.8,
-        color: textPrimary,
+      displayMedium: GoogleFonts.gloock(
+        fontSize: 44, height: 1.05, letterSpacing: -0.8, color: ink,
       ),
-      displaySmall: TextStyle(
-        fontSize: 30,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.5,
-        color: textPrimary,
+      displaySmall: GoogleFonts.gloock(
+        fontSize: 34, height: 1.1, letterSpacing: -0.4, color: ink,
       ),
-      headlineLarge: TextStyle(
-        fontSize: 28,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.4,
-        color: textPrimary,
+      headlineLarge: GoogleFonts.gloock(
+        fontSize: 28, height: 1.15, letterSpacing: -0.3, color: ink,
       ),
-      headlineMedium: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.3,
-        color: textPrimary,
+      headlineMedium: GoogleFonts.gloock(
+        fontSize: 22, height: 1.2, letterSpacing: -0.2, color: ink,
       ),
-      headlineSmall: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.2,
-        color: textPrimary,
+      headlineSmall: GoogleFonts.gloock(
+        fontSize: 18, height: 1.25, color: ink,
       ),
-      titleLarge: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        letterSpacing: -0.1,
-        color: textPrimary,
+      // Title — Caveat, hand UI voice
+      titleLarge: GoogleFonts.caveat(
+        fontSize: 24, fontWeight: FontWeight.w700, color: ink, height: 1.15,
       ),
-      titleMedium: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: textPrimary,
+      titleMedium: GoogleFonts.caveat(
+        fontSize: 20, fontWeight: FontWeight.w700, color: ink, height: 1.15,
       ),
-      titleSmall: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: textPrimary,
+      titleSmall: GoogleFonts.caveat(
+        fontSize: 18, fontWeight: FontWeight.w700, color: ink, height: 1.15,
       ),
-      bodyLarge: TextStyle(
-        fontSize: 15,
-        fontWeight: FontWeight.w400,
-        height: 1.5,
-        color: textPrimary,
+      // Body — Kalam, casual hand
+      bodyLarge: GoogleFonts.kalam(
+        fontSize: 16, height: 1.55, color: ink,
       ),
-      bodyMedium: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        height: 1.5,
-        color: textPrimary,
+      bodyMedium: GoogleFonts.kalam(
+        fontSize: 14, height: 1.55, color: ink,
       ),
-      bodySmall: TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w400,
-        height: 1.4,
-        color: textSecondary,
+      bodySmall: GoogleFonts.kalam(
+        fontSize: 12, height: 1.5, color: inkSoft,
       ),
-      labelLarge: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: textPrimary,
+      // Labels — Caveat for buttons; JetBrains Mono for metadata eyebrows
+      labelLarge: GoogleFonts.caveat(
+        fontSize: 20, fontWeight: FontWeight.w700, color: ink,
       ),
-      labelMedium: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0.4,
-        color: textSecondary,
+      labelMedium: GoogleFonts.jetBrainsMono(
+        fontSize: 10, fontWeight: FontWeight.w500, letterSpacing: 3,
+        color: inkSoft,
       ),
-      labelSmall: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0.5,
-        color: textTertiary,
+      labelSmall: GoogleFonts.jetBrainsMono(
+        fontSize: 9, fontWeight: FontWeight.w500, letterSpacing: 3,
+        color: inkFaint,
       ),
     );
 
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       colorScheme: scheme,
-      scaffoldBackgroundColor: background,
-      canvasColor: background,
-      fontFamily: fontFamily,
+      scaffoldBackgroundColor: pageBg,
+      canvasColor: paper,
       textTheme: textTheme,
 
-      // App bar
-      appBarTheme: const AppBarTheme(
-        backgroundColor: background,
-        foregroundColor: textPrimary,
+      // App bar — paper, ink hairline underline.
+      appBarTheme: AppBarTheme(
+        backgroundColor: paper,
+        foregroundColor: ink,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        titleTextStyle: TextStyle(
-          fontFamily: fontFamily,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: textPrimary,
-          letterSpacing: -0.1,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        titleTextStyle: GoogleFonts.gloock(
+          fontSize: 22,
+          color: ink,
+          letterSpacing: -0.2,
         ),
-        iconTheme: IconThemeData(color: textPrimary, size: 22),
+        iconTheme: const IconThemeData(color: ink, size: 22),
+        shape: const Border(
+          bottom: BorderSide(color: border, width: 1),
+        ),
       ),
 
-      // Text fields
+      // Text fields — paper-edge fill, ink hairline, terracotta focus.
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surface,
+        fillColor: paperEdge.withValues(alpha: 0.45),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: space4,
           vertical: space4,
         ),
-        labelStyle: const TextStyle(
-          color: textSecondary,
+        labelStyle: GoogleFonts.kalam(
+          color: inkSoft,
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
-        hintStyle: const TextStyle(
-          color: textTertiary,
+        hintStyle: GoogleFonts.kalam(
+          color: inkFaint,
           fontSize: 14,
+        ),
+        floatingLabelStyle: GoogleFonts.jetBrainsMono(
+          color: terra,
+          fontSize: 11,
+          letterSpacing: 2,
+          fontWeight: FontWeight.w500,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMd),
@@ -255,7 +303,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMd),
-          borderSide: const BorderSide(color: gold, width: 1.5),
+          borderSide: const BorderSide(color: terra, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMd),
@@ -267,13 +315,13 @@ class AppTheme {
         ),
       ),
 
-      // Filled (primary) button
+      // Filled (primary) button — terracotta stamp on paper.
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: gold,
-          foregroundColor: background,
-          disabledBackgroundColor: surfaceElevated,
-          disabledForegroundColor: textTertiary,
+          backgroundColor: terra,
+          foregroundColor: paper,
+          disabledBackgroundColor: paperEdge,
+          disabledForegroundColor: inkFaint,
           padding: const EdgeInsets.symmetric(
             horizontal: space5,
             vertical: space4,
@@ -282,21 +330,20 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
-          textStyle: const TextStyle(
-            fontFamily: fontFamily,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            letterSpacing: -0.1,
+          textStyle: GoogleFonts.caveat(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.2,
           ),
           elevation: 0,
         ),
       ),
 
-      // Outlined (secondary) button
+      // Outlined (secondary) button — ink hairline.
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: textPrimary,
-          side: const BorderSide(color: border, width: 1),
+          foregroundColor: ink,
+          side: const BorderSide(color: borderAccent, width: 1),
           padding: const EdgeInsets.symmetric(
             horizontal: space5,
             vertical: space4,
@@ -305,72 +352,66 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
-          textStyle: const TextStyle(
-            fontFamily: fontFamily,
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
-            letterSpacing: -0.1,
+          textStyle: GoogleFonts.caveat(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
 
-      // Text button
+      // Text button.
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: textSecondary,
+          foregroundColor: terra,
           padding: const EdgeInsets.symmetric(
             horizontal: space3,
             vertical: space2,
           ),
-          textStyle: const TextStyle(
-            fontFamily: fontFamily,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+          textStyle: GoogleFonts.caveat(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
 
-      // Icon button
+      // Icon button.
       iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(
-          foregroundColor: textSecondary,
-        ),
+        style: IconButton.styleFrom(foregroundColor: inkSoft),
       ),
 
-      // Bottom navigation
+      // Bottom navigation — paper, ink top hairline, terracotta selected.
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: surface,
-        indicatorColor: goldMuted,
+        backgroundColor: paper,
+        indicatorColor: terraMuted,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         height: 68,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
-          return TextStyle(
-            fontFamily: fontFamily,
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: selected ? gold : textTertiary,
-            letterSpacing: 0.1,
+          return GoogleFonts.jetBrainsMono(
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 2,
+            color: selected ? terra : inkFaint,
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
             size: 22,
-            color: selected ? gold : textTertiary,
+            color: selected ? terra : inkFaint,
           );
         }),
       ),
 
-      // Snackbar
+      // Snackbar — inverted: ink ground, paper text.
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: surfaceHigh,
-        contentTextStyle: const TextStyle(
-          fontFamily: fontFamily,
-          color: textPrimary,
+        backgroundColor: ink,
+        contentTextStyle: GoogleFonts.kalam(
+          color: paper,
           fontSize: 14,
+          height: 1.45,
         ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
@@ -379,61 +420,57 @@ class AppTheme {
         elevation: 0,
       ),
 
-      // Dialog
+      // Dialog — a sheet of paper.
       dialogTheme: DialogThemeData(
-        backgroundColor: surfaceHigh,
+        backgroundColor: paper,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusLg),
-          side: const BorderSide(color: border),
+          side: const BorderSide(color: borderAccent),
         ),
-        titleTextStyle: const TextStyle(
-          fontFamily: fontFamily,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          color: textPrimary,
+        titleTextStyle: GoogleFonts.gloock(
+          fontSize: 22,
+          color: ink,
           letterSpacing: -0.2,
         ),
-        contentTextStyle: const TextStyle(
-          fontFamily: fontFamily,
+        contentTextStyle: GoogleFonts.kalam(
           fontSize: 14,
-          color: textSecondary,
-          height: 1.5,
+          color: inkSoft,
+          height: 1.55,
         ),
       ),
 
-      // Dividers
+      // Dividers — ink hairline.
       dividerTheme: const DividerThemeData(
         color: border,
         thickness: 1,
         space: 1,
       ),
 
-      // Segmented button
+      // Segmented button.
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: SegmentedButton.styleFrom(
-          backgroundColor: surface,
-          foregroundColor: textSecondary,
-          selectedBackgroundColor: goldMuted,
-          selectedForegroundColor: gold,
+          backgroundColor: paper,
+          foregroundColor: inkSoft,
+          selectedBackgroundColor: terraMuted,
+          selectedForegroundColor: terra,
           side: const BorderSide(color: border),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
-          textStyle: const TextStyle(
-            fontFamily: fontFamily,
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
+          textStyle: GoogleFonts.caveat(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
 
-      // Progress indicator
+      // Progress — terracotta on paper.
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: gold,
-        linearTrackColor: surfaceElevated,
-        circularTrackColor: surfaceElevated,
+        color: terra,
+        linearTrackColor: paperEdge,
+        circularTrackColor: paperEdge,
       ),
 
       splashFactory: NoSplash.splashFactory,

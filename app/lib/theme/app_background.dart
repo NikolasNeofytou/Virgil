@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_theme.dart';
 
-/// Subtle radial gradient wrapper used as the root of most screens. Gives the
-/// app a soft depth without being distracting — a dim gold glow anchored near
-/// the top-center, fading into pure black at the edges.
+/// Virgil page background — a sheet of kafeneio paper, hand-inked.
+///
+/// Base pageBg color, two soft radial ink stains, and repeating horizontal
+/// rules every ~29px to suggest a notebook page. The existing `showGlow`
+/// parameter is preserved; when true, the ink stains are rendered; when
+/// false, the background is flat paper (useful behind dense screens like
+/// the scoring grid).
 class AppBackground extends StatelessWidget {
   const AppBackground({super.key, required this.child, this.showGlow = true});
 
@@ -14,28 +19,72 @@ class AppBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.background,
-        gradient: showGlow
-            ? const RadialGradient(
-                center: Alignment(0, -0.6),
-                radius: 1.4,
-                colors: [
-                  Color(0x1AD4A94D), // 10% gold
-                  Color(0x08D4A94D), // 3% gold
-                  Color(0x00000000), // transparent
-                ],
-                stops: [0.0, 0.3, 0.8],
-              )
-            : null,
+      color: AppTheme.pageBg,
+      child: CustomPaint(
+        painter: _PaperPainter(showStains: showGlow),
+        child: child,
       ),
-      child: child,
     );
   }
 }
 
-/// A reusable card container — the foundation of the Linear/Notion style.
-/// Dark surface, hairline border, optional subtle hover glow.
+class _PaperPainter extends CustomPainter {
+  const _PaperPainter({required this.showStains});
+
+  final bool showStains;
+
+  static const _ink = Color(0xFF3D2817);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+
+    if (showStains) {
+      // Soft ink stain — upper-left.
+      canvas.drawRect(
+        rect,
+        Paint()
+          ..shader = RadialGradient(
+            center: const Alignment(-0.6, -0.4),
+            radius: 0.9,
+            colors: [
+              _ink.withValues(alpha: 0.04),
+              _ink.withValues(alpha: 0.0),
+            ],
+          ).createShader(rect),
+      );
+      // Soft ink stain — lower-right.
+      canvas.drawRect(
+        rect,
+        Paint()
+          ..shader = RadialGradient(
+            center: const Alignment(0.6, 0.2),
+            radius: 0.9,
+            colors: [
+              _ink.withValues(alpha: 0.03),
+              _ink.withValues(alpha: 0.0),
+            ],
+          ).createShader(rect),
+      );
+    }
+
+    // Repeating horizontal hairlines — notebook rules.
+    final rulePaint = Paint()
+      ..color = _ink.withValues(alpha: 0.025)
+      ..strokeWidth = 1;
+    const gap = 29.0;
+    for (double y = gap; y < size.height; y += gap) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), rulePaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PaperPainter oldDelegate) =>
+      oldDelegate.showStains != showStains;
+}
+
+/// A sheet of paper. The foundation of the Virgil aesthetic — warm off-white
+/// with a soft warm drop-shadow and near-square corners.
 class AppCard extends StatelessWidget {
   const AppCard({
     super.key,
@@ -57,13 +106,13 @@ class AppCard extends StatelessWidget {
       curve: Curves.easeOut,
       padding: padding,
       decoration: BoxDecoration(
-        color: highlighted ? AppTheme.surfaceElevated : AppTheme.surface,
+        color: highlighted ? AppTheme.surfaceElevated : AppTheme.paper,
         borderRadius: BorderRadius.circular(AppTheme.radiusLg),
         border: Border.all(
           color: highlighted ? AppTheme.borderAccent : AppTheme.border,
           width: 1,
         ),
-        boxShadow: highlighted ? AppTheme.shadowSm : null,
+        boxShadow: highlighted ? AppTheme.shadowMd : AppTheme.shadowSm,
       ),
       child: child,
     );
@@ -73,7 +122,7 @@ class AppCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        splashColor: AppTheme.goldMuted,
+        splashColor: AppTheme.terraMuted,
         highlightColor: Colors.transparent,
         child: content,
       ),
@@ -81,22 +130,36 @@ class AppCard extends StatelessWidget {
   }
 }
 
-/// Small uppercase label used to title sections. Think Notion headings.
+/// Eyebrow label — terracotta JetBrains Mono with a leading section mark,
+/// followed by a hairline rule. Matches the "§ 01 — Logo exploration"
+/// pattern from the Virgil identity sheet.
 class AppSectionLabel extends StatelessWidget {
-  const AppSectionLabel(this.text, {super.key});
+  const AppSectionLabel(this.text, {super.key, this.showRule = false});
 
   final String text;
+  final bool showRule;
 
   @override
   Widget build(BuildContext context) {
-    return Text(
+    final label = Text(
       text.toUpperCase(),
-      style: const TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 1.2,
-        color: AppTheme.textTertiary,
+      style: GoogleFonts.jetBrainsMono(
+        fontSize: 10,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 3,
+        color: AppTheme.terra,
       ),
+    );
+    if (!showRule) return label;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        label,
+        const SizedBox(width: AppTheme.space3),
+        const Expanded(
+          child: Divider(color: AppTheme.border, height: 1, thickness: 1),
+        ),
+      ],
     );
   }
 }

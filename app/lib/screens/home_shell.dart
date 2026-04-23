@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_background.dart';
+import '../theme/virgil_icons.dart';
 import 'tabs/friends_tab.dart';
 import 'tabs/leaderboard_tab.dart';
 import 'tabs/play_tab.dart';
@@ -35,23 +36,19 @@ class _HomeShellState extends State<HomeShell> {
           onDestinationSelected: (i) => setState(() => _index = i),
           destinations: const [
             NavigationDestination(
-              icon: Icon(Icons.style_outlined),
-              selectedIcon: Icon(Icons.style),
+              icon: VirgilIcon(VirgilIconName.home),
               label: 'Παίξε',
             ),
             NavigationDestination(
-              icon: Icon(Icons.people_outline),
-              selectedIcon: Icon(Icons.people),
+              icon: VirgilIcon(VirgilIconName.rooms),
               label: 'Φίλοι',
             ),
             NavigationDestination(
-              icon: Icon(Icons.leaderboard_outlined),
-              selectedIcon: Icon(Icons.leaderboard),
+              icon: VirgilIcon(VirgilIconName.stats),
               label: 'Κατάταξη',
             ),
             NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
+              icon: VirgilIcon(VirgilIconName.profile),
               label: 'Προφίλ',
             ),
           ],
