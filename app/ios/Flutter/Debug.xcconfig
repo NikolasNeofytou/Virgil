@@ -1,1 +1,10 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"
+
+// Simulator dev escape hatch — disable codesign on embedded frameworks so
+// the iOS simulator build doesn't trip on macOS's com.apple.provenance
+// xattr (which cannot be removed without SIP tweaks). Only safe for
+// simulator/dev builds — release signing is configured elsewhere.
+CODE_SIGNING_ALLOWED = NO
+CODE_SIGNING_REQUIRED = NO
+CODE_SIGN_IDENTITY =

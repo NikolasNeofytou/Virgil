@@ -1,0 +1,22 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "virgil-preview",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": [
+        "run",
+        "-d",
+        "web-server",
+        "--web-port",
+        "8787",
+        "--web-hostname",
+        "127.0.0.1",
+        "--target",
+        "lib/preview_main.dart"
+      ],
+      "cwd": "app",
+      "port": 8787
+    }
+  ]
+}
