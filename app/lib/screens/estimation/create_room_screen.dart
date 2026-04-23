@@ -1,10 +1,16 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../services/estimation_service.dart';
 import '../../theme/app_background.dart';
 import '../../theme/app_theme.dart';
 import 'room_lobby_screen.dart';
 
+/// Create-room screen. Virgil masthead → player-count picker (paper tiles
+/// with the same terracotta stamp-ring animation as [NumberPicker]) → a
+/// short game-length summary → terra filled button.
 class CreateRoomScreen extends StatefulWidget {
   const CreateRoomScreen({super.key});
 
@@ -13,7 +19,7 @@ class CreateRoomScreen extends StatefulWidget {
 }
 
 class _CreateRoomScreenState extends State<CreateRoomScreen> {
-  int _playerCount = 4;
+  int _playerCount = 2;
   bool _creating = false;
   String? _error;
   final _service = EstimationService();
@@ -40,8 +46,10 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final maxCards = 52 ~/ _playerCount;
-    final totalRounds = 2 * maxCards - 1;
+    // Mirror the SQL: max_cards = least(7, floor(52 / player_count)),
+    // total_rounds = 2 × max_cards (peak doubled ladder).
+    final maxCards = math.min(7, 52 ~/ _playerCount);
+    final totalRounds = 2 * maxCards;
 
     return AppBackground(
       child: Scaffold(
@@ -57,13 +65,19 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: AppTheme.space4),
-                    const AppSectionLabel('Αριθμός παικτών'),
+                    _MiniMasthead(),
+                    const SizedBox(height: AppTheme.space6),
+
+                    const AppSectionLabel(
+                      '§ 01 · ΠΑΙΚΤΕΣ · PLAYERS',
+                      showRule: true,
+                    ),
                     const SizedBox(height: AppTheme.space3),
                     Row(
                       children: [
-                        for (final n in [2, 3, 4]) ...[
+                        for (final n in const [2, 3, 4]) ...[
                           Expanded(
-                            child: _CountOption(
+                            child: _CountTile(
                               count: n,
                               selected: _playerCount == n,
                               onTap: () => setState(() => _playerCount = n),
@@ -74,36 +88,15 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: AppTheme.space5),
-
-                    // Round preview
-                    Container(
-                      padding: const EdgeInsets.all(AppTheme.space4),
-                      decoration: BoxDecoration(
-                        color: AppTheme.surface,
-                        borderRadius:
-                            BorderRadius.circular(AppTheme.radiusMd),
-                        border: Border.all(color: AppTheme.border),
-                      ),
-                      child: Row(
-                        children: [
-                          _StatChip(
-                            label: 'Κάρτες/γύρο',
-                            value: 'έως $maxCards',
-                          ),
-                          const SizedBox(width: AppTheme.space3),
-                          Container(
-                            width: 1,
-                            height: 32,
-                            color: AppTheme.border,
-                          ),
-                          const SizedBox(width: AppTheme.space3),
-                          _StatChip(
-                            label: 'Σύνολο γύρων',
-                            value: '$totalRounds',
-                          ),
-                        ],
-                      ),
+                    const SizedBox(height: AppTheme.space6),
+                    const AppSectionLabel(
+                      '§ 02 · ΓΥΡΟΙ · LENGTH',
+                      showRule: true,
+                    ),
+                    const SizedBox(height: AppTheme.space3),
+                    _LengthSummary(
+                      maxCards: maxCards,
+                      totalRounds: totalRounds,
                     ),
 
                     const Spacer(),
@@ -123,12 +116,14 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                       Text(
                         _error!,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: GoogleFonts.caveat(
                           color: AppTheme.danger,
-                          fontSize: 13,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
+                    const SizedBox(height: AppTheme.space2),
                   ],
                 ),
               ),
@@ -140,8 +135,71 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
   }
 }
 
-class _CountOption extends StatelessWidget {
-  const _CountOption({
+/// Mini masthead — double-rule Gloock title. Smaller than the home tab's
+/// full Virgil masthead; enough to keep identity consistency on interior
+/// screens without overwhelming the form.
+class _MiniMasthead extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'VOL. I · APR 2026',
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 9,
+                letterSpacing: 3,
+                color: AppTheme.inkSoft,
+              ),
+            ),
+            Text(
+              'KAFENEIO',
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 9,
+                letterSpacing: 3,
+                color: AppTheme.inkSoft,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Container(height: 1.5, color: AppTheme.ink),
+        const SizedBox(height: 2),
+        Container(height: 0.5, color: AppTheme.ink),
+        const SizedBox(height: AppTheme.space3),
+        Center(
+          child: Text(
+            'Νέο δωμάτιο',
+            style: GoogleFonts.gloock(
+              fontSize: 40,
+              color: AppTheme.ink,
+              letterSpacing: -0.6,
+              height: 1.0,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Center(
+          child: Text(
+            'στήσε το τραπέζι',
+            style: GoogleFonts.caveat(
+              fontSize: 20,
+              color: AppTheme.terra,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// One of the three player-count tiles. Paper tile with Gloock numeral +
+/// Caveat label; terracotta stamp ring when selected.
+class _CountTile extends StatelessWidget {
+  const _CountTile({
     required this.count,
     required this.selected,
     required this.onTap,
@@ -151,6 +209,12 @@ class _CountOption extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
+  static const _labels = {
+    2: 'δύο',
+    3: 'τρεις',
+    4: 'τέσσερις',
+  };
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -158,26 +222,82 @@ class _CountOption extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 160),
-          height: 80,
+        splashColor: AppTheme.terraMuted,
+        highlightColor: Colors.transparent,
+        child: Container(
+          height: 112,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: selected ? AppTheme.goldMuted : AppTheme.surface,
+            color: AppTheme.paper,
             borderRadius: BorderRadius.circular(AppTheme.radiusMd),
             border: Border.all(
-              color: selected ? AppTheme.gold : AppTheme.border,
-              width: selected ? 1.5 : 1,
+              color: selected
+                  ? AppTheme.terra.withValues(alpha: 0.6)
+                  : AppTheme.border,
+              width: selected ? 1.4 : 1,
             ),
+            boxShadow: AppTheme.shadowSm,
           ),
-          child: Text(
-            '$count',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w800,
-              color: selected ? AppTheme.gold : AppTheme.textPrimary,
-              letterSpacing: -1,
-            ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              if (selected)
+                TweenAnimationBuilder<double>(
+                  key: ValueKey('stamp-$count'),
+                  tween: Tween(begin: 0, end: 1),
+                  duration: const Duration(milliseconds: 260),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, t, _) {
+                    final scale = 2.4 - 1.4 * t;
+                    final opacity = (t * 2).clamp(0.0, 1.0);
+                    return Positioned(
+                      top: 8,
+                      child: Opacity(
+                        opacity: 0.9 - t * 0.4,
+                        child: Transform.scale(
+                          scale: scale,
+                          child: Container(
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color:
+                                    AppTheme.terra.withValues(alpha: opacity),
+                                width: 1.6,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '$count',
+                    style: GoogleFonts.gloock(
+                      fontSize: 44,
+                      color: selected ? AppTheme.terra : AppTheme.ink,
+                      height: 1.0,
+                      letterSpacing: -0.8,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _labels[count]!,
+                    style: GoogleFonts.caveat(
+                      fontSize: 16,
+                      color: selected ? AppTheme.terra : AppTheme.inkSoft,
+                      fontWeight: FontWeight.w700,
+                      height: 1.0,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -185,38 +305,67 @@ class _CountOption extends StatelessWidget {
   }
 }
 
-class _StatChip extends StatelessWidget {
-  const _StatChip({required this.label, required this.value});
+/// "7 κάρτες max · 14 γύροι" summary card — Gloock numerals flanking short
+/// Caveat captions, divided by a thin ink rule.
+class _LengthSummary extends StatelessWidget {
+  const _LengthSummary({required this.maxCards, required this.totalRounds});
 
-  final String label;
-  final String value;
+  final int maxCards;
+  final int totalRounds;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.space4,
+        vertical: AppTheme.space4,
+      ),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(color: AppTheme.border),
+        boxShadow: AppTheme.shadowSm,
+      ),
+      child: Row(
         children: [
-          Text(
-            label.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.8,
-              color: AppTheme.textTertiary,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textPrimary,
-            ),
-          ),
+          Expanded(child: _Stat(value: '$maxCards', label: 'κάρτες max')),
+          Container(width: 1, height: 44, color: AppTheme.border),
+          Expanded(child: _Stat(value: '$totalRounds', label: 'γύροι')),
         ],
       ),
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  const _Stat({required this.value, required this.label});
+
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: GoogleFonts.gloock(
+            fontSize: 32,
+            color: AppTheme.ink,
+            height: 1.0,
+            letterSpacing: -0.4,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: GoogleFonts.kalam(
+            fontSize: 13,
+            color: AppTheme.inkSoft,
+            height: 1.2,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -303,7 +303,9 @@ class _PrimaryForm extends StatelessWidget {
   }
 }
 
-class _OtpForm extends StatelessWidget {
+/// Verify-OTP view. Paper-tile digits mirroring a hidden [TextField],
+/// Gloock glyphs for each digit, JetBrains Mono email echo.
+class _OtpForm extends StatefulWidget {
   const _OtpForm({
     required this.emailController,
     required this.otpController,
@@ -319,63 +321,88 @@ class _OtpForm extends StatelessWidget {
   final VoidCallback onBack;
 
   @override
+  State<_OtpForm> createState() => _OtpFormState();
+}
+
+class _OtpFormState extends State<_OtpForm> {
+  final _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    widget.otpController.addListener(_onChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _focusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    widget.otpController.removeListener(_onChanged);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onChanged() {
+    if (!mounted) return;
+    setState(() {});
+    // Auto-verify when 6 digits are entered.
+    if (widget.otpController.text.length == 6 && !widget.loading) {
+      widget.onVerify();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          width: 56,
-          height: 56,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppTheme.goldMuted,
-            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-          ),
-          child: const Icon(Icons.mark_email_read_outlined,
-              color: AppTheme.gold, size: 28,),
-        ),
-        const SizedBox(height: AppTheme.space4),
-        Text(
-          'Έλεγξε το email σου',
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: AppTheme.space1),
-        Text(
-          emailController.text.trim(),
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppTheme.textSecondary,
-              ),
-        ),
-        const SizedBox(height: AppTheme.space5),
-        TextField(
-          controller: otpController,
-          autofocus: true,
-          maxLength: 6,
-          keyboardType: TextInputType.number,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 10,
-            color: AppTheme.gold,
-          ),
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: const InputDecoration(
-            counterText: '',
-            hintText: '------',
-            hintStyle: TextStyle(
-              fontSize: 28,
-              letterSpacing: 10,
-              color: AppTheme.textTertiary,
+        // Eyebrow stamp
+        Center(
+          child: Text(
+            'ΕΛΕΓΞΕ ΤΟ EMAIL · CHECK YOUR EMAIL',
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 3,
+              color: AppTheme.terra,
             ),
           ),
         ),
-        const SizedBox(height: AppTheme.space4),
+        const SizedBox(height: AppTheme.space3),
+        Center(
+          child: Text(
+            'σου στείλαμε κωδικό',
+            style: GoogleFonts.caveat(
+              fontSize: 22,
+              color: AppTheme.ink,
+              height: 1.0,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Center(
+          child: Text(
+            widget.emailController.text.trim(),
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 12,
+              letterSpacing: 1,
+              color: AppTheme.inkSoft,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.space5),
+        _OtpTiles(
+          controller: widget.otpController,
+          focusNode: _focusNode,
+        ),
+        const SizedBox(height: AppTheme.space5),
         FilledButton(
-          onPressed: loading ? null : onVerify,
-          child: loading
+          onPressed:
+              widget.loading || widget.otpController.text.length != 6
+                  ? null
+                  : widget.onVerify,
+          child: widget.loading
               ? const SizedBox(
                   height: 18,
                   width: 18,
@@ -384,8 +411,141 @@ class _OtpForm extends StatelessWidget {
               : const Text('Επιβεβαίωση'),
         ),
         const SizedBox(height: AppTheme.space2),
-        TextButton(onPressed: onBack, child: const Text('Πίσω')),
+        TextButton(onPressed: widget.onBack, child: const Text('Πίσω')),
       ],
+    );
+  }
+}
+
+/// Six paper tiles mirroring a hidden [TextField]. The field drives state;
+/// the tiles render the current digit with a terra hairline underscore on
+/// whichever slot the next digit will land in.
+class _OtpTiles extends StatefulWidget {
+  const _OtpTiles({required this.controller, required this.focusNode});
+
+  final TextEditingController controller;
+  final FocusNode focusNode;
+
+  @override
+  State<_OtpTiles> createState() => _OtpTilesState();
+}
+
+class _OtpTilesState extends State<_OtpTiles> {
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_rebuild);
+    widget.focusNode.addListener(_rebuild);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_rebuild);
+    widget.focusNode.removeListener(_rebuild);
+    super.dispose();
+  }
+
+  void _rebuild() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final digits = widget.controller.text.split('');
+    final focusedIndex =
+        widget.focusNode.hasFocus ? digits.length.clamp(0, 5) : -1;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => widget.focusNode.requestFocus(),
+      child: Stack(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (var i = 0; i < 6; i++) ...[
+                _DigitTile(
+                  digit: i < digits.length ? digits[i] : null,
+                  isFocused: i == focusedIndex,
+                ),
+                if (i != 5) const SizedBox(width: 6),
+              ],
+            ],
+          ),
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0,
+              child: TextField(
+                controller: widget.controller,
+                focusNode: widget.focusNode,
+                maxLength: 6,
+                autocorrect: false,
+                enableSuggestions: false,
+                showCursor: false,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: const InputDecoration(
+                  counterText: '',
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  filled: false,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DigitTile extends StatelessWidget {
+  const _DigitTile({required this.digit, required this.isFocused});
+
+  final String? digit;
+  final bool isFocused;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        height: 68,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppTheme.paper,
+          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+          border: Border.all(
+            color: isFocused
+                ? AppTheme.terra.withValues(alpha: 0.6)
+                : AppTheme.border,
+            width: isFocused ? 1.4 : 1,
+          ),
+          boxShadow: AppTheme.shadowSm,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              digit ?? '',
+              style: GoogleFonts.gloock(
+                fontSize: 30,
+                color: AppTheme.ink,
+                height: 1.0,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              width: 18,
+              height: 1,
+              color: isFocused
+                  ? AppTheme.terra.withValues(alpha: 0.8)
+                  : AppTheme.ink.withValues(alpha: 0.25),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

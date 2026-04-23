@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../providers/auth_providers.dart';
 import '../services/supabase_client.dart';
@@ -23,10 +24,18 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
   bool _saving = false;
   String? _error;
 
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      if (_error != null && mounted) setState(() => _error = null);
+    });
+  }
+
   Future<void> _save() async {
     final username = _controller.text.trim();
     if (!_re.hasMatch(username)) {
-      setState(() => _error = '3–24 χαρακτήρες: γράμματα, αριθμοί, _');
+      setState(() => _error = '3–24 χαρακτήρες · γράμματα, αριθμοί, _');
       return;
     }
     setState(() {
@@ -43,8 +52,8 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
     } on Object catch (e) {
       setState(() {
         _error = e.toString().contains('players_username_key')
-            ? 'Αυτό το username υπάρχει ήδη'
-            : 'Σφάλμα: $e';
+            ? 'αυτό το όνομα υπάρχει ήδη'
+            : 'σφάλμα · δοκίμασε ξανά';
       });
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -65,73 +74,70 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
         body: SafeArea(
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
+              constraints: const BoxConstraints(maxWidth: 460),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.space6,
+                  horizontal: AppTheme.space5,
                   vertical: AppTheme.space5,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Container(
-                      width: 56,
-                      height: 56,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppTheme.goldMuted,
-                        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                      ),
-                      child: const Icon(
-                        Icons.person_outline,
-                        color: AppTheme.gold,
-                        size: 26,
+                    _MiniMasthead(),
+                    const SizedBox(height: AppTheme.space6),
+
+                    Center(
+                      child: Text(
+                        '§ 01 · ΟΝΟΜΑ · NAME',
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 3,
+                          color: AppTheme.terra,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: AppTheme.space4),
-                    Text(
-                      'Διάλεξε username',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineMedium,
+                    const SizedBox(height: AppTheme.space3),
+                    Center(
+                      child: Text(
+                        'Διάλεξε όνομα',
+                        style: GoogleFonts.gloock(
+                          fontSize: 40,
+                          color: AppTheme.ink,
+                          letterSpacing: -0.5,
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Center(
+                      child: Text(
+                        'το όνομά σου στο τραπέζι',
+                        style: GoogleFonts.caveat(
+                          fontSize: 20,
+                          color: AppTheme.terra,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppTheme.space5),
+
+                    _UsernameField(
+                      controller: _controller,
+                      enabled: !_saving,
                     ),
                     const SizedBox(height: AppTheme.space2),
-                    Text(
-                      'Έτσι θα σε βλέπουν οι φίλοι σου',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.textSecondary,
-                          ),
-                    ),
-                    const SizedBox(height: AppTheme.space6),
-                    TextField(
-                      controller: _controller,
-                      autofocus: true,
-                      maxLength: 24,
-                      autocorrect: false,
-                      textCapitalization: TextCapitalization.none,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.textPrimary,
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r'[a-zA-Z0-9_]'),
+                    Center(
+                      child: Text(
+                        '3–24 χαρακτήρες · γράμματα, αριθμοί, _',
+                        style: GoogleFonts.kalam(
+                          fontSize: 12,
+                          color: AppTheme.inkFaint,
                         ),
-                      ],
-                      decoration: const InputDecoration(
-                        prefixText: '@ ',
-                        prefixStyle: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textSecondary,
-                        ),
-                        labelText: 'username',
-                        counterText: '',
                       ),
                     ),
-                    const SizedBox(height: AppTheme.space4),
+
+                    const SizedBox(height: AppTheme.space5),
                     FilledButton(
                       onPressed: _saving ? null : _save,
                       child: _saving
@@ -143,13 +149,14 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
                           : const Text('Συνέχεια'),
                     ),
                     if (_error != null) ...[
-                      const SizedBox(height: AppTheme.space4),
+                      const SizedBox(height: AppTheme.space3),
                       Text(
                         _error!,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: GoogleFonts.caveat(
                           color: AppTheme.danger,
-                          fontSize: 13,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
@@ -160,6 +167,179 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Paper card wrapping the username text field. Gloock `@` prefix +
+/// Caveat user input; terra underline grows as the name becomes valid.
+class _UsernameField extends StatefulWidget {
+  const _UsernameField({required this.controller, required this.enabled});
+
+  final TextEditingController controller;
+  final bool enabled;
+
+  @override
+  State<_UsernameField> createState() => _UsernameFieldState();
+}
+
+class _UsernameFieldState extends State<_UsernameField> {
+  final _focus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _focus.requestFocus();
+    });
+    _focus.addListener(_rebuild);
+    widget.controller.addListener(_rebuild);
+  }
+
+  @override
+  void dispose() {
+    _focus.removeListener(_rebuild);
+    widget.controller.removeListener(_rebuild);
+    _focus.dispose();
+    super.dispose();
+  }
+
+  void _rebuild() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasFocus = _focus.hasFocus;
+    final hasText = widget.controller.text.isNotEmpty;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.space4,
+        vertical: AppTheme.space3,
+      ),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(
+          color: hasFocus
+              ? AppTheme.terra.withValues(alpha: 0.6)
+              : AppTheme.border,
+          width: hasFocus ? 1.4 : 1,
+        ),
+        boxShadow: AppTheme.shadowSm,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Text(
+            '@',
+            style: GoogleFonts.gloock(
+              fontSize: 24,
+              color: hasText ? AppTheme.terra : AppTheme.inkFaint,
+              height: 1.0,
+              letterSpacing: -0.2,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              controller: widget.controller,
+              focusNode: _focus,
+              enabled: widget.enabled,
+              maxLength: 24,
+              autocorrect: false,
+              enableSuggestions: false,
+              textCapitalization: TextCapitalization.none,
+              style: GoogleFonts.caveat(
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.ink,
+                height: 1.2,
+              ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  RegExp(r'[a-zA-Z0-9_]'),
+                ),
+              ],
+              decoration: InputDecoration(
+                counterText: '',
+                hintText: 'όνομα…',
+                hintStyle: GoogleFonts.caveat(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.inkFaint,
+                ),
+                filled: false,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniMasthead extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'VOL. I · APR 2026',
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 9,
+                letterSpacing: 3,
+                color: AppTheme.inkSoft,
+              ),
+            ),
+            Text(
+              'KAFENEIO',
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 9,
+                letterSpacing: 3,
+                color: AppTheme.inkSoft,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Container(height: 2, color: AppTheme.ink),
+        const SizedBox(height: 2),
+        Container(height: 0.5, color: AppTheme.ink),
+        const SizedBox(height: AppTheme.space3),
+        Center(
+          child: Text(
+            'Virgil',
+            style: GoogleFonts.gloock(
+              fontSize: 56,
+              color: AppTheme.ink,
+              letterSpacing: -1.2,
+              height: 1.0,
+            ),
+          ),
+        ),
+        const SizedBox(height: 2),
+        Center(
+          child: Text(
+            'a guide for the table',
+            style: GoogleFonts.caveat(
+              fontSize: 18,
+              color: AppTheme.terra,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

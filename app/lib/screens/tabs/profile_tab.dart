@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/player_profile.dart';
 import '../../providers/auth_providers.dart';
+import '../../providers/stats_providers.dart';
 import '../../services/auth_service.dart';
 import '../../services/supabase_client.dart';
 import '../../theme/app_background.dart';
 import '../../theme/app_theme.dart';
 
+/// Profile tab — ink-stamp avatar, Caveat username, JetBrains Mono email,
+/// paper stats card over the player's Estimation history, language toggle,
+/// outlined danger sign-out.
 class ProfileTab extends ConsumerWidget {
   const ProfileTab({super.key});
 
@@ -20,7 +25,16 @@ class ProfileTab extends ConsumerWidget {
       appBar: AppBar(title: const Text('Προφίλ')),
       body: profile.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Σφάλμα: $e')),
+        error: (e, _) => Center(
+          child: Text(
+            'σφάλμα · $e',
+            style: GoogleFonts.caveat(
+              color: AppTheme.danger,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
         data: (p) {
           if (p == null) return const SizedBox.shrink();
           return _ProfileBody(profile: p);
@@ -38,6 +52,9 @@ class _ProfileBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final p = profile;
+    final email = SupabaseBootstrap.client.auth.currentUser?.email;
+    final statsAsync = ref.watch(estimationStatsProvider);
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(
         AppTheme.space5,
@@ -47,103 +64,230 @@ class _ProfileBody extends ConsumerWidget {
       ),
       children: [
         // ── Identity ──
+        Center(child: _StampAvatar(username: p.username, url: p.avatarUrl)),
+        const SizedBox(height: AppTheme.space4),
         Center(
-          child: Column(
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: AppTheme.surfaceElevated,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppTheme.gold.withValues(alpha: 0.3),
-                    width: 2,
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: p.avatarUrl != null
-                    ? ClipOval(
-                        child: Image.network(p.avatarUrl!, fit: BoxFit.cover),
-                      )
-                    : Text(
-                        p.username.substring(0, 1).toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.gold,
-                        ),
-                      ),
-              ),
-              const SizedBox(height: AppTheme.space4),
-              Text(
-                '@${p.username}',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              if (p.displayName?.isNotEmpty ?? false) ...[
-                const SizedBox(height: 2),
-                Text(
-                  p.displayName!,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.textSecondary,
-                      ),
-                ),
-              ],
-            ],
+          child: Text(
+            '@${p.username}',
+            style: GoogleFonts.caveat(
+              fontSize: 36,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.ink,
+              height: 1.0,
+            ),
           ),
         ),
+        if (email != null) ...[
+          const SizedBox(height: 4),
+          Center(
+            child: Text(
+              email,
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 11,
+                letterSpacing: 1,
+                color: AppTheme.inkSoft,
+              ),
+            ),
+          ),
+        ],
+        if (p.displayName?.isNotEmpty ?? false) ...[
+          const SizedBox(height: AppTheme.space2),
+          Center(
+            child: Text(
+              p.displayName!,
+              style: GoogleFonts.kalam(
+                fontSize: 14,
+                color: AppTheme.inkSoft,
+              ),
+            ),
+          ),
+        ],
 
         const SizedBox(height: AppTheme.space6),
 
         // ── Stats ──
-        Row(
-          children: [
-            _StatTile(label: 'ELO', value: '${p.elo}'),
-            const SizedBox(width: AppTheme.space3),
-            _StatTile(label: 'LEVEL', value: '${p.level}'),
-            const SizedBox(width: AppTheme.space3),
-            _StatTile(label: 'XP', value: '${p.xp}'),
-            const SizedBox(width: AppTheme.space3),
-            _StatTile(label: 'GAMES', value: '${p.gamesPlayed}'),
-          ],
+        const AppSectionLabel('§ 01 · ΣΤΑΤΙΣΤΙΚΑ · STATS', showRule: true),
+        const SizedBox(height: AppTheme.space3),
+        statsAsync.when(
+          loading: () => const _StatsSkeleton(),
+          error: (_, __) => const _StatsCard.empty(),
+          data: _StatsCard.new,
         ),
 
         const SizedBox(height: AppTheme.space6),
 
         // ── Settings ──
-        const AppSectionLabel('Ρυθμίσεις'),
+        const AppSectionLabel('§ 02 · ΡΥΘΜΙΣΕΙΣ · SETTINGS', showRule: true),
         const SizedBox(height: AppTheme.space3),
-        _SettingsRow(
-          icon: Icons.language_outlined,
-          title: 'Γλώσσα',
-          trailing: SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(value: 'el', label: Text('EL')),
-              ButtonSegment(value: 'en', label: Text('EN')),
+        _SettingsCard(
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Γλώσσα',
+                  style: GoogleFonts.caveat(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.ink,
+                  ),
+                ),
+              ),
+              SegmentedButton<String>(
+                segments: const [
+                  ButtonSegment(value: 'el', label: Text('EL')),
+                  ButtonSegment(value: 'en', label: Text('EN')),
+                ],
+                selected: {p.locale},
+                onSelectionChanged: (s) async {
+                  await SupabaseBootstrap.client
+                      .from('players')
+                      .update({'locale': s.first}).eq('id', p.id);
+                  ref.invalidate(currentPlayerProfileProvider);
+                },
+                showSelectedIcon: false,
+                style: const ButtonStyle(
+                  visualDensity: VisualDensity.compact,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
             ],
-            selected: {p.locale},
-            onSelectionChanged: (s) async {
-              await SupabaseBootstrap.client
-                  .from('players')
-                  .update({'locale': s.first}).eq('id', p.id);
-              ref.invalidate(currentPlayerProfileProvider);
-            },
-            showSelectedIcon: false,
-            style: const ButtonStyle(
-              visualDensity: VisualDensity.compact,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
           ),
         ),
-        const SizedBox(height: AppTheme.space2),
-        _SettingsRow(
-          icon: Icons.logout_outlined,
-          title: 'Αποσύνδεση',
-          onTap: () => AuthService().signOut(),
-          trailing: const Icon(
-            Icons.chevron_right,
-            color: AppTheme.textTertiary,
-            size: 18,
+
+        const SizedBox(height: AppTheme.space5),
+
+        OutlinedButton(
+          onPressed: () => AuthService().signOut(),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppTheme.danger,
+            side: BorderSide(
+              color: AppTheme.danger.withValues(alpha: 0.5),
+            ),
+          ),
+          child: const Text('Αποσύνδεση'),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Avatar ────────────────────────────────────────────────────────────────────
+
+class _StampAvatar extends StatelessWidget {
+  const _StampAvatar({required this.username, this.url});
+
+  final String username;
+  final String? url;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 96,
+      height: 96,
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppTheme.terra.withValues(alpha: 0.6), width: 1.6),
+        boxShadow: AppTheme.shadowMd,
+      ),
+      alignment: Alignment.center,
+      child: url != null
+          ? ClipOval(child: Image.network(url!, fit: BoxFit.cover))
+          : Text(
+              username.isEmpty ? '?' : username.substring(0, 1).toUpperCase(),
+              style: GoogleFonts.gloock(
+                fontSize: 48,
+                color: AppTheme.ink,
+                height: 1.0,
+                letterSpacing: -0.8,
+              ),
+            ),
+    );
+  }
+}
+
+// ── Stats card ────────────────────────────────────────────────────────────────
+
+class _StatsCard extends StatelessWidget {
+  const _StatsCard(this.stats);
+
+  const _StatsCard.empty() : stats = EstimationStats.empty;
+
+  final EstimationStats stats;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.space4,
+        vertical: AppTheme.space4,
+      ),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(color: AppTheme.border),
+        boxShadow: AppTheme.shadowSm,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _StatCell(
+              value: '${stats.gamesPlayed}',
+              label: 'παιχνίδια',
+            ),
+          ),
+          Container(width: 1, height: 52, color: AppTheme.border),
+          Expanded(
+            child: _StatCell(
+              value: '${stats.wins}',
+              label: 'νίκες',
+              highlight: stats.wins > 0,
+            ),
+          ),
+          Container(width: 1, height: 52, color: AppTheme.border),
+          Expanded(
+            child: _StatCell(
+              value: '${stats.totalScore}',
+              label: 'πόντοι',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCell extends StatelessWidget {
+  const _StatCell({
+    required this.value,
+    required this.label,
+    this.highlight = false,
+  });
+
+  final String value;
+  final String label;
+  final bool highlight;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: GoogleFonts.gloock(
+            fontSize: 32,
+            color: highlight ? AppTheme.goldReserved : AppTheme.ink,
+            height: 1.0,
+            letterSpacing: -0.4,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: GoogleFonts.kalam(
+            fontSize: 12,
+            color: AppTheme.inkSoft,
+            height: 1.2,
           ),
         ),
       ],
@@ -151,103 +295,49 @@ class _ProfileBody extends ConsumerWidget {
   }
 }
 
-class _StatTile extends StatelessWidget {
-  const _StatTile({required this.label, required this.value});
-
-  final String label;
-  final String value;
+class _StatsSkeleton extends StatelessWidget {
+  const _StatsSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: AppTheme.space4,
-          horizontal: AppTheme.space2,
-        ),
-        decoration: BoxDecoration(
-          color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-          border: Border.all(color: AppTheme.border),
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: AppTheme.textPrimary,
-                letterSpacing: -0.5,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: AppTheme.textTertiary,
-                letterSpacing: 1.0,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsRow extends StatelessWidget {
-  const _SettingsRow({
-    required this.icon,
-    required this.title,
-    required this.trailing,
-    this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final Widget trailing;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
+    return Container(
+      height: 86,
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppTheme.space4,
-            vertical: AppTheme.space4,
-          ),
-          decoration: BoxDecoration(
-            color: AppTheme.surface,
-            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-            border: Border.all(color: AppTheme.border),
-          ),
-          child: Row(
-            children: [
-              Icon(icon, size: 18, color: AppTheme.textSecondary),
-              const SizedBox(width: AppTheme.space3),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-              ),
-              trailing,
-            ],
-          ),
-        ),
+        border: Border.all(color: AppTheme.border),
+      ),
+      alignment: Alignment.center,
+      child: const SizedBox(
+        height: 18,
+        width: 18,
+        child: CircularProgressIndicator(strokeWidth: 2),
       ),
     );
   }
 }
 
+// ── Settings card ─────────────────────────────────────────────────────────────
+
+class _SettingsCard extends StatelessWidget {
+  const _SettingsCard({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.space4,
+        vertical: AppTheme.space3,
+      ),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(color: AppTheme.border),
+        boxShadow: AppTheme.shadowSm,
+      ),
+      child: child,
+    );
+  }
+}
