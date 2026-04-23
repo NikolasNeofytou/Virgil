@@ -4,23 +4,58 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../providers/active_game_provider.dart';
 import '../../../providers/estimation_providers.dart';
+import '../../../services/estimation_service.dart';
 import '../../../theme/app_theme.dart';
+import '../room_lobby_screen.dart';
 
 /// Final standings — the Virgil winner moment. A laurel wreath cradles the
 /// winner's name; a terracotta ribbon unfurls below with "ΝΙΚΗΤΗΣ · WINNER".
-class GameOverPanel extends ConsumerWidget {
+class GameOverPanel extends ConsumerStatefulWidget {
   const GameOverPanel({super.key, required this.gameId});
 
   final String gameId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final players =
-        ref.watch(estimationPlayersStreamProvider(gameId)).valueOrNull ?? [];
+  ConsumerState<GameOverPanel> createState() => _GameOverPanelState();
+}
+
+class _GameOverPanelState extends ConsumerState<GameOverPanel> {
+  final _service = EstimationService();
+  bool _starting = false;
+
+  Future<void> _rematch() async {
+    if (_starting) return;
+    setState(() => _starting = true);
+    try {
+      final newGameId = await _service.rematchOrJoin(widget.gameId);
+      if (!mounted) return;
+      ref.invalidate(activeEstimationGameProvider);
+      Navigator.of(context).pushReplacement<void, void>(
+        MaterialPageRoute<void>(
+          builder: (_) => RoomLobbyScreen(gameId: newGameId),
+        ),
+      );
+    } on Object catch (e) {
+      if (!mounted) return;
+      setState(() => _starting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Σφάλμα: $e')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final players = ref
+            .watch(estimationPlayersStreamProvider(widget.gameId))
+            .valueOrNull ??
+        [];
     final usernames =
-        ref.watch(playerUsernamesProvider(gameId)).valueOrNull ?? {};
-    final game = ref.watch(estimationGameStreamProvider(gameId)).valueOrNull;
+        ref.watch(playerUsernamesProvider(widget.gameId)).valueOrNull ?? {};
+    final game =
+        ref.watch(estimationGameStreamProvider(widget.gameId)).valueOrNull;
 
     if (players.isEmpty || game == null) {
       return const Center(child: CircularProgressIndicator());
@@ -53,6 +88,17 @@ class GameOverPanel extends ConsumerWidget {
           }),
           const Spacer(),
           FilledButton(
+            onPressed: _starting ? null : _rematch,
+            child: _starting
+                ? const SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Νέο παιχνίδι'),
+          ),
+          const SizedBox(height: AppTheme.space2),
+          OutlinedButton(
             onPressed: () => Navigator.of(context).popUntil(
               (route) => route.isFirst,
             ),
@@ -64,89 +110,181 @@ class GameOverPanel extends ConsumerWidget {
   }
 }
 
-/// The winner card — laurel wreath + name + ribbon.
-class _WinnerCertificate extends StatelessWidget {
+/// The winner card — laurel wreath + name + ribbon, animated in over
+/// ~4.2s per the design's SceneWinner spec:
+///
+///   0.00 → 0.30  name fades in letter-by-letter (typewriter feel)
+///   0.20 → 0.70  laurel leaves grow, both sides staggered
+///   0.60 → 0.90  ribbon body unfurls from the center outward
+///   0.70 → 1.00  "ΝΙΚΗΤΗΣ · WINNER" text fades in on the ribbon;
+///                `X πόντοι` line fades in below
+class _WinnerCertificate extends StatefulWidget {
   const _WinnerCertificate({required this.name, required this.score});
 
   final String name;
   final int score;
 
   @override
+  State<_WinnerCertificate> createState() => _WinnerCertificateState();
+}
+
+class _WinnerCertificateState extends State<_WinnerCertificate>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4200),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          width: 280,
-          height: 170,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              const CustomPaint(
-                size: Size(280, 170),
-                painter: _LaurelPainter(),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  name,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.gloock(
-                    fontSize: 40,
-                    color: AppTheme.ink,
-                    height: 1.0,
-                    letterSpacing: -0.5,
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (context, _) {
+        final t = _ctrl.value;
+        final laurelT = ((t - 0.20) / 0.50).clamp(0.0, 1.0);
+        final ribbonT = ((t - 0.60) / 0.30).clamp(0.0, 1.0);
+        final captionT = ((t - 0.70) / 0.30).clamp(0.0, 1.0);
+
+        return Column(
+          children: [
+            SizedBox(
+              width: 280,
+              height: 170,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  CustomPaint(
+                    size: const Size(280, 170),
+                    painter: _LaurelPainter(progress: laurelT),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: _TypewriterName(name: widget.name, progress: t),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppTheme.space3),
-        SizedBox(
-          width: 220,
-          height: 38,
-          child: CustomPaint(
-            painter: const _RibbonPainter(),
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 2),
-                child: Text(
-                  'ΝΙΚΗΤΗΣ · WINNER',
-                  style: GoogleFonts.jetBrainsMono(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 3,
-                    color: AppTheme.paper,
+            ),
+            const SizedBox(height: AppTheme.space3),
+            SizedBox(
+              width: 220,
+              height: 38,
+              child: CustomPaint(
+                painter: _RibbonPainter(progress: ribbonT),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: Opacity(
+                      opacity: captionT,
+                      child: Text(
+                        'ΝΙΚΗΤΗΣ · WINNER',
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 3,
+                          color: AppTheme.paper,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
+            const SizedBox(height: AppTheme.space4),
+            Opacity(
+              opacity: captionT,
+              child: Text(
+                '${widget.score} πόντοι',
+                style: GoogleFonts.caveat(
+                  fontSize: 22,
+                  color: AppTheme.inkSoft,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Types the name in character by character over the first 0.30 of the
+/// controller. Each letter fades + rises into position.
+class _TypewriterName extends StatelessWidget {
+  const _TypewriterName({required this.name, required this.progress});
+
+  final String name;
+  final double progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final letters = name.characters.toList();
+    final perLetter = 0.30 / letters.length.clamp(1, 99);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (var i = 0; i < letters.length; i++)
+          _Letter(
+            char: letters[i],
+            t: ((progress - i * perLetter * 0.6) / (perLetter * 2))
+                .clamp(0.0, 1.0),
           ),
-        ),
-        const SizedBox(height: AppTheme.space4),
-        Text(
-          '$score πόντοι',
-          style: GoogleFonts.caveat(
-            fontSize: 22,
-            color: AppTheme.inkSoft,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
       ],
     );
   }
 }
 
+class _Letter extends StatelessWidget {
+  const _Letter({required this.char, required this.t});
+
+  final String char;
+  final double t;
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.translate(
+      offset: Offset(0, 8 * (1 - Curves.easeOutCubic.transform(t))),
+      child: Opacity(
+        opacity: t,
+        child: Text(
+          char,
+          style: GoogleFonts.gloock(
+            fontSize: 40,
+            color: AppTheme.ink,
+            height: 1.0,
+            letterSpacing: -0.5,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _LaurelPainter extends CustomPainter {
-  const _LaurelPainter();
+  const _LaurelPainter({this.progress = 1.0});
+
+  /// 0 = no leaves drawn, 1 = fully drawn. Left side leads by 10% of the
+  /// window so the two arcs grow at slightly different cadences.
+  final double progress;
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height * 0.62);
-    final rx = size.width * 0.38; // horizontal radius — hugs the name
-    final ry = size.height * 0.42; // vertical — tighter, ellipse shape
+    final rx = size.width * 0.38;
+    final ry = size.height * 0.42;
 
     final leafFill = Paint()
       ..color = AppTheme.olive
@@ -156,9 +294,12 @@ class _LaurelPainter extends CustomPainter {
       ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke;
 
-    for (final dir in [-1, 1]) {
-      _paintSide(canvas, center, rx, ry, dir, leafFill, veinStroke);
-    }
+    // Slight side offset for personality.
+    final leftT = (progress / 0.9).clamp(0.0, 1.0);
+    final rightT = ((progress - 0.1) / 0.9).clamp(0.0, 1.0);
+
+    _paintSide(canvas, center, rx, ry, -1, leftT, leafFill, veinStroke);
+    _paintSide(canvas, center, rx, ry, 1, rightT, leafFill, veinStroke);
   }
 
   void _paintSide(
@@ -167,15 +308,20 @@ class _LaurelPainter extends CustomPainter {
     double rx,
     double ry,
     int dir,
+    double sideProgress,
     Paint leafFill,
     Paint veinStroke,
   ) {
-    // Arc: start near bottom (slight gap), sweep up to near top.
     const startFrac = 0.12;
     const endFrac = 0.95;
     const leafCount = 9;
+    const perLeaf = 1 / leafCount;
 
     for (var i = 0; i < leafCount; i++) {
+      final leafT =
+          ((sideProgress - i * perLeaf * 0.5) / (perLeaf * 2)).clamp(0.0, 1.0);
+      if (leafT <= 0) continue;
+
       final a = math.pi / 2 +
           dir *
               math.pi *
@@ -183,46 +329,60 @@ class _LaurelPainter extends CustomPainter {
       final cx = center.dx + math.cos(a) * rx;
       final cy = center.dy + math.sin(a) * ry;
       final stemAngle = math.atan2(math.cos(a) * ry, -math.sin(a) * rx);
+      final scale = Curves.easeOutCubic.transform(leafT);
 
       canvas.save();
       canvas.translate(cx, cy);
       canvas.rotate(stemAngle);
-      // Leaf: 5 × 11 ellipse
+      canvas.scale(scale);
       canvas.drawOval(
         Rect.fromCenter(center: Offset.zero, width: 10, height: 22),
         leafFill,
       );
-      // Central vein
       canvas.drawLine(const Offset(-5, 0), const Offset(5, 0), veinStroke);
       canvas.restore();
     }
   }
 
   @override
-  bool shouldRepaint(covariant _LaurelPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _LaurelPainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }
 
 class _RibbonPainter extends CustomPainter {
-  const _RibbonPainter();
+  const _RibbonPainter({this.progress = 1.0});
+
+  /// 0 = nothing drawn, 1 = full ribbon. The ribbon unfurls from center
+  /// outward, so at small progress values the body is clipped around
+  /// `w / 2`.
+  final double progress;
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (progress <= 0) return;
+
     final body = Paint()..color = AppTheme.terra;
     final fold = Paint()..color = const Color(0xFF7A3F22); // deeper terra
 
     final w = size.width;
     final h = size.height;
-    const tail = 12.0; // tail width
-    const cut = 6.0; // V-cut depth
+    const tail = 12.0;
+    const cut = 6.0;
+    final t = Curves.easeOutCubic.transform(progress.clamp(0.0, 1.0));
+    final half = (w / 2) * t;
+    final cx = w / 2;
 
-    // Main body
+    // Main body — width grows from 0 to (w - 2·tail).
     final bodyPath = Path()
-      ..moveTo(tail, 0)
-      ..lineTo(w - tail, 0)
-      ..lineTo(w - tail, h)
-      ..lineTo(tail, h)
+      ..moveTo(cx - (half - tail).clamp(0.0, w), 0)
+      ..lineTo(cx + (half - tail).clamp(0.0, w), 0)
+      ..lineTo(cx + (half - tail).clamp(0.0, w), h)
+      ..lineTo(cx - (half - tail).clamp(0.0, w), h)
       ..close();
     canvas.drawPath(bodyPath, body);
+
+    // Tails only show once the body has unfurled past the tail width.
+    if (half <= tail) return;
 
     // Left tail fold
     final leftTail = Path()
@@ -254,7 +414,8 @@ class _RibbonPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _RibbonPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _RibbonPainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }
 
 class _StandingRow extends StatelessWidget {

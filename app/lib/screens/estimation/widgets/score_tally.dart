@@ -72,7 +72,10 @@ class ScoreTally extends ConsumerWidget {
   }
 }
 
-class _TallyRow extends StatelessWidget {
+/// Per-seat row. Tweens the score integer when it changes and floats a
+/// Caveat "+N" stamp above the new value for ~900ms, matching the design's
+/// SceneScoreTick motion.
+class _TallyRow extends StatefulWidget {
   const _TallyRow({
     required this.name,
     required this.score,
@@ -86,11 +89,61 @@ class _TallyRow extends StatelessWidget {
   final bool isLeader;
 
   @override
+  State<_TallyRow> createState() => _TallyRowState();
+}
+
+class _TallyRowState extends State<_TallyRow>
+    with SingleTickerProviderStateMixin {
+  late int _displayedScore = widget.score;
+  int? _pendingFloater; // +N to float when we see a delta
+
+  late final AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _TallyRow old) {
+    super.didUpdateWidget(old);
+    if (widget.score != old.score) {
+      final delta = widget.score - old.score;
+      _pendingFloater = delta;
+      _ctrl.forward(from: 0).then((_) {
+        if (mounted) setState(() => _pendingFloater = null);
+      });
+      _tweenScore(from: old.score, to: widget.score);
+    }
+  }
+
+  Future<void> _tweenScore({required int from, required int to}) async {
+    const steps = 20;
+    for (var i = 1; i <= steps; i++) {
+      if (!mounted) return;
+      await Future<void>.delayed(const Duration(milliseconds: 25));
+      setState(() {
+        _displayedScore = from + ((to - from) * i / steps).round();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final nameColor = isMe ? AppTheme.terra : AppTheme.ink;
-    final scoreColor = isLeader
+    final nameColor = widget.isMe ? AppTheme.terra : AppTheme.ink;
+    final scoreColor = widget.isLeader
         ? AppTheme.goldReserved
-        : isMe
+        : widget.isMe
             ? AppTheme.terra
             : AppTheme.ink;
 
@@ -99,7 +152,7 @@ class _TallyRow extends StatelessWidget {
       textBaseline: TextBaseline.alphabetic,
       children: [
         Text(
-          name,
+          widget.name,
           style: GoogleFonts.caveat(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -108,7 +161,7 @@ class _TallyRow extends StatelessWidget {
           ),
           overflow: TextOverflow.ellipsis,
         ),
-        if (isMe) ...[
+        if (widget.isMe) ...[
           const SizedBox(width: 6),
           Text(
             'ΕΣΥ',
@@ -120,7 +173,7 @@ class _TallyRow extends StatelessWidget {
             ),
           ),
         ],
-        if (isLeader) ...[
+        if (widget.isLeader) ...[
           const SizedBox(width: 6),
           const Text(
             '★',
@@ -145,14 +198,48 @@ class _TallyRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: AppTheme.space2),
-        Text(
-          '$score',
-          style: GoogleFonts.gloock(
-            fontSize: 20,
-            color: scoreColor,
-            height: 1.0,
-            letterSpacing: -0.3,
-          ),
+        // Score numeral + optional floater stacked above.
+        Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            Text(
+              '$_displayedScore',
+              style: GoogleFonts.gloock(
+                fontSize: 20,
+                color: scoreColor,
+                height: 1.0,
+                letterSpacing: -0.3,
+              ),
+            ),
+            if (_pendingFloater != null)
+              AnimatedBuilder(
+                animation: _ctrl,
+                builder: (context, _) {
+                  final t = _ctrl.value;
+                  // Rise from 0 → -22, fade in quickly then out slowly.
+                  final translateY = -22 * Curves.easeOutCubic.transform(t);
+                  final opacity = t < 0.1
+                      ? t * 10
+                      : (1 - ((t - 0.1) / 0.9)).clamp(0.0, 1.0);
+                  return Positioned(
+                    top: translateY,
+                    child: Opacity(
+                      opacity: opacity,
+                      child: Text(
+                        '+${_pendingFloater!}',
+                        style: GoogleFonts.caveat(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.terra,
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+          ],
         ),
       ],
     );

@@ -203,6 +203,7 @@ class _ValidatingPhaseState extends ConsumerState<ValidatingPhase> {
                 final isBonus = predicted == actual;
 
                 return _ResultRow(
+                  key: ValueKey('reveal-${game.currentRound}-$pid'),
                   username: name,
                   isMe: isMe,
                   predicted: predicted,
@@ -210,6 +211,7 @@ class _ValidatingPhaseState extends ConsumerState<ValidatingPhase> {
                   score: score,
                   isBonus: isBonus,
                   validated: entry.validated,
+                  revealDelay: Duration(milliseconds: i * 180),
                   onDispute: !isMe && !_disputing
                       ? () => _dispute(game.currentRound, pid)
                       : null,
@@ -278,8 +280,17 @@ class _ValidatingPhaseState extends ConsumerState<ValidatingPhase> {
 
 /// Reveal row — prediction vs actual as Gloock numerals, terracotta
 /// underline beneath, Caveat "★ match · +N" floater when bonus.
-class _ResultRow extends StatelessWidget {
+///
+/// Animation timeline (driven by a single 1100ms controller that starts
+/// after [revealDelay]):
+///
+///   0.00 → 0.25  prediction numeral fades + slides in
+///   0.25 → 0.55  actual numeral stamps in (2.4× → 1.0× overshoot)
+///   0.45 → 0.75  underline sweeps out from the center of each numeral
+///   0.65 → 1.00  "★ +N" floater slides up + fades in (bonus rows only)
+class _ResultRow extends StatefulWidget {
   const _ResultRow({
+    super.key,
     required this.username,
     required this.isMe,
     required this.predicted,
@@ -287,6 +298,7 @@ class _ResultRow extends StatelessWidget {
     required this.score,
     required this.isBonus,
     required this.validated,
+    required this.revealDelay,
     this.onDispute,
   });
 
@@ -297,7 +309,34 @@ class _ResultRow extends StatelessWidget {
   final int score;
   final bool isBonus;
   final bool validated;
+  final Duration revealDelay;
   final VoidCallback? onDispute;
+
+  @override
+  State<_ResultRow> createState() => _ResultRowState();
+}
+
+class _ResultRowState extends State<_ResultRow>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    );
+    Future<void>.delayed(widget.revealDelay, () {
+      if (mounted) _ctrl.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -311,115 +350,174 @@ class _ResultRow extends StatelessWidget {
         color: AppTheme.paper,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         border: Border.all(
-          color: isMe
+          color: widget.isMe
               ? AppTheme.terra.withValues(alpha: 0.55)
               : AppTheme.border,
-          width: isMe ? 1.2 : 1,
+          width: widget.isMe ? 1.2 : 1,
         ),
         boxShadow: AppTheme.shadowSm,
       ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    username,
-                    style: GoogleFonts.caveat(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: isMe ? AppTheme.terra : AppTheme.ink,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (isMe) ...[
-                  const SizedBox(width: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 1,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppTheme.terraMuted,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    child: Text(
-                      'ΕΣΥ',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 8,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 2,
-                        color: AppTheme.terra,
+      child: AnimatedBuilder(
+        animation: _ctrl,
+        builder: (context, _) {
+          final t = _ctrl.value;
+          // Phase timings inside the 0..1 controller.
+          final predT = (t / 0.25).clamp(0.0, 1.0);
+          final actT = ((t - 0.25) / 0.30).clamp(0.0, 1.0);
+          final underT = ((t - 0.45) / 0.30).clamp(0.0, 1.0);
+          final floatT = ((t - 0.65) / 0.35).clamp(0.0, 1.0);
+
+          return Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        widget.username,
+                        style: GoogleFonts.caveat(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: widget.isMe
+                              ? AppTheme.terra
+                              : AppTheme.ink,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    if (widget.isMe) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppTheme.terraMuted,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        child: Text(
+                          'ΕΣΥ',
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 8,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 2,
+                            color: AppTheme.terra,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              _RevealNumeral(
+                value: widget.predicted,
+                highlight: false,
+                opacity: predT,
+                scale: 0.6 + 0.4 * Curves.easeOutCubic.transform(predT),
+                underlineT: underT,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: Opacity(
+                  opacity: predT,
+                  child: Text(
+                    '→',
+                    style: GoogleFonts.gloock(
+                      fontSize: 18,
+                      color: AppTheme.inkFaint,
+                      height: 1.0,
+                    ),
                   ),
-                ],
-              ],
-            ),
-          ),
-          _RevealNumeral(value: predicted, highlight: false),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Text(
-              '→',
-              style: GoogleFonts.gloock(
-                fontSize: 18,
-                color: AppTheme.inkFaint,
-                height: 1.0,
+                ),
               ),
-            ),
-          ),
-          _RevealNumeral(value: actual, highlight: isBonus),
-          const SizedBox(width: AppTheme.space2),
-          SizedBox(
-            width: 56,
-            child: Text(
-              isBonus ? '★ +$score' : '+$score',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.caveat(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: isBonus ? AppTheme.olive : AppTheme.inkSoft,
+              _RevealNumeral(
+                value: widget.actual,
+                highlight: widget.isBonus,
+                opacity: actT,
+                // Stamp overshoot 2.4 → 1.0
+                scale: actT == 0 ? 0.0 : 2.4 - 1.4 * Curves.easeOutCubic.transform(actT),
+                underlineT: underT,
               ),
-            ),
-          ),
-          const SizedBox(width: AppTheme.space2),
-          SizedBox(
-            width: 24,
-            child: validated
-                ? const Icon(
-                    Icons.check_circle,
-                    size: 16,
-                    color: AppTheme.olive,
-                  )
-                : onDispute != null
-                    ? IconButton(
-                        onPressed: onDispute,
-                        icon: const Icon(Icons.flag_outlined),
-                        iconSize: 14,
-                        color: AppTheme.inkFaint,
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        tooltip: 'Αμφισβήτηση',
+              const SizedBox(width: AppTheme.space2),
+              SizedBox(
+                width: 56,
+                child: widget.isBonus
+                    ? Transform.translate(
+                        offset: Offset(0, -6 * (1 - floatT)),
+                        child: Opacity(
+                          opacity: floatT,
+                          child: Text(
+                            '★ +${widget.score}',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.caveat(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.olive,
+                            ),
+                          ),
+                        ),
                       )
-                    : const SizedBox.shrink(),
-          ),
-        ],
+                    : Opacity(
+                        opacity: underT,
+                        child: Text(
+                          '+${widget.score}',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.caveat(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.inkSoft,
+                          ),
+                        ),
+                      ),
+              ),
+              const SizedBox(width: AppTheme.space2),
+              SizedBox(
+                width: 24,
+                child: widget.validated
+                    ? const Icon(
+                        Icons.check_circle,
+                        size: 16,
+                        color: AppTheme.olive,
+                      )
+                    : widget.onDispute != null
+                        ? IconButton(
+                            onPressed: widget.onDispute,
+                            icon: const Icon(Icons.flag_outlined),
+                            iconSize: 14,
+                            color: AppTheme.inkFaint,
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            tooltip: 'Αμφισβήτηση',
+                          )
+                        : const SizedBox.shrink(),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
 /// Single Gloock numeral with a hairline underline — the "reveal" mark.
+/// Pass animation params so the parent [_ResultRow] can drive the reveal.
 class _RevealNumeral extends StatelessWidget {
-  const _RevealNumeral({required this.value, required this.highlight});
+  const _RevealNumeral({
+    required this.value,
+    required this.highlight,
+    this.opacity = 1.0,
+    this.scale = 1.0,
+    this.underlineT = 1.0,
+  });
 
   final int value;
   final bool highlight;
+  final double opacity;
+  final double scale;
+  final double underlineT;
 
   @override
   Widget build(BuildContext context) {
@@ -428,19 +526,26 @@ class _RevealNumeral extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          '$value',
-          style: GoogleFonts.gloock(
-            fontSize: 26,
-            color: color,
-            height: 1.0,
-            letterSpacing: -0.5,
+        Opacity(
+          opacity: opacity,
+          child: Transform.scale(
+            scale: scale,
+            child: Text(
+              '$value',
+              style: GoogleFonts.gloock(
+                fontSize: 26,
+                color: color,
+                height: 1.0,
+                letterSpacing: -0.5,
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 2),
+        // Underline sweeps out from the center.
         Container(
           height: 1,
-          width: 20,
+          width: 20 * Curves.easeOutCubic.transform(underlineT.clamp(0.0, 1.0)),
           color: highlight
               ? AppTheme.olive.withValues(alpha: 0.6)
               : AppTheme.terra.withValues(alpha: 0.5),
