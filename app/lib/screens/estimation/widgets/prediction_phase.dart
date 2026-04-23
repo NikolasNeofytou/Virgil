@@ -145,6 +145,7 @@ class _PredictionPhaseState extends ConsumerState<PredictionPhase> {
     final hasLocked = myEntry?.hasLockedPrediction ?? false;
 
     final dealerName = _seatName(players, usernames, game.dealerSeat);
+    final starterName = _seatName(players, usernames, game.roundStarterSeat);
     final currentBidderName =
         _seatName(players, usernames, currentBidderSeat);
 
@@ -158,6 +159,7 @@ class _PredictionPhaseState extends ConsumerState<PredictionPhase> {
             totalRounds: game.totalRounds,
             cardsThisRound: maxVal,
             dealerName: dealerName,
+            starterName: starterName,
           ),
           const SizedBox(height: AppTheme.space3),
           ScoreTally(gameId: widget.gameId),

@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../theme/app_theme.dart';
 
 /// Masthead for every in-game phase. Gloock round numeral, JetBrains Mono
-/// eyebrow, Caveat dealer byline.
+/// eyebrow, Caveat dealer + starter bylines.
 class RoundHeader extends StatelessWidget {
   const RoundHeader({
     super.key,
@@ -12,12 +12,14 @@ class RoundHeader extends StatelessWidget {
     required this.totalRounds,
     required this.cardsThisRound,
     this.dealerName,
+    this.starterName,
   });
 
   final int currentRound;
   final int totalRounds;
   final int cardsThisRound;
   final String? dealerName;
+  final String? starterName;
 
   @override
   Widget build(BuildContext context) {
@@ -87,29 +89,26 @@ class RoundHeader extends StatelessWidget {
                   ],
                 ),
               ),
-              if (dealerName != null)
+              if (dealerName != null || starterName != null)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'DEALER',
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 3,
-                        color: AppTheme.terra,
+                    if (starterName != null) ...[
+                      _HeaderLine(
+                        label: 'ΞΕΚΙΝΑ · LEADS',
+                        value: starterName!,
+                        accent: AppTheme.terra,
                       ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      dealerName!,
-                      style: GoogleFonts.caveat(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.ink,
-                        height: 1.0,
+                    ],
+                    if (dealerName != null && starterName != null)
+                      const SizedBox(height: 6),
+                    if (dealerName != null)
+                      _HeaderLine(
+                        label: 'ΜΟΙΡΑΖΕΙ · DEALER',
+                        value: dealerName!,
+                        accent: AppTheme.inkSoft,
                       ),
-                    ),
                   ],
                 ),
             ],
@@ -118,6 +117,49 @@ class RoundHeader extends StatelessWidget {
           _DotProgress(current: currentRound, total: totalRounds),
         ],
       ),
+    );
+  }
+}
+
+/// One labeled byline on the right of the round header — JetBrains Mono
+/// eyebrow, Caveat name.
+class _HeaderLine extends StatelessWidget {
+  const _HeaderLine({
+    required this.label,
+    required this.value,
+    required this.accent,
+  });
+
+  final String label;
+  final String value;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.jetBrainsMono(
+            fontSize: 9,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 3,
+            color: accent,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: GoogleFonts.caveat(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.ink,
+            height: 1.0,
+          ),
+        ),
+      ],
     );
   }
 }

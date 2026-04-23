@@ -147,6 +147,7 @@ class _PlayingPhaseState extends ConsumerState<PlayingPhase> {
     final leaderSeat = game.currentLeaderSeat ?? game.roundStarterSeat ?? 0;
     final leaderName = _seatName(players, usernames, leaderSeat);
     final dealerName = _seatName(players, usernames, game.dealerSeat);
+    final starterName = _seatName(players, usernames, game.roundStarterSeat);
 
     return Padding(
       padding: const EdgeInsets.all(AppTheme.space5),
@@ -158,6 +159,7 @@ class _PlayingPhaseState extends ConsumerState<PlayingPhase> {
             totalRounds: game.totalRounds,
             cardsThisRound: game.cardsThisRound,
             dealerName: dealerName,
+            starterName: starterName,
           ),
           const SizedBox(height: AppTheme.space3),
           ScoreTally(gameId: widget.gameId),

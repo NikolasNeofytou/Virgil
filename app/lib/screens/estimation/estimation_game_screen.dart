@@ -36,7 +36,7 @@ class EstimationGameScreen extends ConsumerWidget {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: const Text('Estimation'),
+            title: const Text('Παιχνίδι'),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () => _showExitDialog(context),

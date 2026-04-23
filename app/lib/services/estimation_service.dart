@@ -59,6 +59,110 @@ class EstimationService {
     throw StateError('Could not generate unique room code after 5 attempts');
   }
 
+  /// Join-or-create a rematch game for a just-finished session.
+  ///
+  /// Either client can call this. The first one creates a new
+  /// `estimation_games` row with `rematch_of = previousGameId` and seats
+  /// themselves at their old seat. Every subsequent caller finds that row
+  /// (via the unique `rematch_of` index) and seats themselves in it.
+  ///
+  /// Returns the rematch game id. The caller navigates to its lobby; the
+  /// host taps Ξεκίνα when all seats are filled, which runs [startGame]
+  /// as usual — re-drawing the short-straw dealer + starter.
+  Future<String> rematchOrJoin(String previousGameId) async {
+    final client = SupabaseBootstrap.client;
+    final userId = client.auth.currentUser!.id;
+
+    // Previous seating info — need this both for new-game creation and to
+    // figure out my seat.
+    final previous = await client
+        .from('estimation_games')
+        .select('player_count, status')
+        .eq('id', previousGameId)
+        .single();
+    if (previous['status'] != 'finished') {
+      throw StateError('Το προηγούμενο παιχνίδι δεν έχει τελειώσει');
+    }
+    final playerCount = previous['player_count'] as int;
+
+    final mySeatRow = await client
+        .from('estimation_players')
+        .select('seat')
+        .eq('game_id', previousGameId)
+        .eq('player_id', userId)
+        .single();
+    final mySeat = mySeatRow['seat'] as int;
+
+    // Is there already a rematch game for this previous one?
+    final existing = await client
+        .from('estimation_games')
+        .select('id')
+        .eq('rematch_of', previousGameId)
+        .maybeSingle();
+    if (existing != null) {
+      final gameId = existing['id'] as String;
+      // Seat me if not already there.
+      final alreadySeated = await client
+          .from('estimation_players')
+          .select('id')
+          .eq('game_id', gameId)
+          .eq('player_id', userId)
+          .maybeSingle();
+      if (alreadySeated == null) {
+        await client.from('estimation_players').insert({
+          'game_id': gameId,
+          'player_id': userId,
+          'seat': mySeat,
+        });
+      }
+      return gameId;
+    }
+
+    // First in — create the rematch game + seat myself.
+    for (var attempt = 0; attempt < 5; attempt++) {
+      final code = generateRoomCode();
+      try {
+        final game = await client
+            .from('estimation_games')
+            .insert({
+              'room_code': code,
+              'player_count': playerCount,
+              'status': 'waiting',
+              'phase': 'predicting',
+              'rematch_of': previousGameId,
+            })
+            .select('id')
+            .single();
+        final gameId = game['id'] as String;
+        await client.from('estimation_players').insert({
+          'game_id': gameId,
+          'player_id': userId,
+          'seat': mySeat,
+        });
+        return gameId;
+      } on Object catch (e) {
+        final msg = e.toString();
+        if (msg.contains('rematch_of')) {
+          // Race — someone else beat us. Retry the lookup.
+          final winner = await client
+              .from('estimation_games')
+              .select('id')
+              .eq('rematch_of', previousGameId)
+              .single();
+          final gameId = winner['id'] as String;
+          await client.from('estimation_players').insert({
+            'game_id': gameId,
+            'player_id': userId,
+            'seat': mySeat,
+          });
+          return gameId;
+        }
+        if (!msg.contains('room_code')) rethrow;
+      }
+    }
+    throw StateError('Could not create rematch after 5 attempts');
+  }
+
   /// Joins the caller into the game identified by [roomCode]. Returns the
   /// `estimation_games.id`. Throws if the game is full or already finished.
   Future<String> joinGameByCode(String roomCode) async {
