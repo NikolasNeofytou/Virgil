@@ -214,6 +214,21 @@ class EstimationService {
     return gameId;
   }
 
+  /// Update the optional human-readable name for a game. Trimmed; null/empty
+  /// clears it. Capped at 48 chars to match the DB check constraint.
+  Future<void> updateSessionName({
+    required String gameId,
+    required String? name,
+  }) async {
+    final trimmed = name?.trim();
+    final value = (trimmed == null || trimmed.isEmpty)
+        ? null
+        : (trimmed.length > 48 ? trimmed.substring(0, 48) : trimmed);
+    await SupabaseBootstrap.client
+        .from('estimation_games')
+        .update({'session_name': value}).eq('id', gameId);
+  }
+
   // ---------------------------------------------------------------------------
   // Gameplay loop — sequential bidding + per-trick tracking
   // ---------------------------------------------------------------------------
@@ -628,10 +643,24 @@ class EstimationService {
 
     // 2. Advance round or finish.
     if (currentRound >= totalRounds) {
-      await client
-          .from('estimation_games')
-          .update({'status': 'finished'})
-          .eq('id', gameId);
+      // Pick the winner = highest total_score post-this-round. Ties broken
+      // by earliest joined_at (deterministic across clients).
+      final standings = await client
+          .from('estimation_players')
+          .select('player_id, total_score, joined_at')
+          .eq('game_id', gameId)
+          .order('total_score', ascending: false)
+          .order('joined_at', ascending: true)
+          .limit(1);
+      final winnerId = standings.isNotEmpty
+          ? standings.first['player_id'] as String
+          : null;
+
+      await client.from('estimation_games').update({
+        'status': 'finished',
+        'ended_at': DateTime.now().toUtc().toIso8601String(),
+        if (winnerId != null) 'winner_player_id': winnerId,
+      }).eq('id', gameId);
       return;
     }
 

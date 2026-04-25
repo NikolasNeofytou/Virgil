@@ -1,9 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../game/game_awards_calculator.dart';
 import '../models/estimation_game.dart';
 import '../models/estimation_player.dart';
 import '../models/estimation_round.dart';
 import '../models/estimation_trick.dart';
+import '../models/game_award.dart';
+import '../models/live_player_stats.dart';
 import '../providers/auth_providers.dart';
 import '../services/supabase_client.dart';
 
@@ -243,4 +246,91 @@ final playerUsernamesProvider =
       .select('id, username')
       .inFilter('id', ids);
   return {for (final r in rows) r['id'] as String: r['username'] as String};
+});
+
+// ── Day 3 additions: awards + live scoreboard ────────────────────────────────
+
+/// Awards earned in a finished estimation game. Empty list while data is
+/// loading or the game isn't finished yet.
+final gameAwardsProvider =
+    Provider.family<List<GameAward>, String>((ref, gameId) {
+  final game = ref.watch(estimationGameStreamProvider(gameId)).valueOrNull;
+  final players =
+      ref.watch(estimationPlayersStreamProvider(gameId)).valueOrNull;
+  final rounds = ref.watch(allRoundsStreamProvider(gameId)).valueOrNull;
+  final usernames = ref.watch(playerUsernamesProvider(gameId)).valueOrNull;
+
+  if (game == null ||
+      players == null ||
+      rounds == null ||
+      usernames == null ||
+      players.isEmpty ||
+      rounds.isEmpty) {
+    return const [];
+  }
+  // Final standings — pick the highest scorer as winner (matches what
+  // finalizeRound() persists). Tiebreaker: earliest joined_at.
+  final sorted = [...players]
+    ..sort((a, b) {
+      final byScore = b.totalScore.compareTo(a.totalScore);
+      if (byScore != 0) return byScore;
+      return a.joinedAt.compareTo(b.joinedAt);
+    });
+  final winnerId = sorted.first.playerId;
+  final finalScores = {
+    for (final p in players) p.playerId: p.totalScore,
+  };
+  return GameAwardsCalculator.compute(
+    rounds: rounds,
+    usernames: usernames,
+    winnerId: winnerId,
+    finalScores: finalScores,
+  );
+});
+
+/// Live aggregate per-player stats for the in-game scoreboard sheet. Sorted
+/// by `total_score` desc; ties broken by earliest `joined_at`.
+final liveScoreboardProvider =
+    Provider.family<List<LivePlayerStats>, String>((ref, gameId) {
+  final players =
+      ref.watch(estimationPlayersStreamProvider(gameId)).valueOrNull;
+  final rounds = ref.watch(allRoundsStreamProvider(gameId)).valueOrNull;
+  final usernames = ref.watch(playerUsernamesProvider(gameId)).valueOrNull;
+
+  if (players == null || rounds == null || usernames == null) return const [];
+
+  final sortedPlayers = [...players]
+    ..sort((a, b) {
+      final byScore = b.totalScore.compareTo(a.totalScore);
+      if (byScore != 0) return byScore;
+      return a.joinedAt.compareTo(b.joinedAt);
+    });
+
+  return sortedPlayers.map((p) {
+    final mine = rounds.where((r) => r.playerId == p.playerId).toList()
+      ..sort((a, b) => a.roundNumber.compareTo(b.roundNumber));
+
+    var hits = 0;
+    var attempts = 0;
+    var cumulative = 0;
+    final cumByRound = <int, int>{};
+    for (final r in mine) {
+      if (r.prediction != null && r.actualTricks != null) {
+        attempts++;
+        if (r.prediction == r.actualTricks) hits++;
+      }
+      if (r.score != null) {
+        cumulative += r.score!;
+        cumByRound[r.roundNumber] = cumulative;
+      }
+    }
+    return LivePlayerStats(
+      playerId: p.playerId,
+      username: usernames[p.playerId] ?? '???',
+      totalScore: p.totalScore,
+      accuracyHits: hits,
+      accuracyAttempts: attempts,
+      cumulativeByRound: cumByRound,
+    );
+  }).toList();
 });

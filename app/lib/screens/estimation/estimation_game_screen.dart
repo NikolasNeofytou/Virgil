@@ -6,6 +6,7 @@ import '../../providers/estimation_providers.dart';
 import '../../theme/app_background.dart';
 import '../../theme/app_theme.dart';
 import 'widgets/game_over_panel.dart';
+import 'widgets/live_scoreboard_sheet.dart';
 import 'widgets/playing_phase.dart';
 import 'widgets/prediction_phase.dart';
 import 'widgets/short_straw_draw.dart';
@@ -41,6 +42,14 @@ class EstimationGameScreen extends ConsumerWidget {
               icon: const Icon(Icons.arrow_back),
               onPressed: () => _showExitDialog(context),
             ),
+            actions: [
+              IconButton(
+                tooltip: 'Ζωντανή κατάταξη',
+                icon: const Icon(Icons.leaderboard_outlined),
+                onPressed: () =>
+                    showLiveScoreboardSheet(context, gameId: gameId),
+              ),
+            ],
           ),
           body: SafeArea(
             child: Stack(

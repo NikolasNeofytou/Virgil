@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +9,7 @@ import '../../providers/auth_providers.dart';
 import '../../services/estimation_service.dart';
 import '../../services/supabase_client.dart';
 import '../../theme/app_background.dart';
+import '../../theme/app_route.dart';
 import '../../theme/app_theme.dart';
 import 'estimation_game_screen.dart';
 
@@ -33,6 +36,13 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
   bool _starting = false;
   bool _navigatedToGame = false;
 
+  // Session-name editing state for the host. Non-host players see whatever's
+  // already on the game row; the host can write to it (debounced) and other
+  // players see the change live via [_gameStream].
+  final TextEditingController _sessionNameCtrl = TextEditingController();
+  String _lastSyncedSessionName = '';
+  Timer? _sessionNameDebounce;
+
   @override
   void initState() {
     super.initState();
@@ -46,6 +56,40 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
         .stream(primaryKey: ['id'])
         .eq('game_id', widget.gameId)
         .order('seat');
+  }
+
+  @override
+  void dispose() {
+    _sessionNameDebounce?.cancel();
+    _sessionNameCtrl.dispose();
+    super.dispose();
+  }
+
+  void _onSessionNameChanged(String value) {
+    _sessionNameDebounce?.cancel();
+    _sessionNameDebounce = Timer(const Duration(milliseconds: 500), () {
+      final trimmed = value.trim();
+      if (trimmed == _lastSyncedSessionName) return;
+      _lastSyncedSessionName = trimmed;
+      EstimationService().updateSessionName(
+        gameId: widget.gameId,
+        name: trimmed.isEmpty ? null : trimmed,
+      );
+    });
+  }
+
+  /// Mirror remote session_name into the controller for non-host players,
+  /// and for the host on first load. Skip while the host is actively typing
+  /// (detected via _lastSyncedSessionName equality).
+  void _syncSessionNameFromRemote(String? remote) {
+    final value = remote ?? '';
+    if (_sessionNameCtrl.text == value) return;
+    if (_lastSyncedSessionName == value) return;
+    _lastSyncedSessionName = value;
+    _sessionNameCtrl.text = value;
+    _sessionNameCtrl.selection = TextSelection.fromPosition(
+      TextPosition(offset: value.length),
+    );
   }
 
   Future<void> _resolveUsernames(List<Map<String, dynamic>> rows) async {
@@ -115,9 +159,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       Navigator.of(context).pushReplacement<void, void>(
-        MaterialPageRoute<void>(
-          builder: (_) => EstimationGameScreen(gameId: widget.gameId),
-        ),
+        AppRoute.build((_) => EstimationGameScreen(gameId: widget.gameId)),
       );
     });
   }
@@ -180,6 +222,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
               if (gSnap.hasData && gSnap.data!.isNotEmpty) {
                 _game = gSnap.data!.first;
                 _navigateToGameIfActive();
+                _syncSessionNameFromRemote(_game!['session_name'] as String?);
               }
               if (_game == null) {
                 return const Center(child: CircularProgressIndicator());
@@ -207,6 +250,11 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
 
                             // ── Room code card ──
                             _RoomCodeCard(code: code),
+
+                            const SizedBox(height: AppTheme.space4),
+
+                            // ── Session name (host edits, others see live) ──
+                            _buildSessionNameField(),
 
                             const SizedBox(height: AppTheme.space5),
 
@@ -253,6 +301,97 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSessionNameField() {
+    final remote = (_game?['session_name'] as String?) ?? '';
+    if (_isHost) {
+      return Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppTheme.space3,
+          vertical: AppTheme.space2,
+        ),
+        decoration: BoxDecoration(
+          color: AppTheme.paper,
+          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+          border: Border.all(color: AppTheme.border),
+          boxShadow: AppTheme.shadowSm,
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.edit_outlined,
+              size: 16,
+              color: AppTheme.terra,
+            ),
+            const SizedBox(width: AppTheme.space2),
+            Expanded(
+              child: TextField(
+                controller: _sessionNameCtrl,
+                textInputAction: TextInputAction.done,
+                maxLength: 48,
+                onChanged: _onSessionNameChanged,
+                style: GoogleFonts.caveat(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.ink,
+                  height: 1.1,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'όνομα παιχνιδιού (προαιρετικό)',
+                  hintStyle: GoogleFonts.caveat(
+                    fontSize: 20,
+                    color: AppTheme.inkFaint,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  isDense: true,
+                  filled: false,
+                  counterText: '',
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    if (remote.isEmpty) return const SizedBox.shrink();
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.space4,
+        vertical: AppTheme.space3,
+      ),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(color: AppTheme.border),
+        boxShadow: AppTheme.shadowSm,
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.bookmark_outline,
+            size: 16,
+            color: AppTheme.terra,
+          ),
+          const SizedBox(width: AppTheme.space2),
+          Expanded(
+            child: Text(
+              remote,
+              style: GoogleFonts.caveat(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.ink,
+                height: 1.1,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

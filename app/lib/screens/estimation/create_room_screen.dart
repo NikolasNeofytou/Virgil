@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../services/estimation_service.dart';
 import '../../theme/app_background.dart';
+import '../../theme/app_route.dart';
 import '../../theme/app_theme.dart';
 import 'room_lobby_screen.dart';
 
@@ -33,9 +34,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
       final gameId = await _service.createGame(playerCount: _playerCount);
       if (!mounted) return;
       Navigator.of(context).pushReplacement<void, void>(
-        MaterialPageRoute<void>(
-          builder: (_) => RoomLobbyScreen(gameId: gameId),
-        ),
+        AppRoute.build((_) => RoomLobbyScreen(gameId: gameId)),
       );
     } on Object catch (e) {
       if (mounted) setState(() => _error = e.toString());

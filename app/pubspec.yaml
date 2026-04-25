@@ -47,6 +47,9 @@ dependencies:
   # Typography — Virgil identity (Gloock, Caveat, Kalam, JetBrains Mono)
   google_fonts: ^6.2.1
 
+  # Animations (shake on error, page transitions, leaderboard fade-in stagger)
+  flutter_animate: ^4.5.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -4,7 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../services/estimation_service.dart';
 import '../../theme/app_background.dart';
+import '../../theme/app_route.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/shake_on_error.dart';
 import 'room_lobby_screen.dart';
 
 /// Join-room screen. Renders four paper tiles that mirror a single hidden
@@ -24,7 +26,16 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
   final _focusNode = FocusNode();
   bool _joining = false;
   String? _error;
+  int _shakes = 0;
   final _service = EstimationService();
+
+  void _setError(String message) {
+    setState(() {
+      _error = message;
+      _shakes++;
+      _joining = false;
+    });
+  }
 
   @override
   void initState() {
@@ -63,7 +74,7 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
   Future<void> _join() async {
     final code = _controller.text.trim().toUpperCase();
     if (code.length != 4) {
-      setState(() => _error = 'ο κωδικός έχει 4 χαρακτήρες');
+      _setError('ο κωδικός έχει 4 χαρακτήρες');
       return;
     }
     setState(() {
@@ -74,16 +85,13 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
       final gameId = await _service.joinGameByCode(code);
       if (!mounted) return;
       Navigator.of(context).pushReplacement<void, void>(
-        MaterialPageRoute<void>(
-          builder: (_) => RoomLobbyScreen(gameId: gameId),
-        ),
+        AppRoute.build((_) => RoomLobbyScreen(gameId: gameId)),
       );
     } on Object catch (e) {
       if (mounted) {
-        setState(() {
-          _error = e.toString().replaceFirst('Bad state: ', '').toLowerCase();
-          _joining = false;
-        });
+        _setError(
+          e.toString().replaceFirst('Bad state: ', '').toLowerCase(),
+        );
       }
     }
   }
@@ -112,9 +120,12 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
                       showRule: true,
                     ),
                     const SizedBox(height: AppTheme.space4),
-                    _CodeEntry(
-                      controller: _controller,
-                      focusNode: _focusNode,
+                    ShakeOnError(
+                      trigger: _shakes,
+                      child: _CodeEntry(
+                        controller: _controller,
+                        focusNode: _focusNode,
+                      ),
                     ),
                     const SizedBox(height: AppTheme.space3),
                     Center(

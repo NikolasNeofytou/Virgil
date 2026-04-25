@@ -1,12 +1,16 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
+import '../../../models/game_award.dart';
 import '../../../providers/active_game_provider.dart';
 import '../../../providers/estimation_providers.dart';
 import '../../../services/estimation_service.dart';
+import '../../../theme/app_route.dart';
 import '../../../theme/app_theme.dart';
 import '../room_lobby_screen.dart';
 
@@ -33,9 +37,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
       if (!mounted) return;
       ref.invalidate(activeEstimationGameProvider);
       Navigator.of(context).pushReplacement<void, void>(
-        MaterialPageRoute<void>(
-          builder: (_) => RoomLobbyScreen(gameId: newGameId),
-        ),
+        AppRoute.build((_) => RoomLobbyScreen(gameId: newGameId)),
       );
     } on Object catch (e) {
       if (!mounted) return;
@@ -56,6 +58,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
         ref.watch(playerUsernamesProvider(widget.gameId)).valueOrNull ?? {};
     final game =
         ref.watch(estimationGameStreamProvider(widget.gameId)).valueOrNull;
+    final awards = ref.watch(gameAwardsProvider(widget.gameId));
 
     if (players.isEmpty || game == null) {
       return const Center(child: CircularProgressIndicator());
@@ -66,12 +69,33 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
     final winner = sorted.first;
     final winnerName = usernames[winner.playerId] ?? '???';
 
-    return Padding(
-      padding: const EdgeInsets.all(AppTheme.space6),
+    final sessionLabel = (game.sessionName?.trim().isNotEmpty ?? false)
+        ? game.sessionName!
+        : 'παιχνίδι ${DateFormat('d MMM').format(game.createdAt.toLocal())}';
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(
+        AppTheme.space6,
+        AppTheme.space5,
+        AppTheme.space6,
+        AppTheme.space7,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Spacer(),
+          // ── Session label header ──
+          Center(
+            child: Text(
+              sessionLabel,
+              style: GoogleFonts.jetBrainsMono(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 2.5,
+                color: AppTheme.inkSoft,
+              ),
+            ),
+          ),
+          const SizedBox(height: AppTheme.space5),
           _WinnerCertificate(name: winnerName, score: winner.totalScore),
           const SizedBox(height: AppTheme.space6),
           const AppSectionLabelMono('ΚΑΤΑΤΑΞΗ · FINAL'),
@@ -86,7 +110,30 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
               isWinner: i == 0,
             );
           }),
-          const Spacer(),
+
+          if (awards.isNotEmpty) ...[
+            const SizedBox(height: AppTheme.space6),
+            const AppSectionLabelMono('ΒΡΑΒΕΙΑ · AWARDS'),
+            const SizedBox(height: AppTheme.space3),
+            for (var i = 0; i < awards.length; i++)
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: i == awards.length - 1 ? 0 : AppTheme.space2,
+                ),
+                child: _AwardCard(award: awards[i])
+                    .animate()
+                    .fadeIn(
+                      // Stagger after the WinnerCertificate has settled
+                      // (~4.2s) so awards don't fight the laurel reveal.
+                      duration: 320.ms,
+                      delay: (4400 + i * 140).ms,
+                      curve: Curves.easeOut,
+                    )
+                    .slideY(begin: 0.2, end: 0, duration: 320.ms),
+              ),
+          ],
+
+          const SizedBox(height: AppTheme.space7),
           FilledButton(
             onPressed: _starting ? null : _rematch,
             child: _starting
@@ -103,6 +150,83 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
               (route) => route.isFirst,
             ),
             child: const Text('Πίσω στο μενού'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One award row, paper-and-ink: emoji on the left, ink title + caveat
+/// description, terra username chip on the right.
+class _AwardCard extends StatelessWidget {
+  const _AwardCard({required this.award});
+
+  final GameAward award;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.space4,
+        vertical: AppTheme.space3,
+      ),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(color: AppTheme.border),
+        boxShadow: AppTheme.shadowSm,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceElevated,
+              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+            ),
+            child: Text(
+              award.emoji,
+              style: const TextStyle(fontSize: 22, height: 1),
+            ),
+          ),
+          const SizedBox(width: AppTheme.space3),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  award.title,
+                  style: GoogleFonts.gloock(
+                    fontSize: 17,
+                    color: AppTheme.ink,
+                    height: 1.0,
+                    letterSpacing: -0.2,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  award.description,
+                  style: GoogleFonts.kalam(
+                    fontSize: 13,
+                    color: AppTheme.inkSoft,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppTheme.space3),
+          Text(
+            award.username,
+            style: GoogleFonts.caveat(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.terra,
+              height: 1.1,
+            ),
           ),
         ],
       ),

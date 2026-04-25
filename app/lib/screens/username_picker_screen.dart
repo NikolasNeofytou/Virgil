@@ -7,6 +7,7 @@ import '../providers/auth_providers.dart';
 import '../services/supabase_client.dart';
 import '../theme/app_background.dart';
 import '../theme/app_theme.dart';
+import '../theme/shake_on_error.dart';
 
 /// Shown once, right after first sign-in. Username must be 3-24 chars,
 /// alphanumeric + underscore, and globally unique.
@@ -23,6 +24,15 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
   static final _re = RegExp(r'^[a-zA-Z0-9_]{3,24}$');
   bool _saving = false;
   String? _error;
+  int _shakes = 0;
+
+  void _setError(String message) {
+    setState(() {
+      _error = message;
+      _shakes++;
+      _saving = false;
+    });
+  }
 
   @override
   void initState() {
@@ -35,7 +45,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
   Future<void> _save() async {
     final username = _controller.text.trim();
     if (!_re.hasMatch(username)) {
-      setState(() => _error = '3–24 χαρακτήρες · γράμματα, αριθμοί, _');
+      _setError('3–24 χαρακτήρες · γράμματα, αριθμοί, _');
       return;
     }
     setState(() {
@@ -50,11 +60,13 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
           .eq('id', userId);
       ref.invalidate(currentPlayerProfileProvider);
     } on Object catch (e) {
-      setState(() {
-        _error = e.toString().contains('players_username_key')
-            ? 'αυτό το όνομα υπάρχει ήδη'
-            : 'σφάλμα · δοκίμασε ξανά';
-      });
+      if (mounted) {
+        _setError(
+          e.toString().contains('players_username_key')
+              ? 'αυτό το όνομα υπάρχει ήδη'
+              : 'σφάλμα · δοκίμασε ξανά',
+        );
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -122,9 +134,12 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
                     ),
                     const SizedBox(height: AppTheme.space5),
 
-                    _UsernameField(
-                      controller: _controller,
-                      enabled: !_saving,
+                    ShakeOnError(
+                      trigger: _shakes,
+                      child: _UsernameField(
+                        controller: _controller,
+                        enabled: !_saving,
+                      ),
                     ),
                     const SizedBox(height: AppTheme.space2),
                     Center(

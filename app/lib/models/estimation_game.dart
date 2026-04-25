@@ -14,6 +14,9 @@ class EstimationGame {
     this.roundStarterSeat,
     this.currentTrickNumber = 1,
     this.currentLeaderSeat,
+    this.sessionName,
+    this.endedAt,
+    this.winnerPlayerId,
   });
 
   final String id;
@@ -37,6 +40,17 @@ class EstimationGame {
   /// Seat leading the active trick. Starts at [roundStarterSeat], then
   /// follows trick winners.
   final int? currentLeaderSeat;
+
+  /// Optional human-readable name set by the host on the lobby. Falls back
+  /// to "Παιχνίδι {date}" when null/empty. Capped at 48 chars in the DB.
+  final String? sessionName;
+
+  /// When [status] flipped to `finished`. Used for sorting in history.
+  final DateTime? endedAt;
+
+  /// Player with the highest [EstimationPlayer.totalScore] when the game
+  /// finished. Null while in progress; ties broken by earliest joined_at.
+  final String? winnerPlayerId;
 
   /// Cards dealt this round. Climbs 1..N then descends N..1 with the peak
   /// doubled: round N and N+1 both get N cards. Total rounds = 2·N.
@@ -70,6 +84,11 @@ class EstimationGame {
       roundStarterSeat: json['round_starter_seat'] as int?,
       currentTrickNumber: (json['current_trick_number'] as int?) ?? 1,
       currentLeaderSeat: json['current_leader_seat'] as int?,
+      sessionName: json['session_name'] as String?,
+      endedAt: json['ended_at'] == null
+          ? null
+          : DateTime.parse(json['ended_at'] as String),
+      winnerPlayerId: json['winner_player_id'] as String?,
     );
   }
 }

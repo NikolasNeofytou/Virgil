@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../providers/active_game_provider.dart';
 import '../../theme/app_background.dart';
+import '../../theme/app_route.dart';
 import '../../theme/app_theme.dart';
 import '../estimation/create_room_screen.dart';
 import '../estimation/estimation_game_screen.dart';
@@ -44,11 +45,9 @@ class PlayTab extends ConsumerWidget {
                       onTap: () {
                         ref.invalidate(activeEstimationGameProvider);
                         Navigator.of(context).push<void>(
-                          MaterialPageRoute<void>(
-                            builder: (_) => active.isInLobby
-                                ? RoomLobbyScreen(gameId: active.gameId)
-                                : EstimationGameScreen(gameId: active.gameId),
-                          ),
+                          AppRoute.build((_) => active.isInLobby
+                              ? RoomLobbyScreen(gameId: active.gameId)
+                              : EstimationGameScreen(gameId: active.gameId),),
                         );
                       },
                     ),
@@ -66,17 +65,13 @@ class PlayTab extends ConsumerWidget {
               tagline: '2–4 παίκτες · peer validation · αυτόματο scoring',
               onCreate: () async {
                 await Navigator.of(context).push<void>(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const CreateRoomScreen(),
-                  ),
+                  AppRoute.build((_) => const CreateRoomScreen()),
                 );
                 ref.invalidate(activeEstimationGameProvider);
               },
               onJoin: () async {
                 await Navigator.of(context).push<void>(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const JoinRoomScreen(),
-                  ),
+                  AppRoute.build((_) => const JoinRoomScreen()),
                 );
                 ref.invalidate(activeEstimationGameProvider);
               },

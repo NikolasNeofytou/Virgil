@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
 import '../theme/app_background.dart';
 import '../theme/app_theme.dart';
+import '../theme/shake_on_error.dart';
 
 /// Sign-in screen: email + password (primary) or email OTP (fallback).
 class SignInScreen extends ConsumerStatefulWidget {
@@ -21,8 +22,16 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _otpController = TextEditingController();
   bool _loading = false;
   String? _error;
+  int _shakes = 0;
   bool _useOtp = false;
   bool _codeSent = false;
+
+  void _setError(String? message) {
+    setState(() {
+      _error = message;
+      if (message != null) _shakes++;
+    });
+  }
 
   final _auth = AuthService();
 
@@ -38,11 +47,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
     if (email.isEmpty || !email.contains('@')) {
-      setState(() => _error = 'Βάλε ένα έγκυρο email');
+      _setError('Βάλε ένα έγκυρο email');
       return;
     }
     if (password.isEmpty) {
-      setState(() => _error = 'Βάλε τον κωδικό σου');
+      _setError('Βάλε τον κωδικό σου');
       return;
     }
     setState(() {
@@ -52,7 +61,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     try {
       await _auth.signInWithPassword(email: email, password: password);
     } catch (_) {
-      if (mounted) setState(() => _error = 'Λάθος email ή κωδικός');
+      if (mounted) _setError('Λάθος email ή κωδικός');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -61,7 +70,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   Future<void> _sendOtp() async {
     final email = _emailController.text.trim();
     if (email.isEmpty || !email.contains('@')) {
-      setState(() => _error = 'Βάλε ένα έγκυρο email');
+      _setError('Βάλε ένα έγκυρο email');
       return;
     }
     setState(() {
@@ -73,7 +82,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       if (!mounted) return;
       setState(() => _codeSent = true);
     } catch (e) {
-      setState(() => _error = e.toString());
+      if (mounted) _setError(e.toString());
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -82,7 +91,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   Future<void> _verifyOtp() async {
     final code = _otpController.text.trim();
     if (code.length != 6) {
-      setState(() => _error = 'Ο κωδικός έχει 6 ψηφία');
+      _setError('Ο κωδικός έχει 6 ψηφία');
       return;
     }
     setState(() {
@@ -95,7 +104,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         token: code,
       );
     } catch (_) {
-      if (mounted) setState(() => _error = 'Λάθος κωδικός. Δοκίμασε ξανά.');
+      if (mounted) _setError('Λάθος κωδικός. Δοκίμασε ξανά.');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -123,35 +132,43 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     _Brand(),
                     const SizedBox(height: AppTheme.space7),
 
-                    if (_useOtp && _codeSent)
-                      _OtpForm(
-                        emailController: _emailController,
-                        otpController: _otpController,
-                        loading: _loading,
-                        onVerify: _verifyOtp,
-                        onBack: () => setState(() {
-                          _codeSent = false;
-                          _otpController.clear();
-                          _error = null;
-                        }),
-                      )
-                    else
-                      _PrimaryForm(
-                        emailController: _emailController,
-                        passwordController: _passwordController,
-                        useOtp: _useOtp,
-                        loading: _loading,
-                        onSubmit: _useOtp ? _sendOtp : _signInWithPassword,
-                        onToggleMode: () => setState(() {
-                          _useOtp = !_useOtp;
-                          _error = null;
-                        }),
+                    ShakeOnError(
+                      trigger: _shakes,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (_useOtp && _codeSent)
+                            _OtpForm(
+                              emailController: _emailController,
+                              otpController: _otpController,
+                              loading: _loading,
+                              onVerify: _verifyOtp,
+                              onBack: () => setState(() {
+                                _codeSent = false;
+                                _otpController.clear();
+                                _error = null;
+                              }),
+                            )
+                          else
+                            _PrimaryForm(
+                              emailController: _emailController,
+                              passwordController: _passwordController,
+                              useOtp: _useOtp,
+                              loading: _loading,
+                              onSubmit:
+                                  _useOtp ? _sendOtp : _signInWithPassword,
+                              onToggleMode: () => setState(() {
+                                _useOtp = !_useOtp;
+                                _error = null;
+                              }),
+                            ),
+                          if (_error != null) ...[
+                            const SizedBox(height: AppTheme.space4),
+                            _ErrorBanner(message: _error!),
+                          ],
+                        ],
                       ),
-
-                    if (_error != null) ...[
-                      const SizedBox(height: AppTheme.space4),
-                      _ErrorBanner(message: _error!),
-                    ],
+                    ),
                   ],
                 ),
               ),
