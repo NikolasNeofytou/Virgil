@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../game/game_awards_calculator.dart';
+import '../game/game_narrator.dart';
 import '../models/estimation_game.dart';
 import '../models/estimation_player.dart';
 import '../models/estimation_round.dart';
@@ -285,6 +286,39 @@ final gameAwardsProvider =
     usernames: usernames,
     winnerId: winnerId,
     finalScores: finalScores,
+  );
+});
+
+/// Virgil-narrates-your-night text for a finished game. Returns null while
+/// data is loading or when the game is too sparse to narrate.
+final gameNarrationProvider =
+    Provider.family<String?, String>((ref, gameId) {
+  final players =
+      ref.watch(estimationPlayersStreamProvider(gameId)).valueOrNull;
+  final rounds = ref.watch(allRoundsStreamProvider(gameId)).valueOrNull;
+  final usernames = ref.watch(playerUsernamesProvider(gameId)).valueOrNull;
+
+  if (players == null ||
+      rounds == null ||
+      usernames == null ||
+      players.isEmpty ||
+      rounds.isEmpty) {
+    return null;
+  }
+  final sorted = [...players]
+    ..sort((a, b) {
+      final byScore = b.totalScore.compareTo(a.totalScore);
+      if (byScore != 0) return byScore;
+      return a.joinedAt.compareTo(b.joinedAt);
+    });
+  final winnerId = sorted.first.playerId;
+  final finalScores = {for (final p in players) p.playerId: p.totalScore};
+  return GameNarrator.narrate(
+    gameId: gameId,
+    rounds: rounds,
+    usernames: usernames,
+    finalScores: finalScores,
+    winnerId: winnerId,
   );
 });
 

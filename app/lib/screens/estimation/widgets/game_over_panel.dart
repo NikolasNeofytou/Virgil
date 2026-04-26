@@ -59,6 +59,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
     final game =
         ref.watch(estimationGameStreamProvider(widget.gameId)).valueOrNull;
     final awards = ref.watch(gameAwardsProvider(widget.gameId));
+    final narration = ref.watch(gameNarrationProvider(widget.gameId));
 
     if (players.isEmpty || game == null) {
       return const Center(child: CircularProgressIndicator());
@@ -111,6 +112,22 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
             );
           }),
 
+          if (narration != null) ...[
+            const SizedBox(height: AppTheme.space6),
+            const AppSectionLabelMono('ΝΑΡΡΗΣΗ · NIGHT NOTE'),
+            const SizedBox(height: AppTheme.space3),
+            _NarrationCard(text: narration)
+                .animate()
+                .fadeIn(
+                  // Fades in as the WinnerCertificate (4.2s) settles, just
+                  // before the awards begin to stagger at 4.4s.
+                  duration: 360.ms,
+                  delay: 4200.ms,
+                  curve: Curves.easeOut,
+                )
+                .slideY(begin: 0.15, end: 0, duration: 360.ms),
+          ],
+
           if (awards.isNotEmpty) ...[
             const SizedBox(height: AppTheme.space6),
             const AppSectionLabelMono('ΒΡΑΒΕΙΑ · AWARDS'),
@@ -152,6 +169,42 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
             child: const Text('Πίσω στο μενού'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// "Virgil narrates the night" — a paper card with the templated 2-3
+/// sentence game summary in Kalam handwriting, with a terra hairline border
+/// to set it apart from the award cards below.
+class _NarrationCard extends StatelessWidget {
+  const _NarrationCard({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.space5,
+        vertical: AppTheme.space4,
+      ),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(
+          color: AppTheme.terra.withValues(alpha: 0.4),
+          width: 1.2,
+        ),
+        boxShadow: AppTheme.shadowSm,
+      ),
+      child: Text(
+        text,
+        style: GoogleFonts.kalam(
+          fontSize: 16,
+          color: AppTheme.ink,
+          height: 1.55,
+        ),
       ),
     );
   }
