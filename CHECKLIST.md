@@ -82,11 +82,11 @@ See [`docs/roadmap/day-3-leaderboard-animations-memories.md`](./docs/roadmap/day
 
 Dropped as redundant (Virgil already had equivalents): `_AnimatedScoreChip` (score_tally covers it), `_FlipReveal` (sequential bidding doesn't need it), NumberPicker bounce (Virgil's terracotta stamp ring is the lock-in motion), `ShimmerNumber` on locked card (no static locked card in sequential flow).
 
-## Day 4 — Magic-link deep-linking · Auto-highlights [IN PROGRESS]
+## Day 4 — Magic-link deep-linking · Virgil narrator · dev script [DONE]
 
 **Original plan superseded.** Sound + BeReal + TestFlight all hit blockers (no
 sound assets sourced, no real device for camera validation, no Apple Developer
-account). Pivoted to two unblocked, sim-testable wins. See
+account). Pivoted to three unblocked, sim-testable wins. See
 [`docs/roadmap/day-4-photos-sound-testflight.md`](./docs/roadmap/day-4-photos-sound-testflight.md)
 for the original (now archived) plan.
 
@@ -94,10 +94,25 @@ for the original (now archived) plan.
   - `app_links` package, iOS `CFBundleURLTypes` + Android intent-filter
   - `DeepLinkService` exchanges incoming URI for a session via Supabase PKCE
   - `auth_service` redirect target updated from legacy `cy.tichucyprus://`
-  - Sign-in screen flips back to magic-link as primary; password kept as fallback
-- [ ] Auto-generated game highlights on game-over panel
-  - Pure compute over existing `estimation_rounds` data (no new schema)
-  - Awards like "Τέλεια προφητεία × 3", "Η μεγάλη επιστροφή", "Παρά μία τρίχα"
+  - Sign-in screen flipped back to magic-link as primary; password kept as fallback
+  - Verified end-to-end via Mailpit round-trip on a real iOS simulator
+- [x] Virgil narrator on game-over panel
+  - `GameNarrator.narrate()` — pure-dart, 2–3 sentence Greek narration with
+    body variants picked by game shape (close / streak / comeback /
+    wire-to-wire / blowout / default-quiet)
+  - Opener and closer pools seeded by `gameId` for variety across games but
+    determinism within a game
+  - Renders as "ΝΑΡΡΗΣΗ · NIGHT NOTE" paper card between standings and
+    awards on `GameOverPanel`, fades in at 4.2s as the WinnerCertificate settles
+  - 14 unit tests covering each body variant, edge cases, and singular/plural
+    Greek grammar
+- [x] `scripts/dev-two-sims.sh` — one-shot local-dev script that starts
+  Supabase, boots two iOS simulators, and spawns two `flutter run` Terminal tabs
+
+The "auto-highlights" item from the in-progress checklist became the narrator —
+a sweep of `GameAwardsCalculator` showed Day 3 already shipped the discrete
+callouts (Best Predictor, Hot Streak, Clean Sweep, Dead Reckoner, Biggest Upset,
+Slow Starter), so the genuinely-new thing was the narrator's connective tissue.
 
 ## Day 5+ — Backlog
 - [ ] Shareable summary card (`RepaintBoundary` → PNG → `share_plus`)
