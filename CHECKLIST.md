@@ -6,7 +6,7 @@
 - [x] Monorepo scaffold (app/, server/, supabase/, shared/, docs/)
 - [x] Supabase project live with migrations (players + estimation tables)
 - [x] Flutter app running on iOS simulator
-- [x] Email OTP sign-in flow (6-digit code) — magic links don't deep-link yet, password mode is the workaround
+- [x] Email OTP sign-in flow (6-digit code + magic-link click — see Day 4 deep-linking)
 - [x] Username picker screen
 - [x] 4-tab bottom nav (Play, Friends, Leaderboard, Profile)
 - [x] Profile tab with stats + locale toggle
@@ -82,12 +82,22 @@ See [`docs/roadmap/day-3-leaderboard-animations-memories.md`](./docs/roadmap/day
 
 Dropped as redundant (Virgil already had equivalents): `_AnimatedScoreChip` (score_tally covers it), `_FlipReveal` (sequential bidding doesn't need it), NumberPicker bounce (Virgil's terracotta stamp ring is the lock-in motion), `ShimmerNumber` on locked card (no static locked card in sequential flow).
 
-## Day 4 — Sound · BeReal Photo · TestFlight [NEXT]
-See [`docs/roadmap/day-4-photos-sound-testflight.md`](./docs/roadmap/day-4-photos-sound-testflight.md).
+## Day 4 — Magic-link deep-linking · Auto-highlights [IN PROGRESS]
 
-- [ ] Block 1 — sound + haptics (audio service, 7 clips, settings toggle)
-- [ ] Block 2 — BeReal winner photo (migration 0010, Storage bucket, dual-camera capture, gallery grid, fullscreen viewer)
-- [ ] Block 3 — TestFlight build for real-device testing
+**Original plan superseded.** Sound + BeReal + TestFlight all hit blockers (no
+sound assets sourced, no real device for camera validation, no Apple Developer
+account). Pivoted to two unblocked, sim-testable wins. See
+[`docs/roadmap/day-4-photos-sound-testflight.md`](./docs/roadmap/day-4-photos-sound-testflight.md)
+for the original (now archived) plan.
+
+- [x] Magic-link via custom `virgil://login-callback/` URL scheme
+  - `app_links` package, iOS `CFBundleURLTypes` + Android intent-filter
+  - `DeepLinkService` exchanges incoming URI for a session via Supabase PKCE
+  - `auth_service` redirect target updated from legacy `cy.tichucyprus://`
+  - Sign-in screen flips back to magic-link as primary; password kept as fallback
+- [ ] Auto-generated game highlights on game-over panel
+  - Pure compute over existing `estimation_rounds` data (no new schema)
+  - Awards like "Τέλεια προφητεία × 3", "Η μεγάλη επιστροφή", "Παρά μία τρίχα"
 
 ## Day 5+ — Backlog
 - [ ] Shareable summary card (`RepaintBoundary` → PNG → `share_plus`)
@@ -98,10 +108,11 @@ See [`docs/roadmap/day-4-photos-sound-testflight.md`](./docs/roadmap/day-4-photo
 
 ## A3 — Final Polish
 - [ ] i18n setup (Greek default + English toggle)
-- [ ] Deep linking for auth (magic links + OAuth redirects)
+- [x] Deep linking for auth (magic links via `virgil://` custom scheme — Day 4)
+- [ ] Universal Links via `apple-app-site-association` (needs Apple Developer account)
 - [ ] Google / Apple OAuth provider setup
 - [ ] Sentry error tracking integration
-- [ ] Fastlane CI + automated TestFlight builds
+- [ ] Fastlane CI + automated TestFlight builds (needs Apple Developer account)
 
 ## Phase B — Tichu Online
 *(Phase A scope ends after A3. Phase B is months out.)*

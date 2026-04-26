@@ -27,6 +27,9 @@ dependencies:
   # Backend
   supabase_flutter: ^2.5.0
 
+  # Deep linking — receives virgil:// callbacks from magic-link emails
+  app_links: ^6.3.0
+
   # Game engine (Phase B) — uncomment when needed
   # flame: ^1.18.0
 
