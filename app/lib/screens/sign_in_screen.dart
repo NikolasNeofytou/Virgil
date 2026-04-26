@@ -23,7 +23,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   bool _loading = false;
   String? _error;
   int _shakes = 0;
-  bool _useOtp = false;
+  bool _useOtp = true;
   bool _codeSent = false;
 
   void _setError(String? message) {

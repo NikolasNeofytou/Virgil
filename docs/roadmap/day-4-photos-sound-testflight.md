@@ -1,5 +1,13 @@
 # Day 4 — Sound + Haptics · BeReal Photo · TestFlight
 
+> **⚠ Superseded on 2026-04-26 — kept as historical record.**
+>
+> All three blocks hit blockers at the start of the session: no sound assets
+> sourced, no real device available to validate dual-camera capture, no Apple
+> Developer account for TestFlight. Pivoted to a different Day 4 scope —
+> magic-link deep-linking + auto-generated game highlights. See `CHECKLIST.md`
+> for the actual shipped work and the Block-1+2 PR for the magic-link rationale.
+
 **Path C** picked from the Day-3 wrap-up. The two highest-ROI items from Track 3 (Memorable Moments) plus a real-device build so we stop testing only in the simulator.
 
 Total estimated effort: **~5 hours**.

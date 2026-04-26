@@ -21,7 +21,7 @@ class AuthService {
   Future<void> signInWithEmailOtp(String email) async {
     await _auth.signInWithOtp(
       email: email,
-      emailRedirectTo: kIsWeb ? null : 'cy.tichucyprus://login-callback/',
+      emailRedirectTo: kIsWeb ? null : 'virgil://login-callback/',
     );
   }
 
@@ -39,14 +39,14 @@ class AuthService {
   Future<bool> signInWithGoogle() {
     return _auth.signInWithOAuth(
       OAuthProvider.google,
-      redirectTo: kIsWeb ? null : 'cy.tichucyprus://login-callback/',
+      redirectTo: kIsWeb ? null : 'virgil://login-callback/',
     );
   }
 
   Future<bool> signInWithApple() {
     return _auth.signInWithOAuth(
       OAuthProvider.apple,
-      redirectTo: kIsWeb ? null : 'cy.tichucyprus://login-callback/',
+      redirectTo: kIsWeb ? null : 'virgil://login-callback/',
     );
   }
 
