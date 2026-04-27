@@ -1,11 +1,17 @@
+import 'dart:io';
 import 'dart:math' as math;
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../models/game_award.dart';
 import '../../../providers/active_game_provider.dart';
@@ -14,6 +20,7 @@ import '../../../services/estimation_service.dart';
 import '../../../theme/app_route.dart';
 import '../../../theme/app_theme.dart';
 import '../room_lobby_screen.dart';
+import 'game_share_card.dart';
 
 /// Final standings — the Virgil winner moment. A laurel wreath cradles the
 /// winner's name; a terracotta ribbon unfurls below with "ΝΙΚΗΤΗΣ · WINNER".
@@ -29,6 +36,7 @@ class GameOverPanel extends ConsumerStatefulWidget {
 class _GameOverPanelState extends ConsumerState<GameOverPanel> {
   final _service = EstimationService();
   bool _starting = false;
+  bool _sharing = false;
   late final ConfettiController _confetti;
 
   @override
@@ -63,6 +71,117 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Σφάλμα: $e')),
       );
+    }
+  }
+
+  Future<void> _share() async {
+    if (_sharing) return;
+    setState(() => _sharing = true);
+
+    final players =
+        ref.read(estimationPlayersStreamProvider(widget.gameId)).valueOrNull ??
+            [];
+    final usernames =
+        ref.read(playerUsernamesProvider(widget.gameId)).valueOrNull ?? {};
+    final game =
+        ref.read(estimationGameStreamProvider(widget.gameId)).valueOrNull;
+    final awards = ref.read(gameAwardsProvider(widget.gameId));
+    final narration = ref.read(gameNarrationProvider(widget.gameId));
+
+    if (game == null || players.isEmpty) {
+      setState(() => _sharing = false);
+      return;
+    }
+
+    final sorted = [...players]
+      ..sort((a, b) => b.totalScore.compareTo(a.totalScore));
+    final winnerName = usernames[sorted.first.playerId] ?? '???';
+    final sessionLabel = (game.sessionName?.trim().isNotEmpty ?? false)
+        ? game.sessionName!
+        : 'παιχνίδι ${DateFormat('d MMM').format(game.createdAt.toLocal())}';
+
+    try {
+      final bytes = await _captureShareCard(
+        sessionLabel: sessionLabel,
+        winnerName: winnerName,
+        winnerScore: sorted.first.totalScore,
+        standings: sorted
+            .map(
+              (p) => EstimationStanding(
+                name: usernames[p.playerId] ?? '???',
+                score: p.totalScore,
+              ),
+            )
+            .toList(),
+        awards: awards,
+        narration: narration,
+        gameDate: game.createdAt,
+      );
+      final tmp = await getTemporaryDirectory();
+      final file = await File(
+        '${tmp.path}/virgil-${game.id}.png',
+      ).writeAsBytes(bytes);
+      await Share.shareXFiles(
+        [XFile(file.path, mimeType: 'image/png')],
+        text: 'Virgil · $winnerName ${sorted.first.totalScore} πόντοι',
+      );
+    } on Object catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Σφάλμα κοινοποίησης: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
+  }
+
+  /// Mounts the static share card off-screen via an Overlay, lets it lay out
+  /// for two frames, then captures it to a PNG. The overlay is removed
+  /// before this method returns.
+  Future<Uint8List> _captureShareCard({
+    required String sessionLabel,
+    required String winnerName,
+    required int winnerScore,
+    required List<EstimationStanding> standings,
+    required List<GameAward> awards,
+    required String? narration,
+    required DateTime gameDate,
+  }) async {
+    final boundaryKey = GlobalKey();
+    final entry = OverlayEntry(
+      builder: (_) => Positioned(
+        left: -10000,
+        top: -10000,
+        child: Material(
+          color: Colors.transparent,
+          child: RepaintBoundary(
+            key: boundaryKey,
+            child: EstimationShareCard(
+              sessionLabel: sessionLabel,
+              winnerName: winnerName,
+              winnerScore: winnerScore,
+              standings: standings,
+              awards: awards,
+              narration: narration,
+              gameDate: gameDate,
+            ),
+          ),
+        ),
+      ),
+    );
+    Overlay.of(context).insert(entry);
+    try {
+      // Two frames: layout + paint settled (Google Fonts may load async).
+      await WidgetsBinding.instance.endOfFrame;
+      await WidgetsBinding.instance.endOfFrame;
+      final boundary = boundaryKey.currentContext!.findRenderObject()!
+          as RenderRepaintBoundary;
+      final image = await boundary.toImage(pixelRatio: 3);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData!.buffer.asUint8List();
+    } finally {
+      entry.remove();
     }
   }
 
@@ -180,6 +299,17 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Text('Νέο παιχνίδι'),
+              ),
+              const SizedBox(height: AppTheme.space2),
+              OutlinedButton(
+                onPressed: _sharing ? null : _share,
+                child: _sharing
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Κοινοποίηση'),
               ),
               const SizedBox(height: AppTheme.space2),
               OutlinedButton(
