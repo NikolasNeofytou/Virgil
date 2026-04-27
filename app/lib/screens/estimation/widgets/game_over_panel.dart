@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,6 +29,23 @@ class GameOverPanel extends ConsumerStatefulWidget {
 class _GameOverPanelState extends ConsumerState<GameOverPanel> {
   final _service = EstimationService();
   bool _starting = false;
+  late final ConfettiController _confetti;
+
+  @override
+  void initState() {
+    super.initState();
+    _confetti = ConfettiController(duration: const Duration(seconds: 3));
+    // Fire as the laurel + ribbon reveal settles (WinnerCertificate is 4.2s).
+    Future.delayed(const Duration(milliseconds: 4200), () {
+      if (mounted) _confetti.play();
+    });
+  }
+
+  @override
+  void dispose() {
+    _confetti.dispose();
+    super.dispose();
+  }
 
   Future<void> _rematch() async {
     if (_starting) return;
@@ -50,10 +68,9 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
 
   @override
   Widget build(BuildContext context) {
-    final players = ref
-            .watch(estimationPlayersStreamProvider(widget.gameId))
-            .valueOrNull ??
-        [];
+    final players =
+        ref.watch(estimationPlayersStreamProvider(widget.gameId)).valueOrNull ??
+            [];
     final usernames =
         ref.watch(playerUsernamesProvider(widget.gameId)).valueOrNull ?? {};
     final game =
@@ -74,102 +91,128 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
         ? game.sessionName!
         : 'παιχνίδι ${DateFormat('d MMM').format(game.createdAt.toLocal())}';
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        AppTheme.space6,
-        AppTheme.space5,
-        AppTheme.space6,
-        AppTheme.space7,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // ── Session label header ──
-          Center(
-            child: Text(
-              sessionLabel,
-              style: GoogleFonts.jetBrainsMono(
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 2.5,
-                color: AppTheme.inkSoft,
-              ),
-            ),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(
+            AppTheme.space6,
+            AppTheme.space5,
+            AppTheme.space6,
+            AppTheme.space7,
           ),
-          const SizedBox(height: AppTheme.space5),
-          _WinnerCertificate(name: winnerName, score: winner.totalScore),
-          const SizedBox(height: AppTheme.space6),
-          const AppSectionLabelMono('ΚΑΤΑΤΑΞΗ · FINAL'),
-          const SizedBox(height: AppTheme.space3),
-          ...List.generate(sorted.length, (i) {
-            final p = sorted[i];
-            final name = usernames[p.playerId] ?? '???';
-            return _StandingRow(
-              rank: i + 1,
-              name: name,
-              score: p.totalScore,
-              isWinner: i == 0,
-            );
-          }),
-
-          if (narration != null) ...[
-            const SizedBox(height: AppTheme.space6),
-            const AppSectionLabelMono('ΝΑΡΡΗΣΗ · NIGHT NOTE'),
-            const SizedBox(height: AppTheme.space3),
-            _NarrationCard(text: narration)
-                .animate()
-                .fadeIn(
-                  // Fades in as the WinnerCertificate (4.2s) settles, just
-                  // before the awards begin to stagger at 4.4s.
-                  duration: 360.ms,
-                  delay: 4200.ms,
-                  curve: Curves.easeOut,
-                )
-                .slideY(begin: 0.15, end: 0, duration: 360.ms),
-          ],
-
-          if (awards.isNotEmpty) ...[
-            const SizedBox(height: AppTheme.space6),
-            const AppSectionLabelMono('ΒΡΑΒΕΙΑ · AWARDS'),
-            const SizedBox(height: AppTheme.space3),
-            for (var i = 0; i < awards.length; i++)
-              Padding(
-                padding: EdgeInsets.only(
-                  bottom: i == awards.length - 1 ? 0 : AppTheme.space2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ── Session label header ──
+              Center(
+                child: Text(
+                  sessionLabel,
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 2.5,
+                    color: AppTheme.inkSoft,
+                  ),
                 ),
-                child: _AwardCard(award: awards[i])
+              ),
+              const SizedBox(height: AppTheme.space5),
+              _WinnerCertificate(name: winnerName, score: winner.totalScore),
+              const SizedBox(height: AppTheme.space6),
+              const AppSectionLabelMono('ΚΑΤΑΤΑΞΗ · FINAL'),
+              const SizedBox(height: AppTheme.space3),
+              ...List.generate(sorted.length, (i) {
+                final p = sorted[i];
+                final name = usernames[p.playerId] ?? '???';
+                return _StandingRow(
+                  rank: i + 1,
+                  name: name,
+                  score: p.totalScore,
+                  isWinner: i == 0,
+                );
+              }),
+
+              if (narration != null) ...[
+                const SizedBox(height: AppTheme.space6),
+                const AppSectionLabelMono('ΝΑΡΡΗΣΗ · NIGHT NOTE'),
+                const SizedBox(height: AppTheme.space3),
+                _NarrationCard(text: narration)
                     .animate()
                     .fadeIn(
-                      // Stagger after the WinnerCertificate has settled
-                      // (~4.2s) so awards don't fight the laurel reveal.
-                      duration: 320.ms,
-                      delay: (4400 + i * 140).ms,
+                      // Fades in as the WinnerCertificate (4.2s) settles, just
+                      // before the awards begin to stagger at 4.4s.
+                      duration: 360.ms,
+                      delay: 4200.ms,
                       curve: Curves.easeOut,
                     )
-                    .slideY(begin: 0.2, end: 0, duration: 320.ms),
-              ),
-          ],
+                    .slideY(begin: 0.15, end: 0, duration: 360.ms),
+              ],
 
-          const SizedBox(height: AppTheme.space7),
-          FilledButton(
-            onPressed: _starting ? null : _rematch,
-            child: _starting
-                ? const SizedBox(
-                    height: 18,
-                    width: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Νέο παιχνίδι'),
+              if (awards.isNotEmpty) ...[
+                const SizedBox(height: AppTheme.space6),
+                const AppSectionLabelMono('ΒΡΑΒΕΙΑ · AWARDS'),
+                const SizedBox(height: AppTheme.space3),
+                for (var i = 0; i < awards.length; i++)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      bottom: i == awards.length - 1 ? 0 : AppTheme.space2,
+                    ),
+                    child: _AwardCard(award: awards[i])
+                        .animate()
+                        .fadeIn(
+                          // Stagger after the WinnerCertificate has settled
+                          // (~4.2s) so awards don't fight the laurel reveal.
+                          duration: 320.ms,
+                          delay: (4400 + i * 140).ms,
+                          curve: Curves.easeOut,
+                        )
+                        .slideY(begin: 0.2, end: 0, duration: 320.ms),
+                  ),
+              ],
+
+              const SizedBox(height: AppTheme.space7),
+              FilledButton(
+                onPressed: _starting ? null : _rematch,
+                child: _starting
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Νέο παιχνίδι'),
+              ),
+              const SizedBox(height: AppTheme.space2),
+              OutlinedButton(
+                onPressed: () => Navigator.of(context).popUntil(
+                  (route) => route.isFirst,
+                ),
+                child: const Text('Πίσω στο μενού'),
+              ),
+            ],
           ),
-          const SizedBox(height: AppTheme.space2),
-          OutlinedButton(
-            onPressed: () => Navigator.of(context).popUntil(
-              (route) => route.isFirst,
+        ),
+        IgnorePointer(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confetti,
+              blastDirectionality: BlastDirectionality.explosive,
+              numberOfParticles: 18,
+              maxBlastForce: 22,
+              minBlastForce: 8,
+              gravity: 0.28,
+              emissionFrequency: 0.04,
+              shouldLoop: false,
+              colors: const [
+                AppTheme.terra,
+                AppTheme.olive,
+                AppTheme.paperEdge,
+                AppTheme.inkSoft,
+              ],
             ),
-            child: const Text('Πίσω στο μενού'),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

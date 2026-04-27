@@ -53,6 +53,9 @@ dependencies:
   # Animations (shake on error, page transitions, leaderboard fade-in stagger)
   flutter_animate: ^4.5.0
 
+  # Confetti burst on game-over (synced with WinnerCertificate reveal)
+  confetti: ^0.7.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
