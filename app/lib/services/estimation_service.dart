@@ -245,6 +245,12 @@ class EstimationService {
     required List<int> seats,
     required List<String> playerIds,
   }) async {
+    if (playerIds.length != playerCount || seats.length != playerCount) {
+      throw StateError(
+        'cannot start game: $playerCount seat(s) required, '
+        '${playerIds.length} present',
+      );
+    }
     final client = SupabaseBootstrap.client;
     final starter = seats[_rand.nextInt(seats.length)];
     final dealer = seats[_rand.nextInt(seats.length)];
