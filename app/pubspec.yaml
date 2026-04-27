@@ -56,6 +56,10 @@ dependencies:
   # Confetti burst on game-over (synced with WinnerCertificate reveal)
   confetti: ^0.7.0
 
+  # Share-sheet for the game-over summary card
+  share_plus: ^10.1.4
+  path_provider: ^2.1.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
