@@ -114,12 +114,37 @@ a sweep of `GameAwardsCalculator` showed Day 3 already shipped the discrete
 callouts (Best Predictor, Hot Streak, Clean Sweep, Dead Reckoner, Biggest Upset,
 Slow Starter), so the genuinely-new thing was the narrator's connective tissue.
 
-## Day 5+ — Backlog
-- [ ] Shareable summary card (`RepaintBoundary` → PNG → `share_plus`)
+## Day 5 — Start-game guard · Shareable card · Confetti [DONE]
+
+Three small, sim-testable PRs landed in one session.
+
+- [x] Block 1 — Server-side guard against starting an under-full room
+  - Postgres `BEFORE UPDATE` trigger on `estimation_games` refuses
+    `'waiting' → 'active'` when `count(estimation_players) < player_count`
+  - Defense-in-depth `StateError` in `EstimationService.startGame()`
+  - Lobby's existing button-disabled guard (`_isFull`) remains primary UX
+  - Migration `0010_start_game_guard.sql`; verified end-to-end via psql
+- [x] Block 2 — Shareable summary card
+  - `EstimationShareCard` static widget — winner block, standings,
+    night note, awards — at 360 logical px, captured at `pixelRatio: 3.0`
+    for a 1080-wide PNG
+  - Off-screen `Overlay` + `RepaintBoundary` so the card never flashes
+    onto the user's view during capture
+  - "Κοινοποίηση" button on `GameOverPanel`; `share_plus` hands the
+    PNG to the system share sheet
+  - Deps: `share_plus ^10.1.4`, `path_provider ^2.1.4`
+- [x] Block 3 — Confetti synced with the laurel reveal
+  - `ConfettiController` fires at 4.2s (matches `WinnerCertificate`
+    completion) in Virgil's terra/olive/paperEdge palette
+  - Wrapped panel in `Stack(fit: StackFit.expand)`; `IgnorePointer` so
+    confetti never blocks taps
+  - Dep: `confetti ^0.7.0`
+
+## Day 6+ — Backlog
 - [ ] Game history screen (Profile tab → "Τα παιχνίδια μου")
 - [ ] Memorable quotes (140-char inline notes per game)
-- [ ] Confetti on win
 - [ ] Rank-change animation on cross-game leaderboard
+- [ ] Sound + haptics (waiting on Freesound clips)
 
 ## A3 — Final Polish
 - [ ] i18n setup (Greek default + English toggle)
