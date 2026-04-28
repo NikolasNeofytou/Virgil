@@ -8,7 +8,9 @@ import '../../providers/stats_providers.dart';
 import '../../services/auth_service.dart';
 import '../../services/supabase_client.dart';
 import '../../theme/app_background.dart';
+import '../../theme/app_route.dart';
 import '../../theme/app_theme.dart';
+import '../history/game_history_screen.dart';
 
 /// Profile tab — ink-stamp avatar, Caveat username, JetBrains Mono email,
 /// paper stats card over the player's Estimation history, language toggle,
@@ -116,8 +118,22 @@ class _ProfileBody extends ConsumerWidget {
 
         const SizedBox(height: AppTheme.space6),
 
+        // ── History ──
+        const AppSectionLabel(
+          '§ 02 · ΤΑ ΠΑΙΧΝΙΔΙΑ ΜΟΥ · HISTORY',
+          showRule: true,
+        ),
+        const SizedBox(height: AppTheme.space3),
+        _HistoryEntry(
+          onTap: () => Navigator.of(context).push<void>(
+            AppRoute.build((_) => const GameHistoryScreen()),
+          ),
+        ),
+
+        const SizedBox(height: AppTheme.space6),
+
         // ── Settings ──
-        const AppSectionLabel('§ 02 · ΡΥΘΜΙΣΕΙΣ · SETTINGS', showRule: true),
+        const AppSectionLabel('§ 03 · ΡΥΘΜΙΣΕΙΣ · SETTINGS', showRule: true),
         const SizedBox(height: AppTheme.space3),
         _SettingsCard(
           child: Row(
@@ -312,6 +328,74 @@ class _StatsSkeleton extends StatelessWidget {
         height: 18,
         width: 18,
         child: CircularProgressIndicator(strokeWidth: 2),
+      ),
+    );
+  }
+}
+
+// ── History entry ─────────────────────────────────────────────────────────────
+
+class _HistoryEntry extends StatelessWidget {
+  const _HistoryEntry({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        splashColor: AppTheme.terraMuted,
+        highlightColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.space4,
+            vertical: AppTheme.space3,
+          ),
+          decoration: BoxDecoration(
+            color: AppTheme.paper,
+            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+            border: Border.all(color: AppTheme.border),
+            boxShadow: AppTheme.shadowSm,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Τα παιχνίδια μου',
+                      style: GoogleFonts.gloock(
+                        fontSize: 20,
+                        color: AppTheme.ink,
+                        height: 1.0,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'άνοιξε ένα παλιό σύνολο · ξαναδές · ξαναμοιράσου',
+                      style: GoogleFonts.kalam(
+                        fontSize: 13,
+                        color: AppTheme.inkSoft,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppTheme.space2),
+              const Icon(
+                Icons.chevron_right,
+                color: AppTheme.inkFaint,
+                size: 22,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

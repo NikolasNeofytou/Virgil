@@ -24,10 +24,20 @@ import 'game_share_card.dart';
 
 /// Final standings — the Virgil winner moment. A laurel wreath cradles the
 /// winner's name; a terracotta ribbon unfurls below with "ΝΙΚΗΤΗΣ · WINNER".
+///
+/// Set [isHistorical] when re-mounting this for a past game opened from the
+/// Profile → "Τα παιχνίδια μου" history list. Suppresses the one-time
+/// confetti burst and hides the rematch + back-to-menu buttons (the host
+/// screen provides its own back affordance).
 class GameOverPanel extends ConsumerStatefulWidget {
-  const GameOverPanel({super.key, required this.gameId});
+  const GameOverPanel({
+    super.key,
+    required this.gameId,
+    this.isHistorical = false,
+  });
 
   final String gameId;
+  final bool isHistorical;
 
   @override
   ConsumerState<GameOverPanel> createState() => _GameOverPanelState();
@@ -43,6 +53,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
   void initState() {
     super.initState();
     _confetti = ConfettiController(duration: const Duration(seconds: 3));
+    if (widget.isHistorical) return;
     // Fire as the laurel + ribbon reveal settles (WinnerCertificate is 4.2s).
     Future.delayed(const Duration(milliseconds: 4200), () {
       if (mounted) _confetti.play();
@@ -290,17 +301,19 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
               ],
 
               const SizedBox(height: AppTheme.space7),
-              FilledButton(
-                onPressed: _starting ? null : _rematch,
-                child: _starting
-                    ? const SizedBox(
-                        height: 18,
-                        width: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Νέο παιχνίδι'),
-              ),
-              const SizedBox(height: AppTheme.space2),
+              if (!widget.isHistorical) ...[
+                FilledButton(
+                  onPressed: _starting ? null : _rematch,
+                  child: _starting
+                      ? const SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Νέο παιχνίδι'),
+                ),
+                const SizedBox(height: AppTheme.space2),
+              ],
               OutlinedButton(
                 onPressed: _sharing ? null : _share,
                 child: _sharing
@@ -311,13 +324,15 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
                       )
                     : const Text('Κοινοποίηση'),
               ),
-              const SizedBox(height: AppTheme.space2),
-              OutlinedButton(
-                onPressed: () => Navigator.of(context).popUntil(
-                  (route) => route.isFirst,
+              if (!widget.isHistorical) ...[
+                const SizedBox(height: AppTheme.space2),
+                OutlinedButton(
+                  onPressed: () => Navigator.of(context).popUntil(
+                    (route) => route.isFirst,
+                  ),
+                  child: const Text('Πίσω στο μενού'),
                 ),
-                child: const Text('Πίσω στο μενού'),
-              ),
+              ],
             ],
           ),
         ),
