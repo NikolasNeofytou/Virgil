@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../game/game_awards_calculator.dart';
 import '../game/game_narrator.dart';
 import '../models/estimation_game.dart';
+import '../models/estimation_moment.dart';
 import '../models/estimation_player.dart';
 import '../models/estimation_round.dart';
 import '../models/estimation_trick.dart';
@@ -233,6 +234,22 @@ final pastTricksProvider =
     Provider.family<List<EstimationTrick>, String>((ref, gameId) {
   final tricks = ref.watch(activeRoundTricksProvider(gameId));
   return tricks.where((t) => t.isConfirmed).toList();
+});
+
+// ── Στιγμές · Moments ────────────────────────────────────────────────────────
+
+/// Streams every moment attached to a game, oldest first. Empty list while
+/// the user has not authored any (and no peers have either). New inserts
+/// from any participant arrive live via the Realtime publication added in
+/// migration 0012.
+final estimationMomentsStreamProvider =
+    StreamProvider.family<List<EstimationMoment>, String>((ref, gameId) {
+  return SupabaseBootstrap.client
+      .from('estimation_moments')
+      .stream(primaryKey: ['id'])
+      .eq('game_id', gameId)
+      .order('created_at')
+      .map((rows) => rows.map(EstimationMoment.fromJson).toList());
 });
 
 /// Fetches player_id → username map for all players in the game.

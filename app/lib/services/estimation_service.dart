@@ -230,6 +230,39 @@ class EstimationService {
   }
 
   // ---------------------------------------------------------------------------
+  // Στιγμές · Moments — short hand-written notes attached to a game
+  // ---------------------------------------------------------------------------
+
+  /// Insert a moment authored by the signed-in user. Trimmed; rejected if
+  /// empty or longer than 140 chars (matches the DB check constraint).
+  Future<void> addMoment({
+    required String gameId,
+    required String body,
+    int? roundNumber,
+  }) async {
+    final trimmed = body.trim();
+    if (trimmed.isEmpty || trimmed.length > 140) {
+      throw StateError('moment body must be 1..140 chars');
+    }
+    final client = SupabaseBootstrap.client;
+    final userId = client.auth.currentUser!.id;
+    await client.from('estimation_moments').insert({
+      'game_id': gameId,
+      'author_id': userId,
+      'body': trimmed,
+      if (roundNumber != null) 'round_number': roundNumber,
+    });
+  }
+
+  /// Delete a moment. RLS enforces author-only deletion server-side.
+  Future<void> deleteMoment(String momentId) async {
+    await SupabaseBootstrap.client
+        .from('estimation_moments')
+        .delete()
+        .eq('id', momentId);
+  }
+
+  // ---------------------------------------------------------------------------
   // Gameplay loop — sequential bidding + per-trick tracking
   // ---------------------------------------------------------------------------
 
