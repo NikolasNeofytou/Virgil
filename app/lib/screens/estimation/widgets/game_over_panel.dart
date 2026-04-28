@@ -21,6 +21,7 @@ import '../../../theme/app_route.dart';
 import '../../../theme/app_theme.dart';
 import '../room_lobby_screen.dart';
 import 'game_share_card.dart';
+import 'moments_section.dart';
 
 /// Final standings — the Virgil winner moment. A laurel wreath cradles the
 /// winner's name; a terracotta ribbon unfurls below with "ΝΙΚΗΤΗΣ · WINNER".
@@ -299,6 +300,9 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
                         .slideY(begin: 0.2, end: 0, duration: 320.ms),
                   ),
               ],
+
+              const SizedBox(height: AppTheme.space6),
+              MomentsSection(gameId: widget.gameId),
 
               const SizedBox(height: AppTheme.space7),
               if (!widget.isHistorical) ...[
