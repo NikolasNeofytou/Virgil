@@ -50,3 +50,6 @@ supabase/functions/**/node_modules/
 # Logs
 *.log
 logs/
+
+# Claude Code agent harness — temporary worktrees for parallel sessions
+.claude/worktrees/
