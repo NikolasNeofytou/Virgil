@@ -140,9 +140,34 @@ Three small, sim-testable PRs landed in one session.
     confetti never blocks taps
   - Dep: `confetti ^0.7.0`
 
-## Day 6+ — Backlog
-- [ ] Game history screen (Profile tab → "Τα παιχνίδια μου")
-- [ ] Memorable quotes (140-char inline notes per game)
+## Day 6 — Game history · Moments · Defensive guards · Dev script [DONE]
+
+Five PRs landed in one session.
+
+- [x] Game history screen (Profile → "Τα παιχνίδια μου")
+  - `pastEstimationGamesProvider` aggregates per-game rank, my score, and
+    winner username client-side from `estimation_games` + `estimation_players`
+  - `GameHistoryScreen` paper-and-ink list, `GameSummaryScreen` wraps
+    `GameOverPanel` in new `isHistorical` mode (no confetti, no rematch,
+    keep share)
+- [x] Στιγμές · MOMENTS — 140-char hand-written notes per game
+  - Migration `0012_estimation_moments.sql` with RLS (participants SELECT,
+    self-only INSERT, author-only DELETE) + Realtime publish
+  - `MomentsSection` widget on `GameOverPanel` between awards and buttons;
+    add via bottom sheet, delete own with X. Works in live + historical mode.
+- [x] Server-side room cap + tighten start-game guard
+  - Migration `0011_room_cap.sql` — `BEFORE INSERT` trigger on
+    `estimation_players` rejects `seat >= player_count` or already-full
+    rooms; tightens `0010` from `<` to `<>` so over-full also blocks
+- [x] Defensive `_visibleSeats` in lobby — clip seat to
+  `[0, player_count)` and dedupe by player_id, so a stale Realtime entry
+  can't lock up the start button
+- [x] `dev-two-sims.sh` auto-opens Mailpit (http://127.0.0.1:54324) right
+  after Supabase comes up
+
+## Day 7+ — Backlog
+- [ ] Per-round badge picker on the moments add sheet (schema ready)
+- [ ] Embed moments in the share PNG (`game_share_card.dart`)
 - [ ] Rank-change animation on cross-game leaderboard
 - [ ] Sound + haptics (waiting on Freesound clips)
 
