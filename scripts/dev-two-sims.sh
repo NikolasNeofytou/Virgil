@@ -61,7 +61,14 @@ else
   supabase start
 fi
 
-# ── 2. Simulators ──────────────────────────────────────────────────────────
+# ── 2. Mailpit (magic-link inbox) ──────────────────────────────────────────
+# Opens the local email viewer where Supabase delivers OTP / magic-link
+# emails. Same URL re-opened in an existing tab just focuses it.
+
+echo "→ Opening Mailpit (magic-link inbox) in browser"
+open "http://127.0.0.1:54324"
+
+# ── 3. Simulators ──────────────────────────────────────────────────────────
 
 ID_A=$(get_sim_udid "$SIM_A_NAME") || abort_missing_sim "$SIM_A_NAME"
 ID_B=$(get_sim_udid "$SIM_B_NAME") || abort_missing_sim "$SIM_B_NAME"
@@ -72,7 +79,7 @@ echo "→ Booting $SIM_B_NAME ($ID_B)"
 xcrun simctl boot "$ID_B" 2>/dev/null || true
 open -a Simulator
 
-# ── 3. Two flutter run sessions in Terminal tabs ───────────────────────────
+# ── 4. Two flutter run sessions in Terminal tabs ───────────────────────────
 
 echo "→ Launching flutter run in two Terminal tabs..."
 osascript <<APPLESCRIPT >/dev/null
