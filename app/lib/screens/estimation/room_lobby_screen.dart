@@ -121,16 +121,39 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
     return seat0.isNotEmpty && seat0['player_id'] == userId;
   }
 
+  /// Defensive view of [_seats] keyed off [_game]'s `player_count`. Filters
+  /// rows whose `seat` falls outside `[0, player_count)` and dedupes by
+  /// `player_id` (first occurrence wins). Catches stale Realtime entries —
+  /// e.g. a delete event that didn't propagate after a leave/re-join — so
+  /// the seat list, the "X / Y" header, and the start-game guard always
+  /// agree, even if the local stream cache is briefly out of sync with
+  /// the server.
+  List<Map<String, dynamic>> get _visibleSeats {
+    if (_game == null) return const [];
+    final cap = _game!['player_count'] as int;
+    final seenPlayers = <String>{};
+    final out = <Map<String, dynamic>>[];
+    for (final s in _seats) {
+      final seat = s['seat'] as int;
+      final pid = s['player_id'] as String;
+      if (seat < 0 || seat >= cap) continue;
+      if (!seenPlayers.add(pid)) continue;
+      out.add(s);
+    }
+    return out;
+  }
+
   bool get _isFull {
     if (_game == null) return false;
-    return _seats.length >= (_game!['player_count'] as int);
+    return _visibleSeats.length >= (_game!['player_count'] as int);
   }
 
   Future<void> _startGame() async {
     setState(() => _starting = true);
     try {
-      final playerIds = _seats.map((s) => s['player_id'] as String).toList();
-      final seats = _seats.map((s) => s['seat'] as int).toList();
+      final visible = _visibleSeats;
+      final playerIds = visible.map((s) => s['player_id'] as String).toList();
+      final seats = visible.map((s) => s['seat'] as int).toList();
       final playerCount = _game!['player_count'] as int;
 
       await EstimationService().startGame(
@@ -264,7 +287,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                                 const AppSectionLabel('ΠΑΙΚΤΕΣ · SEATED'),
                                 const Spacer(),
                                 Text(
-                                  '${_seats.length} / $playerCount',
+                                  '${_visibleSeats.length} / $playerCount',
                                   style: GoogleFonts.jetBrainsMono(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
