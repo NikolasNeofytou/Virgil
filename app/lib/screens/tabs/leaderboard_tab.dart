@@ -11,12 +11,53 @@ import '../../theme/app_theme.dart';
 /// Cross-game leaderboard — paper masthead + your-stats receipt + Top 10 list
 /// + your-rank footer. Pulls aggregates from the `estimation_stats` view via
 /// [leaderboardProvider]; everything is reactive to the signed-in user.
-class LeaderboardTab extends ConsumerWidget {
+///
+/// Stateful so we can hold a snapshot of the previous-visit ranks for the
+/// duration of this mount: we want delta chips to compute against ranks
+/// from the *previous* visit, not the ranks we just persisted seconds ago.
+/// Persistence happens once after the first paint via a post-frame callback.
+class LeaderboardTab extends ConsumerStatefulWidget {
   const LeaderboardTab({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LeaderboardTab> createState() => _LeaderboardTabState();
+}
+
+class _LeaderboardTabState extends ConsumerState<LeaderboardTab> {
+  /// Snapshot of `playerId → rank` from the previous visit. Empty until
+  /// `lastSeenLeaderboardRanksProvider` resolves; after the first non-null
+  /// resolution we freeze it here so subsequent saves don't re-trigger
+  /// computation against fresh-just-persisted data.
+  Map<String, int>? _previousRanks;
+
+  /// True after we've persisted the current ranks once for this mount.
+  /// Prevents re-saving on every rebuild (e.g. when myStatsProvider ticks).
+  bool _saved = false;
+
+  @override
+  Widget build(BuildContext context) {
     final async = ref.watch(leaderboardProvider);
+    // Pull the previous-visit snapshot once. ref.watch is fine here — once
+    // the FutureProvider resolves we cache into `_previousRanks` and never
+    // overwrite, so chip deltas stay stable for this mount even if the
+    // provider's value is later invalidated by a save.
+    final lastSeenAsync = ref.watch(lastSeenLeaderboardRanksProvider);
+    if (_previousRanks == null && lastSeenAsync.hasValue) {
+      _previousRanks = Map.unmodifiable(lastSeenAsync.value!);
+    }
+
+    // Once both the leaderboard and the previous snapshot are loaded,
+    // persist the new ranks for next time. One-shot per mount.
+    if (!_saved && async.hasValue && _previousRanks != null) {
+      _saved = true;
+      final rows = async.value!;
+      final newRanks = {
+        for (var i = 0; i < rows.length; i++) rows[i].playerId: i + 1,
+      };
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(lastSeenLeaderboardServiceProvider).save(newRanks);
+      });
+    }
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -28,7 +69,10 @@ class LeaderboardTab extends ConsumerWidget {
         child: async.when(
           loading: () => const _Loading(),
           error: (e, _) => _Error(message: '$e'),
-          data: (rows) => _Body(rows: rows),
+          data: (rows) => _Body(
+            rows: rows,
+            previousRanks: _previousRanks ?? const {},
+          ),
         ),
       ),
     );
@@ -83,8 +127,13 @@ class _Error extends StatelessWidget {
 }
 
 class _Body extends ConsumerWidget {
-  const _Body({required this.rows});
+  const _Body({required this.rows, required this.previousRanks});
   final List<LeaderboardEntry> rows;
+
+  /// Snapshot of `playerId → 1-indexed rank` from the previous visit.
+  /// Empty for first-ever visits — `_LeaderRow` interprets a missing
+  /// entry as "no chip" rather than as a delta.
+  final Map<String, int> previousRanks;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -128,6 +177,7 @@ class _Body extends ConsumerWidget {
                     rank: i + 1,
                     stats: top[i],
                     isMe: top[i].playerId == myId,
+                    previousRank: previousRanks[top[i].playerId],
                   )
                       .animate()
                       .fadeIn(
@@ -346,11 +396,16 @@ class _LeaderRow extends StatelessWidget {
     required this.rank,
     required this.stats,
     required this.isMe,
+    this.previousRank,
   });
 
   final int rank;
   final LeaderboardEntry stats;
   final bool isMe;
+
+  /// 1-indexed rank from the previous visit, or null if this player wasn't
+  /// in the snapshot we last persisted (new entrant, or first-ever visit).
+  final int? previousRank;
 
   @override
   Widget build(BuildContext context) {
@@ -431,6 +486,13 @@ class _LeaderRow extends StatelessWidget {
                         ),
                       ),
                     ],
+                    if (_RankDeltaChip.shouldShow(previousRank, rank)) ...[
+                      const SizedBox(width: AppTheme.space2),
+                      _RankDeltaChip(
+                        previousRank: previousRank!,
+                        currentRank: rank,
+                      ),
+                    ],
                   ],
                 ),
                 const SizedBox(height: 1),
@@ -509,6 +571,51 @@ class _EmptyTop extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Inline ↑N / ↓N pill showing how a player's rank moved since the
+/// previous visit. Olive for "moved up", danger for "moved down". Hidden
+/// when there's no previous data or the rank hasn't moved — silence is the
+/// right signal in those cases.
+class _RankDeltaChip extends StatelessWidget {
+  const _RankDeltaChip({
+    required this.previousRank,
+    required this.currentRank,
+  });
+
+  final int previousRank;
+  final int currentRank;
+
+  /// Static gate: callers use this to decide whether to mount the chip at
+  /// all (avoids constructing a hidden widget every paint).
+  static bool shouldShow(int? previousRank, int currentRank) {
+    return previousRank != null && previousRank != currentRank;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Lower rank number = better. Up arrow when moved up the leaderboard.
+    final movedUp = currentRank < previousRank;
+    final magnitude = (previousRank - currentRank).abs();
+    final color = movedUp ? AppTheme.olive : AppTheme.danger;
+    final glyph = movedUp ? '↑' : '↓';
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(2),
+      ),
+      child: Text(
+        '$glyph$magnitude',
+        style: GoogleFonts.jetBrainsMono(
+          fontSize: 8,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 1.5,
+          color: color,
+        ),
       ),
     );
   }
