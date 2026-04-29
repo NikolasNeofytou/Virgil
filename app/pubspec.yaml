@@ -47,7 +47,9 @@ dependencies:
   intl: ^0.20.2
   collection: ^1.18.0
 
-  # Typography — Virgil identity (Gloock, Caveat, Kalam, JetBrains Mono)
+  # Typography — google_fonts catalog covers Fraunces (display) and Inter (body)
+  # for the Meraki rebrand, plus the legacy Virgil set (Gloock/Caveat/Kalam/
+  # JetBrains Mono). Geist Mono is vendored locally — see flutter.fonts below.
   google_fonts: ^6.2.1
 
   # Animations (shake on error, page transitions, leaderboard fade-in stagger)
@@ -81,3 +83,12 @@ flutter:
     - assets/images/
     - assets/cards/
     - assets/fonts/
+  fonts:
+    - family: GeistMono
+      fonts:
+        - asset: assets/fonts/GeistMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/GeistMono-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/GeistMono-Bold.ttf
+          weight: 700
