@@ -53,3 +53,6 @@ logs/
 
 # Claude Code agent harness — temporary worktrees for parallel sessions
 .claude/worktrees/
+
+# Personal Claude Code settings (do not commit)
+.claude/settings.local.json
