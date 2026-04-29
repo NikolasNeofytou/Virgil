@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/estimation_game.dart';
 import '../../providers/estimation_providers.dart';
+import '../../services/estimation_service.dart';
 import '../../theme/app_background.dart';
 import '../../theme/app_theme.dart';
 import 'widgets/game_over_panel.dart';
@@ -49,6 +51,12 @@ class EstimationGameScreen extends ConsumerWidget {
                 onPressed: () =>
                     showLiveScoreboardSheet(context, gameId: gameId),
               ),
+              if (kDebugMode)
+                IconButton(
+                  tooltip: 'DEV · Skip to end',
+                  icon: const Icon(Icons.fast_forward_outlined),
+                  onPressed: () => _showDevSkipDialog(context, ref),
+                ),
             ],
           ),
           body: SafeArea(
@@ -154,6 +162,41 @@ class EstimationGameScreen extends ConsumerWidget {
       default:
         return Center(child: Text('Άγνωστη φάση: ${game.phase}'));
     }
+  }
+
+  void _showDevSkipDialog(BuildContext context, WidgetRef ref) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('DEV · Skip to end'),
+        content: const Text(
+          'Fast-forward this game to the finish screen.\n\n'
+          'Fills every remaining round so seat 0 wins. Local dev/testing only.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Άκυρο'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              ref.read(dealerRevealDismissedProvider(gameId).notifier).state =
+                  true;
+              final messenger = ScaffoldMessenger.of(context);
+              try {
+                await EstimationService().devSkipToEnd(gameId: gameId);
+              } on Object catch (e) {
+                messenger.showSnackBar(
+                  SnackBar(content: Text('Skip failed: $e')),
+                );
+              }
+            },
+            child: const Text('Skip'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showExitDialog(BuildContext context) {

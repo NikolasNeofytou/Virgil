@@ -639,6 +639,88 @@ class EstimationService {
         .eq('id', gameId);
   }
 
+  /// DEV-ONLY: fast-forward this game straight to the finish screen.
+  ///
+  /// Fills every remaining round with a deterministic outcome — seat 0 wins
+  /// every trick; everyone bids exactly what they end up with, so all four
+  /// players collect the +10 bonus each round. The seat-0 player ends up the
+  /// clear winner. We then bump `estimation_players.total_score`, flip the
+  /// game to `finished`, and set `winner_player_id`.
+  ///
+  /// Intended for two-sim verification of the game-over panel without
+  /// playing 14 rounds. Caller must gate on `kDebugMode`.
+  Future<void> devSkipToEnd({required String gameId}) async {
+    final client = SupabaseBootstrap.client;
+
+    final game = await client
+        .from('estimation_games')
+        .select('current_round, total_rounds, max_cards, status')
+        .eq('id', gameId)
+        .single();
+    if (game['status'] == 'finished') return;
+    final currentRound = game['current_round'] as int;
+    final totalRounds = game['total_rounds'] as int;
+    final maxCards = game['max_cards'] as int;
+
+    final players = await client
+        .from('estimation_players')
+        .select('player_id, seat, total_score')
+        .eq('game_id', gameId)
+        .order('seat');
+    if (players.isEmpty) {
+      throw StateError('devSkipToEnd: game has no players');
+    }
+
+    final scoreDelta = <String, int>{
+      for (final p in players) p['player_id'] as String: 0,
+    };
+
+    for (var r = currentRound; r <= totalRounds; r++) {
+      final cards = r <= maxCards ? r : 2 * maxCards - r + 1;
+      final rows = <Map<String, dynamic>>[];
+      for (final p in players) {
+        final pid = p['player_id'] as String;
+        final seat = p['seat'] as int;
+        final actual = seat == 0 ? cards : 0;
+        final score = actual + 10; // prediction == actual → +10 bonus
+        scoreDelta[pid] = scoreDelta[pid]! + score;
+        rows.add({
+          'game_id': gameId,
+          'player_id': pid,
+          'round_number': r,
+          'cards_this_round': cards,
+          'prediction': actual,
+          'actual_tricks': actual,
+          'score': score,
+          'validated': true,
+        });
+      }
+      await client.from('estimation_rounds').upsert(
+            rows,
+            onConflict: 'game_id,player_id,round_number',
+          );
+    }
+
+    for (final p in players) {
+      final pid = p['player_id'] as String;
+      final newTotal = (p['total_score'] as int) + scoreDelta[pid]!;
+      await client
+          .from('estimation_players')
+          .update({'total_score': newTotal})
+          .eq('game_id', gameId)
+          .eq('player_id', pid);
+    }
+
+    final winnerId = (players.first)['player_id'] as String; // seat 0
+    await client.from('estimation_games').update({
+      'status': 'finished',
+      'phase': 'validating',
+      'current_round': totalRounds,
+      'ended_at': DateTime.now().toUtc().toIso8601String(),
+      'winner_player_id': winnerId,
+    }).eq('id', gameId);
+  }
+
   /// Calculate scores, update totals, rotate starter + dealer by +1 seat,
   /// advance to the next round or finish.
   Future<void> finalizeRound({
