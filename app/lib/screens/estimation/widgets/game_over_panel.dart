@@ -99,6 +99,9 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
         ref.read(estimationGameStreamProvider(widget.gameId)).valueOrNull;
     final awards = ref.read(gameAwardsProvider(widget.gameId));
     final narration = ref.read(gameNarrationProvider(widget.gameId));
+    final moments =
+        ref.read(estimationMomentsStreamProvider(widget.gameId)).valueOrNull ??
+            [];
 
     if (game == null || players.isEmpty) {
       setState(() => _sharing = false);
@@ -127,6 +130,15 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
             .toList(),
         awards: awards,
         narration: narration,
+        moments: moments
+            .map(
+              (m) => EstimationShareMoment(
+                authorName: usernames[m.authorId] ?? '???',
+                body: m.body,
+                roundNumber: m.roundNumber,
+              ),
+            )
+            .toList(),
         gameDate: game.createdAt,
       );
       final tmp = await getTemporaryDirectory();
@@ -158,6 +170,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
     required List<EstimationStanding> standings,
     required List<GameAward> awards,
     required String? narration,
+    required List<EstimationShareMoment> moments,
     required DateTime gameDate,
   }) async {
     final boundaryKey = GlobalKey();
@@ -176,6 +189,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
               standings: standings,
               awards: awards,
               narration: narration,
+              moments: moments,
               gameDate: gameDate,
             ),
           ),

@@ -17,6 +17,7 @@ class EstimationShareCard extends StatelessWidget {
     required this.standings,
     required this.awards,
     required this.narration,
+    required this.moments,
     required this.gameDate,
   });
 
@@ -26,6 +27,7 @@ class EstimationShareCard extends StatelessWidget {
   final List<EstimationStanding> standings;
   final List<GameAward> awards;
   final String? narration;
+  final List<EstimationShareMoment> moments;
   final DateTime gameDate;
 
   @override
@@ -85,6 +87,18 @@ class EstimationShareCard extends StatelessWidget {
                 child: _AwardCard(award: awards[i]),
               ),
           ],
+          if (moments.isNotEmpty) ...[
+            const SizedBox(height: AppTheme.space5),
+            const _SectionLabel('ΣΤΙΓΜΕΣ · MOMENTS'),
+            const SizedBox(height: AppTheme.space3),
+            for (var i = 0; i < moments.length; i++)
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: i == moments.length - 1 ? 0 : AppTheme.space2,
+                ),
+                child: _MomentShareCard(moment: moments[i]),
+              ),
+          ],
           const SizedBox(height: AppTheme.space6),
           _Footer(date: gameDate),
         ],
@@ -97,6 +111,20 @@ class EstimationStanding {
   const EstimationStanding({required this.name, required this.score});
   final String name;
   final int score;
+}
+
+/// Capture-friendly slice of an `EstimationMoment` with the author's
+/// username already resolved. Kept separate from the live model so the
+/// share card has no Riverpod / Supabase dependencies.
+class EstimationShareMoment {
+  const EstimationShareMoment({
+    required this.authorName,
+    required this.body,
+    this.roundNumber,
+  });
+  final String authorName;
+  final String body;
+  final int? roundNumber;
 }
 
 class _Masthead extends StatelessWidget {
@@ -373,6 +401,82 @@ class _AwardCard extends StatelessWidget {
               fontWeight: FontWeight.w700,
               color: AppTheme.terra,
               height: 1.1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One moment row inside the share PNG. Mirrors the in-app `_MomentCard`
+/// (terra hairline border, Caveat author, optional ΓΥΡΟΣ N pill, Kalam
+/// body) minus the delete affordance — the share card is read-only.
+class _MomentShareCard extends StatelessWidget {
+  const _MomentShareCard({required this.moment});
+
+  final EstimationShareMoment moment;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.space4,
+        vertical: AppTheme.space3,
+      ),
+      decoration: BoxDecoration(
+        color: AppTheme.paper,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(
+          color: AppTheme.terra.withValues(alpha: 0.4),
+          width: 1.2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  moment.authorName,
+                  style: GoogleFonts.caveat(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.terra,
+                    height: 1.1,
+                  ),
+                ),
+              ),
+              if (moment.roundNumber != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 1,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceElevated,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: Text(
+                    'ΓΥΡΟΣ ${moment.roundNumber}',
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: 2,
+                      color: AppTheme.inkSoft,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            moment.body,
+            style: GoogleFonts.kalam(
+              fontSize: 13,
+              color: AppTheme.ink,
+              height: 1.4,
             ),
           ),
         ],
