@@ -8,6 +8,7 @@ import 'screens/estimation/widgets/player_score_row.dart';
 import 'screens/estimation/widgets/round_header.dart';
 import 'theme/app_background.dart';
 import 'theme/app_theme.dart';
+import 'theme/meraki_fonts.dart';
 import 'theme/virgil_icons.dart';
 
 /// Design-preview entry point. Renders a scrollable gallery of Virgil
@@ -746,12 +747,13 @@ class _PaletteBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final swatches = [
-      ('paper', AppTheme.paper, '#F4ECD8'),
-      ('ink', AppTheme.ink, '#3D2817'),
-      ('ink soft', AppTheme.inkSoft, '#6B4F3A'),
-      ('terra', AppTheme.terra, '#A0522D'),
-      ('olive', AppTheme.olive, '#5A6B3D'),
-      ('gold', AppTheme.goldReserved, '#B8862E'),
+      ('linen', AppTheme.linen, '#F6EFE6'),
+      ('bone', AppTheme.bone, '#EBE2D3'),
+      ('ink', AppTheme.ink, '#14193F'),
+      ('aegean', AppTheme.aegean, '#1F2A5C'),
+      ('coral', AppTheme.coral, '#D9573F'),
+      ('myrtle', AppTheme.myrtle, '#4F6B5C'),
+      ('ochre', AppTheme.ochre, '#C39448'),
     ];
     return Wrap(
       spacing: 8,
@@ -779,16 +781,19 @@ class _PaletteBlock extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: GoogleFonts.caveat(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                         color: AppTheme.ink,
                       ),
                     ),
                     Text(
                       hex,
-                      style: GoogleFonts.jetBrainsMono(
-                        fontSize: 8,
+                      style: const TextStyle(
+                        fontFamily: MerakiFonts.geistMonoFamily,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.5,
                         color: AppTheme.inkSoft,
                       ),
                     ),

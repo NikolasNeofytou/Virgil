@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_theme.dart';
+import 'meraki_fonts.dart';
 
 /// Virgil page background — a sheet of kafeneio paper, hand-inked.
 ///
@@ -33,7 +33,9 @@ class _PaperPainter extends CustomPainter {
 
   final bool showStains;
 
-  static const _ink = Color(0xFF3D2817);
+  // Tracks AppTheme.ink — Aegean-tinted under Meraki, sepia under the legacy
+  // Virgil identity.
+  static const _ink = AppTheme.ink;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -143,11 +145,12 @@ class AppSectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = Text(
       text.toUpperCase(),
-      style: GoogleFonts.jetBrainsMono(
+      style: const TextStyle(
+        fontFamily: MerakiFonts.geistMonoFamily,
         fontSize: 10,
         fontWeight: FontWeight.w500,
-        letterSpacing: 3,
-        color: AppTheme.terra,
+        letterSpacing: 1.6,
+        color: AppTheme.coral,
       ),
     );
     if (!showRule) return label;
