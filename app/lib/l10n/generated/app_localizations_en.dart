@@ -121,4 +121,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSignOut => 'Sign out';
+
+  @override
+  String get lobbyGreetingMorning => 'Good morning';
+
+  @override
+  String get lobbyGreetingAfternoon => 'Good afternoon';
+
+  @override
+  String get lobbyGreetingEvening => 'Good evening';
+
+  @override
+  String get lobbyGreetingFallback => 'Welcome';
+
+  @override
+  String get lobbyHeroTitle => 'A table is set for you.';
+
+  @override
+  String get lobbyTodayLabel => 'TODAY';
+
+  @override
+  String get lobbyTonightSection => 'TONIGHT';
+
+  @override
+  String get lobbyEstimationName => 'Estimation';
+
+  @override
+  String get lobbyEstimationDescription =>
+      'Call your tricks. See who reads the cards.';
+
+  @override
+  String get lobbyTakeYourSeat => 'Take your seat';
+
+  @override
+  String get lobbyJoin => 'Join';
+
+  @override
+  String get lobbyContinueLabel => 'Continue';
+
+  @override
+  String get lobbyInProgressSection => 'IN PROGRESS';
+
+  @override
+  String get lobbyInProgressLobby => 'lobby';
+
+  @override
+  String lobbyInProgressRound(int round) {
+    return 'Round $round';
+  }
+
+  @override
+  String get lobbyGamesSection => 'GAMES';
+
+  @override
+  String get lobbyGamePilotta => 'Pilotta';
+
+  @override
+  String get lobbyGamePilottaTagline => 'Cypriot living-room classic.';
+
+  @override
+  String get lobbyGameTavli => 'Tavli';
+
+  @override
+  String get lobbyGameTavliTagline => 'Three games — Portes, Plakoto, Fevga.';
+
+  @override
+  String get lobbyGameBiriba => 'Biriba';
+
+  @override
+  String get lobbyGameBiribaTagline =>
+      'Two decks. Long sittings. Family staple.';
+
+  @override
+  String get lobbyChipLive => 'live';
+
+  @override
+  String get lobbyChipSoon => 'soon';
 }

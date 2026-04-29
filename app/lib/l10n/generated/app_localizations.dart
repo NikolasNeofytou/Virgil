@@ -319,6 +319,150 @@ abstract class AppLocalizations {
   /// In el, this message translates to:
   /// **'Αποσύνδεση'**
   String get profileSignOut;
+
+  /// No description provided for @lobbyGreetingMorning.
+  ///
+  /// In el, this message translates to:
+  /// **'Καλημέρα'**
+  String get lobbyGreetingMorning;
+
+  /// No description provided for @lobbyGreetingAfternoon.
+  ///
+  /// In el, this message translates to:
+  /// **'Καλησπέρα'**
+  String get lobbyGreetingAfternoon;
+
+  /// No description provided for @lobbyGreetingEvening.
+  ///
+  /// In el, this message translates to:
+  /// **'Καλό βράδυ'**
+  String get lobbyGreetingEvening;
+
+  /// No description provided for @lobbyGreetingFallback.
+  ///
+  /// In el, this message translates to:
+  /// **'Καλώς ήρθες'**
+  String get lobbyGreetingFallback;
+
+  /// No description provided for @lobbyHeroTitle.
+  ///
+  /// In el, this message translates to:
+  /// **'Στρώθηκε τραπέζι για εσένα.'**
+  String get lobbyHeroTitle;
+
+  /// No description provided for @lobbyTodayLabel.
+  ///
+  /// In el, this message translates to:
+  /// **'ΣΗΜΕΡΑ'**
+  String get lobbyTodayLabel;
+
+  /// No description provided for @lobbyTonightSection.
+  ///
+  /// In el, this message translates to:
+  /// **'ΑΠΟΨΕ · TONIGHT'**
+  String get lobbyTonightSection;
+
+  /// No description provided for @lobbyEstimationName.
+  ///
+  /// In el, this message translates to:
+  /// **'Πρόβλεψη'**
+  String get lobbyEstimationName;
+
+  /// No description provided for @lobbyEstimationDescription.
+  ///
+  /// In el, this message translates to:
+  /// **'Πες πόσες μπάζες θα πάρεις. Δες ποιος ξέρει τα χαρτιά του.'**
+  String get lobbyEstimationDescription;
+
+  /// No description provided for @lobbyTakeYourSeat.
+  ///
+  /// In el, this message translates to:
+  /// **'Πιάσε θέση'**
+  String get lobbyTakeYourSeat;
+
+  /// No description provided for @lobbyJoin.
+  ///
+  /// In el, this message translates to:
+  /// **'Μπες'**
+  String get lobbyJoin;
+
+  /// No description provided for @lobbyContinueLabel.
+  ///
+  /// In el, this message translates to:
+  /// **'Συνέχισε'**
+  String get lobbyContinueLabel;
+
+  /// No description provided for @lobbyInProgressSection.
+  ///
+  /// In el, this message translates to:
+  /// **'ΣΕ ΕΞΕΛΙΞΗ · IN PROGRESS'**
+  String get lobbyInProgressSection;
+
+  /// No description provided for @lobbyInProgressLobby.
+  ///
+  /// In el, this message translates to:
+  /// **'στο δωμάτιο'**
+  String get lobbyInProgressLobby;
+
+  /// No description provided for @lobbyInProgressRound.
+  ///
+  /// In el, this message translates to:
+  /// **'Γύρος {round}'**
+  String lobbyInProgressRound(int round);
+
+  /// No description provided for @lobbyGamesSection.
+  ///
+  /// In el, this message translates to:
+  /// **'ΠΑΙΧΝΙΔΙΑ · GAMES'**
+  String get lobbyGamesSection;
+
+  /// No description provided for @lobbyGamePilotta.
+  ///
+  /// In el, this message translates to:
+  /// **'Πιλόττα'**
+  String get lobbyGamePilotta;
+
+  /// No description provided for @lobbyGamePilottaTagline.
+  ///
+  /// In el, this message translates to:
+  /// **'Η Κυπριακή κλασική του καφενείου.'**
+  String get lobbyGamePilottaTagline;
+
+  /// No description provided for @lobbyGameTavli.
+  ///
+  /// In el, this message translates to:
+  /// **'Ταβλί'**
+  String get lobbyGameTavli;
+
+  /// No description provided for @lobbyGameTavliTagline.
+  ///
+  /// In el, this message translates to:
+  /// **'Τρία παιχνίδια — Πόρτες, Πλακωτό, Φεύγα.'**
+  String get lobbyGameTavliTagline;
+
+  /// No description provided for @lobbyGameBiriba.
+  ///
+  /// In el, this message translates to:
+  /// **'Μπιρίμπα'**
+  String get lobbyGameBiriba;
+
+  /// No description provided for @lobbyGameBiribaTagline.
+  ///
+  /// In el, this message translates to:
+  /// **'Δύο τράπουλες. Μεγάλα παιχνίδια. Οικογενειακό.'**
+  String get lobbyGameBiribaTagline;
+
+  /// No description provided for @lobbyChipLive.
+  ///
+  /// In el, this message translates to:
+  /// **'live'**
+  String get lobbyChipLive;
+
+  /// No description provided for @lobbyChipSoon.
+  ///
+  /// In el, this message translates to:
+  /// **'σύντομα'**
+  String get lobbyChipSoon;
 }
 
 class _AppLocalizationsDelegate

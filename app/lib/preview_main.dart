@@ -3,9 +3,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'l10n/generated/app_localizations.dart';
+import 'providers/active_game_provider.dart';
 import 'screens/estimation/widgets/number_picker.dart';
 import 'screens/estimation/widgets/player_score_row.dart';
 import 'screens/estimation/widgets/round_header.dart';
+import 'screens/tabs/play_tab.dart';
 import 'theme/app_background.dart';
 import 'theme/app_theme.dart';
 import 'theme/meraki_fonts.dart';
@@ -33,6 +36,8 @@ class _PreviewApp extends StatelessWidget {
       title: 'Virgil Preview',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: const _Gallery(),
     );
   }
@@ -168,6 +173,10 @@ class _GalleryState extends State<_Gallery> {
                   const AppSectionLabel('§ 10 · COMPONENTS', showRule: true),
                   const SizedBox(height: AppTheme.space4),
                   const _ComponentsBlock(),
+                  const _Rule(),
+                  const AppSectionLabel('§ 11 · LOBBY', showRule: true),
+                  const SizedBox(height: AppTheme.space4),
+                  const _LobbyPreview(),
                   const SizedBox(height: AppTheme.space6),
                   Text(
                     '— FIN —',
@@ -905,6 +914,38 @@ class _ComponentsBlock extends StatelessWidget {
             ),
           ],
         ),
+      ],
+    );
+  }
+}
+
+/// §11 — Lobby preview. Shows the four Play-tab sections (header, daily-
+/// moment hero, continue card, games tiles) with mock data — the production
+/// PlayTab reads username and active-game state from Riverpod providers.
+class _LobbyPreview extends StatelessWidget {
+  const _LobbyPreview();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const LobbyHeader(username: 'nikolas'),
+        const SizedBox(height: AppTheme.space5),
+        DailyMomentCard(onCreate: () {}, onJoin: () {}),
+        const SizedBox(height: AppTheme.space5),
+        ContinueCard(
+          active: const ActiveGameSummary(
+            gameId: 'preview-id',
+            roomCode: '4F7B',
+            status: 'active',
+            currentRound: 3,
+            totalRounds: 14,
+          ),
+          onTap: () {},
+        ),
+        const SizedBox(height: AppTheme.space5),
+        GamesSection(onEstimationTap: () {}),
       ],
     );
   }
