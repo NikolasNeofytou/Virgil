@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/leaderboard_entry.dart';
 import '../../providers/auth_providers.dart';
 import '../../providers/leaderboard_providers.dart';
@@ -20,7 +21,7 @@ class LeaderboardTab extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(title: const Text('Κατάταξη')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.leaderboardTitle)),
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(leaderboardProvider.future),
         color: AppTheme.terra,
@@ -88,6 +89,7 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final myId = ref.watch(currentUserIdProvider);
     final myStats = ref.watch(myStatsProvider);
     final myRank = ref.watch(myRankProvider);
@@ -105,14 +107,14 @@ class _Body extends ConsumerWidget {
         const SizedBox(height: AppTheme.space6),
 
         // ── Your stats receipt ──
-        const _SectionLabel('§ 01 · ΟΙ ΣΤΑΤΙΣΤΙΚΕΣ ΣΟΥ · YOU'),
+        _SectionLabel(l10n.leaderboardYouSection),
         const SizedBox(height: AppTheme.space3),
         _MyStatsCard(stats: myStats),
 
         const SizedBox(height: AppTheme.space6),
 
         // ── Top 10 ──
-        const _SectionLabel('§ 02 · TOP 10 · LEADERS'),
+        _SectionLabel(l10n.leaderboardTopSection),
         const SizedBox(height: AppTheme.space3),
         if (top.isEmpty)
           const _EmptyTop()
@@ -166,6 +168,7 @@ class _Masthead extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -186,7 +189,7 @@ class _Masthead extends StatelessWidget {
         const SizedBox(height: AppTheme.space4),
         Center(
           child: Text(
-            'Κατάταξη',
+            l10n.leaderboardTitle,
             style: GoogleFonts.gloock(
               fontSize: 44,
               color: AppTheme.ink,
@@ -198,7 +201,7 @@ class _Masthead extends StatelessWidget {
         const SizedBox(height: 4),
         Center(
           child: Text(
-            'τα σκορ του τραπεζιού',
+            l10n.leaderboardSubtitle,
             style: GoogleFonts.caveat(
               fontSize: 20,
               color: AppTheme.terra,
@@ -421,7 +424,7 @@ class _LeaderRow extends StatelessWidget {
                           borderRadius: BorderRadius.circular(2),
                         ),
                         child: Text(
-                          'ΕΣΥ',
+                          AppLocalizations.of(context)!.leaderboardYouBadge,
                           style: GoogleFonts.jetBrainsMono(
                             fontSize: 8,
                             fontWeight: FontWeight.w500,
@@ -491,7 +494,7 @@ class _EmptyTop extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'κενό φύλλο',
+            AppLocalizations.of(context)!.leaderboardEmptyTitle,
             style: GoogleFonts.gloock(
               fontSize: 24,
               color: AppTheme.ink,
@@ -500,7 +503,7 @@ class _EmptyTop extends StatelessWidget {
           ),
           const SizedBox(height: AppTheme.space3),
           Text(
-            'γίνε ο πρώτος που θα μπει στην κατάταξη.\nένα κλειστό παιχνίδι αρκεί.',
+            AppLocalizations.of(context)!.leaderboardEmptyBody,
             textAlign: TextAlign.center,
             style: GoogleFonts.kalam(
               fontSize: 14,
@@ -543,7 +546,7 @@ class _YourRankFooter extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'η θέση σου',
+                  AppLocalizations.of(context)!.leaderboardYourPosition,
                   style: GoogleFonts.kalam(
                     fontSize: 12,
                     color: AppTheme.inkFaint,

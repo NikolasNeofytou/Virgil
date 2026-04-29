@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'l10n/generated/app_localizations.dart';
 import 'providers/auth_providers.dart';
+import 'providers/locale_provider.dart';
 import 'screens/home_shell.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/username_picker_screen.dart';
@@ -16,10 +18,14 @@ class TichuCyprusApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(activeLocaleProvider);
     return MaterialApp(
       title: 'Virgil',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: const _AuthGate(),
     );
   }

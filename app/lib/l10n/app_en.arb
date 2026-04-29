@@ -1,0 +1,51 @@
+{
+  "@@locale": "en",
+  "appTitle": "Virgil",
+  "appTagline": "a guide for the table",
+
+  "tabPlay": "Play",
+  "tabFriends": "Friends",
+  "tabLeaderboard": "Leaderboard",
+  "tabProfile": "Profile",
+
+  "signInTitle": "Welcome",
+  "signInSubtitle": "sign in to take a seat",
+
+  "usernamePickerSection": "§ 01 · NAME",
+  "usernamePickerTitle": "Pick a name",
+  "usernamePickerSubtitle": "your name at the table",
+  "usernamePickerHint": "3–24 chars · letters, numbers, _",
+  "usernamePickerSubmit": "Continue",
+  "usernamePickerErrorInvalid": "3–24 chars · letters, numbers, _",
+  "usernamePickerErrorTaken": "that name is already taken",
+  "usernamePickerErrorSession": "session expired · sign in again",
+  "usernamePickerErrorGeneric": "error · try again",
+
+  "gameOverWinnerLabel": "WINNER",
+  "gameOverFinalLabel": "FINAL",
+  "gameOverNarrationLabel": "NIGHT NOTE",
+  "gameOverAwardsLabel": "AWARDS",
+  "gameOverMomentsLabel": "MOMENTS",
+  "gameOverPoints": "{score} points",
+  "@gameOverPoints": {
+    "placeholders": {
+      "score": { "type": "int" }
+    }
+  },
+  "gameOverRematch": "New game",
+  "gameOverShare": "Share",
+  "gameOverBackToMenu": "Back to menu",
+
+  "leaderboardTitle": "Leaderboard",
+  "leaderboardSubtitle": "the scores at the table",
+  "leaderboardYouSection": "§ 01 · YOU",
+  "leaderboardTopSection": "§ 02 · TOP 10 · LEADERS",
+  "leaderboardYouBadge": "YOU",
+  "leaderboardWinsLabel": "WINS",
+  "leaderboardYourPosition": "your position",
+  "leaderboardEmptyTitle": "empty page",
+  "leaderboardEmptyBody": "be the first one on the board.\none finished game is enough.",
+
+  "profileLanguageLabel": "Language",
+  "profileSignOut": "Sign out"
+}

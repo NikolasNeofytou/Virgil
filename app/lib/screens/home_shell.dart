@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../theme/app_background.dart';
 import '../theme/virgil_icons.dart';
 import 'tabs/friends_tab.dart';
@@ -27,6 +28,7 @@ class _HomeShellState extends State<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -34,22 +36,22 @@ class _HomeShellState extends State<HomeShell> {
         bottomNavigationBar: NavigationBar(
           selectedIndex: _index,
           onDestinationSelected: (i) => setState(() => _index = i),
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: VirgilIcon(VirgilIconName.home),
-              label: 'Παίξε',
+              icon: const VirgilIcon(VirgilIconName.home),
+              label: l10n.tabPlay,
             ),
             NavigationDestination(
-              icon: VirgilIcon(VirgilIconName.rooms),
-              label: 'Φίλοι',
+              icon: const VirgilIcon(VirgilIconName.rooms),
+              label: l10n.tabFriends,
             ),
             NavigationDestination(
-              icon: VirgilIcon(VirgilIconName.stats),
-              label: 'Κατάταξη',
+              icon: const VirgilIcon(VirgilIconName.stats),
+              label: l10n.tabLeaderboard,
             ),
             NavigationDestination(
-              icon: VirgilIcon(VirgilIconName.profile),
-              label: 'Προφίλ',
+              icon: const VirgilIcon(VirgilIconName.profile),
+              label: l10n.tabProfile,
             ),
           ],
         ),
