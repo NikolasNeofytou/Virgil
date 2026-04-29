@@ -240,18 +240,22 @@ class _AddMomentButton extends StatelessWidget {
   }
 }
 
-class _AddMomentSheet extends StatefulWidget {
+class _AddMomentSheet extends ConsumerStatefulWidget {
   const _AddMomentSheet({required this.gameId});
 
   final String gameId;
 
   @override
-  State<_AddMomentSheet> createState() => _AddMomentSheetState();
+  ConsumerState<_AddMomentSheet> createState() => _AddMomentSheetState();
 }
 
-class _AddMomentSheetState extends State<_AddMomentSheet> {
+class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
   final _ctrl = TextEditingController();
   bool _saving = false;
+
+  /// Null = "Όλο το παιχνίδι" — pin to the game itself, not a round.
+  /// Otherwise 1..totalRounds.
+  int? _selectedRound;
 
   @override
   void dispose() {
@@ -264,7 +268,11 @@ class _AddMomentSheetState extends State<_AddMomentSheet> {
     if (body.isEmpty || _saving) return;
     setState(() => _saving = true);
     try {
-      await EstimationService().addMoment(gameId: widget.gameId, body: body);
+      await EstimationService().addMoment(
+        gameId: widget.gameId,
+        body: body,
+        roundNumber: _selectedRound,
+      );
       if (mounted) Navigator.of(context).pop();
     } on Object catch (e) {
       if (mounted) {
@@ -279,6 +287,9 @@ class _AddMomentSheetState extends State<_AddMomentSheet> {
   @override
   Widget build(BuildContext context) {
     final viewInsets = MediaQuery.of(context).viewInsets;
+    final game =
+        ref.watch(estimationGameStreamProvider(widget.gameId)).valueOrNull;
+    final totalRounds = game?.totalRounds ?? 0;
     return Padding(
       padding: EdgeInsets.only(bottom: viewInsets.bottom),
       child: Padding(
@@ -333,6 +344,36 @@ class _AddMomentSheetState extends State<_AddMomentSheet> {
               ),
               onChanged: (_) => setState(() {}),
             ),
+            if (totalRounds > 0) ...[
+              const SizedBox(height: AppTheme.space4),
+              Text(
+                'ΓΥΡΟΣ · ROUND',
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 3,
+                  color: AppTheme.terra,
+                ),
+              ),
+              const SizedBox(height: AppTheme.space2),
+              Wrap(
+                spacing: AppTheme.space1,
+                runSpacing: AppTheme.space1,
+                children: [
+                  _RoundChip(
+                    label: 'ΌΛΟ',
+                    selected: _selectedRound == null,
+                    onTap: () => setState(() => _selectedRound = null),
+                  ),
+                  for (var r = 1; r <= totalRounds; r++)
+                    _RoundChip(
+                      label: '$r',
+                      selected: _selectedRound == r,
+                      onTap: () => setState(() => _selectedRound = r),
+                    ),
+                ],
+              ),
+            ],
             const SizedBox(height: AppTheme.space4),
             FilledButton(
               onPressed:
@@ -346,6 +387,51 @@ class _AddMomentSheetState extends State<_AddMomentSheet> {
                   : const Text('Αποθήκευση'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Paper-and-ink pill for selecting which round a moment pins to. Selected
+/// state inverts to a terracotta fill so the choice reads from across the
+/// sheet. Kept tight (32×24) so a 14-round game flows on two lines max.
+class _RoundChip extends StatelessWidget {
+  const _RoundChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? AppTheme.terra : AppTheme.paper,
+          borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+          border: Border.all(
+            color: selected
+                ? AppTheme.terra
+                : AppTheme.terra.withValues(alpha: 0.4),
+            width: 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.jetBrainsMono(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.5,
+            color: selected ? AppTheme.paper : AppTheme.ink,
+          ),
         ),
       ),
     );
