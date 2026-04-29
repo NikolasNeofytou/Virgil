@@ -639,6 +639,23 @@ class EstimationService {
         .eq('id', gameId);
   }
 
+  /// DEV-ONLY: fast-forward this game straight to the finish screen.
+  ///
+  /// Delegates to the `dev_skip_estimation_game_to_end` Postgres RPC
+  /// (migration `0013_dev_skip_to_end.sql`). The RPC runs SECURITY DEFINER
+  /// so peer `total_score` updates land in a single transaction — a
+  /// client-side equivalent only updates the caller's own row because of
+  /// the `estimation_players_update_self` RLS policy.
+  ///
+  /// Caller must be a participant in [gameId]. Caller must also gate this
+  /// on `kDebugMode` so it never ships in release builds.
+  Future<void> devSkipToEnd({required String gameId}) async {
+    await SupabaseBootstrap.client.rpc<void>(
+      'dev_skip_estimation_game_to_end',
+      params: {'p_game_id': gameId},
+    );
+  }
+
   /// Calculate scores, update totals, rotate starter + dealer by +1 seat,
   /// advance to the next round or finish.
   Future<void> finalizeRound({
