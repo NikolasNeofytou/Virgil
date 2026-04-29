@@ -197,4 +197,117 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lobbyChipSoon => 'soon';
+
+  @override
+  String get pareaTitle => 'Parea';
+
+  @override
+  String get pareaSubtitle => 'your company';
+
+  @override
+  String get pareaAddPrompt => 'Add a friend';
+
+  @override
+  String get pareaAddHint => 'username';
+
+  @override
+  String get pareaAddSubmit => 'Send';
+
+  @override
+  String pareaAddSuccess(String username) {
+    return 'sent to @$username';
+  }
+
+  @override
+  String get pareaAddErrorGeneric => 'error · try again';
+
+  @override
+  String get pareaInboxSection => 'INBOX';
+
+  @override
+  String get pareaInboxEmpty => 'no requests right now';
+
+  @override
+  String get pareaInboxWantsToBeFriends => 'wants to be friends';
+
+  @override
+  String get pareaInboxAccept => 'Accept';
+
+  @override
+  String get pareaInboxDecline => 'Decline';
+
+  @override
+  String get pareaYoursSection => 'YOURS';
+
+  @override
+  String get pareaYoursEmpty => 'add your first friend above';
+
+  @override
+  String get pareaSentSection => 'SENT';
+
+  @override
+  String get pareaSentEmpty => 'no requests pending';
+
+  @override
+  String get pareaSentLabel => 'awaiting confirmation';
+
+  @override
+  String get pareaSentCancel => 'Cancel';
+
+  @override
+  String pareaUnfriendTitle(String username) {
+    return 'Remove @$username?';
+  }
+
+  @override
+  String get pareaUnfriendBody =>
+      'The friendship will be removed for both of you.';
+
+  @override
+  String get pareaUnfriendConfirm => 'Remove';
+
+  @override
+  String get pareaUnfriendCancel => 'Cancel';
+
+  @override
+  String get tournamentSection => 'TOURNAMENT';
+
+  @override
+  String get tournamentTopSection => 'TOP 10';
+
+  @override
+  String get tournamentYouSection => 'YOU';
+
+  @override
+  String get tournamentStatGames => 'GAMES';
+
+  @override
+  String get tournamentStatWins => 'WINS';
+
+  @override
+  String get tournamentStatAccuracy => 'ACCURACY';
+
+  @override
+  String get tournamentStatPoints => 'POINTS';
+
+  @override
+  String get tournamentEmptyTitle => 'empty page';
+
+  @override
+  String get tournamentEmptyBody =>
+      'be the first one on the board.\none finished game is enough.';
+
+  @override
+  String get tournamentYouAreHere => 'your position';
+
+  @override
+  String get tournamentNoGamesTitle => 'no closed games yet';
+
+  @override
+  String get tournamentNoGamesBody => 'start one to enter the tournament.';
+
+  @override
+  String tournamentGamesPointsLabel(int games, int points) {
+    return '$games games · $points pts';
+  }
 }

@@ -3,15 +3,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/friendship.dart';
 import '../../providers/auth_providers.dart';
 import '../../providers/friends_providers.dart';
 import '../../services/friends_service.dart';
-import '../../theme/app_background.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/meraki_tokens.dart';
+import '../../widgets/virgil_card.dart';
 
-/// Friends tab. Real friendships via `public.friendships`. Three sections:
-/// inbox (pending inbound), yours (accepted), sent (pending outbound).
+/// Parea — friends, restyled to the Meraki §05 SCREEN 03 pattern. Linen
+/// canvas, Fraunces names, GeistMono section eyebrows, italic-verb actions.
+/// Three sections drive the same friendship state machine the kafeneio
+/// version did: INBOX → YOURS → SENT.
+///
+/// "Sort by closeness — games shared, last 30 days" from the deck waits on
+/// presence + co-game data we don't track yet; for now rows render in the
+/// order Supabase returns them. Restyling first; sorting follows when the
+/// data lands.
 class FriendsTab extends ConsumerStatefulWidget {
   const FriendsTab({super.key});
 
@@ -35,6 +44,7 @@ class _FriendsTabState extends ConsumerState<FriendsTab> {
   }
 
   Future<void> _send() async {
+    final loc = AppLocalizations.of(context)!;
     final username = _addController.text.trim();
     if (username.isEmpty) return;
     setState(() {
@@ -46,14 +56,14 @@ class _FriendsTabState extends ConsumerState<FriendsTab> {
       await _service.sendFriendRequest(username);
       if (!mounted) return;
       setState(() {
-        _success = 'στάλθηκε στον @$username';
+        _success = loc.pareaAddSuccess(username);
         _addController.clear();
       });
       _addFocus.unfocus();
     } on FriendsException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } on Object {
-      if (mounted) setState(() => _error = 'σφάλμα · δοκίμασε ξανά');
+      if (mounted) setState(() => _error = loc.pareaAddErrorGeneric);
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -61,6 +71,7 @@ class _FriendsTabState extends ConsumerState<FriendsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final me = ref.watch(currentUserIdProvider);
     final accepted = ref.watch(acceptedFriendsProvider);
     final inbound = ref.watch(inboundPendingProvider);
@@ -70,7 +81,7 @@ class _FriendsTabState extends ConsumerState<FriendsTab> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(title: const Text('Φίλοι')),
+      appBar: AppBar(title: Text(loc.pareaTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           AppTheme.space5,
@@ -87,59 +98,53 @@ class _FriendsTabState extends ConsumerState<FriendsTab> {
             success: _success,
             onSend: _send,
           ),
-
           const SizedBox(height: AppTheme.space6),
-          const AppSectionLabel(
-            '§ 01 · ΑΙΤΗΣΕΙΣ · INBOX',
-            showRule: true,
-          ),
+          _SectionEyebrow('§ 01 · ${loc.pareaInboxSection}'),
           const SizedBox(height: AppTheme.space3),
           if (inbound.isEmpty)
-            const _EmptyHint('δεν έχεις αιτήσεις αυτή τη στιγμή')
+            _EmptyHint(loc.pareaInboxEmpty)
           else
-            ...inbound.map((f) => _InboundRow(
-                  friendship: f,
-                  name: names[f.requesterId] ?? '…',
-                  service: _service,
-                ),),
-
+            ...inbound.map(
+              (f) => _InboundRow(
+                friendship: f,
+                name: names[f.requesterId] ?? '…',
+                service: _service,
+              ),
+            ),
           const SizedBox(height: AppTheme.space6),
-          const AppSectionLabel(
-            '§ 02 · ΦΙΛΟΙ · YOURS',
-            showRule: true,
-          ),
+          _SectionEyebrow('§ 02 · ${loc.pareaYoursSection}'),
           const SizedBox(height: AppTheme.space3),
           if (accepted.isEmpty)
-            const _EmptyHint('πρόσθεσε τον πρώτο σου φίλο πιο πάνω')
+            _EmptyHint(loc.pareaYoursEmpty)
           else if (me != null)
-            ...accepted.map((f) => _FriendRow(
-                  friendship: f,
-                  name: names[f.otherParty(me)] ?? '…',
-                  service: _service,
-                ),),
-
+            ...accepted.map(
+              (f) => _FriendRow(
+                friendship: f,
+                name: names[f.otherParty(me)] ?? '…',
+                service: _service,
+              ),
+            ),
           const SizedBox(height: AppTheme.space6),
-          const AppSectionLabel(
-            '§ 03 · ΣΕ ΑΝΑΜΟΝΗ · SENT',
-            showRule: true,
-          ),
+          _SectionEyebrow('§ 03 · ${loc.pareaSentSection}'),
           const SizedBox(height: AppTheme.space3),
           if (outbound.isEmpty)
-            const _EmptyHint('καμία αίτηση σε αναμονή')
+            _EmptyHint(loc.pareaSentEmpty)
           else
-            ...outbound.map((f) => _OutboundRow(
-                  friendship: f,
-                  name: names[f.addresseeId] ?? '…',
-                  service: _service,
-                ),),
+            ...outbound.map(
+              (f) => _OutboundRow(
+                friendship: f,
+                name: names[f.addresseeId] ?? '…',
+                service: _service,
+              ),
+            ),
         ],
       ),
     );
   }
 }
 
-// ── Add-friend card ───────────────────────────────────────────────────────────
-
+/// Top "add a friend" composer. Lives in a hero card with a coral '@' prefix
+/// and an Inter input. Italic-Fraunces "Send" verb on the right.
 class _AddFriendCard extends StatelessWidget {
   const _AddFriendCard({
     required this.controller,
@@ -159,27 +164,19 @@ class _AddFriendCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppTheme.space4,
-        vertical: AppTheme.space4,
-      ),
-      decoration: BoxDecoration(
-        color: AppTheme.paper,
-        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        border: Border.all(color: AppTheme.border),
-        boxShadow: AppTheme.shadowSm,
-      ),
+    final loc = AppLocalizations.of(context)!;
+    final tokens = MerakiTokens.of(context);
+    final scheme = Theme.of(context).colorScheme;
+
+    return VirgilCard(
+      variant: VirgilCardVariant.hero,
+      padding: const EdgeInsets.all(AppTheme.space4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'πρόσθεσε φίλο με όνομα',
-            style: GoogleFonts.caveat(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.ink,
-            ),
+            loc.pareaAddPrompt,
+            style: tokens.eyebrow.copyWith(color: scheme.primary),
           ),
           const SizedBox(height: AppTheme.space2),
           Row(
@@ -187,9 +184,10 @@ class _AddFriendCard extends StatelessWidget {
             children: [
               Text(
                 '@',
-                style: GoogleFonts.gloock(
+                style: GoogleFonts.fraunces(
                   fontSize: 22,
-                  color: AppTheme.terra,
+                  fontWeight: FontWeight.w400,
+                  color: scheme.primary,
                   height: 1.0,
                 ),
               ),
@@ -203,10 +201,10 @@ class _AddFriendCard extends StatelessWidget {
                   autocorrect: false,
                   enableSuggestions: false,
                   textCapitalization: TextCapitalization.none,
-                  style: GoogleFonts.caveat(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.ink,
+                  style: GoogleFonts.inter(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                    color: scheme.onSurface,
                     height: 1.2,
                   ),
                   inputFormatters: [
@@ -217,10 +215,9 @@ class _AddFriendCard extends StatelessWidget {
                   onSubmitted: (_) => onSend(),
                   decoration: InputDecoration(
                     counterText: '',
-                    hintText: 'όνομα',
-                    hintStyle: GoogleFonts.caveat(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
+                    hintText: loc.pareaAddHint,
+                    hintStyle: GoogleFonts.inter(
+                      fontSize: 17,
                       color: AppTheme.inkFaint,
                     ),
                     filled: false,
@@ -248,7 +245,7 @@ class _AddFriendCard extends StatelessWidget {
                         width: 14,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Στείλε'),
+                    : Text(loc.pareaAddSubmit),
               ),
             ],
           ),
@@ -256,10 +253,10 @@ class _AddFriendCard extends StatelessWidget {
             const SizedBox(height: AppTheme.space2),
             Text(
               error!,
-              style: GoogleFonts.caveat(
+              style: GoogleFonts.inter(
                 color: AppTheme.danger,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -267,10 +264,10 @@ class _AddFriendCard extends StatelessWidget {
             const SizedBox(height: AppTheme.space2),
             Text(
               success!,
-              style: GoogleFonts.caveat(
-                color: AppTheme.olive,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
+              style: GoogleFonts.inter(
+                color: scheme.secondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -280,67 +277,118 @@ class _AddFriendCard extends StatelessWidget {
   }
 }
 
-// ── Row shells ────────────────────────────────────────────────────────────────
+/// Section eyebrow — Geist Mono with a hairline rule running to the right.
+class _SectionEyebrow extends StatelessWidget {
+  const _SectionEyebrow(this.text);
 
-/// Base paper row. Action buttons on the right.
-class _FriendshipRow extends StatelessWidget {
-  const _FriendshipRow({
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = MerakiTokens.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(text, style: tokens.eyebrow.copyWith(color: scheme.primary)),
+        const SizedBox(width: AppTheme.space2),
+        const Expanded(
+          child: Divider(thickness: 1, color: AppTheme.border, height: 1),
+        ),
+      ],
+    );
+  }
+}
+
+/// Empty-state line — italic Fraunces faint ink, no card.
+class _EmptyHint extends StatelessWidget {
+  const _EmptyHint(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.space2,
+        vertical: AppTheme.space3,
+      ),
+      child: Text(
+        text,
+        style: GoogleFonts.fraunces(
+          fontSize: 16,
+          fontStyle: FontStyle.italic,
+          color: AppTheme.inkFaint,
+          height: 1.4,
+        ),
+      ),
+    );
+  }
+}
+
+/// Base parea row — VirgilCard standard with a Fraunces name, optional
+/// italic Fraunces subtitle, and a list of trailing action widgets.
+class _PareaRow extends StatelessWidget {
+  const _PareaRow({
     required this.name,
     required this.children,
     this.subtitle,
-    this.nameColor,
+    this.dim = false,
   });
 
   final String name;
   final List<Widget> children;
   final String? subtitle;
-  final Color? nameColor;
+  final bool dim;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppTheme.space2),
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppTheme.space4,
-        vertical: AppTheme.space3,
-      ),
-      decoration: BoxDecoration(
-        color: AppTheme.paper,
-        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        border: Border.all(color: AppTheme.border),
-        boxShadow: AppTheme.shadowSm,
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  name,
-                  style: GoogleFonts.caveat(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: nameColor ?? AppTheme.ink,
-                    height: 1.1,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (subtitle != null)
+    final scheme = Theme.of(context).colorScheme;
+    final nameColor = dim ? AppTheme.inkSoft : scheme.onSurface;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppTheme.space2),
+      child: VirgilCard(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppTheme.space4,
+          vertical: AppTheme.space3,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Text(
-                    subtitle!,
-                    style: GoogleFonts.kalam(
-                      fontSize: 12,
-                      color: AppTheme.inkFaint,
-                      height: 1.2,
+                    '@$name',
+                    style: GoogleFonts.fraunces(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: -0.2,
+                      color: nameColor,
+                      height: 1.1,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-              ],
+                  if (subtitle != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        subtitle!,
+                        style: GoogleFonts.fraunces(
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          color: AppTheme.inkFaint,
+                          height: 1.2,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
-          ),
-          ...children,
-        ],
+            ...children,
+          ],
+        ),
       ),
     );
   }
@@ -359,26 +407,27 @@ class _InboundRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _FriendshipRow(
+    final loc = AppLocalizations.of(context)!;
+    return _PareaRow(
       name: name,
-      subtitle: 'θέλει να γίνει φίλος σου',
+      subtitle: loc.pareaInboxWantsToBeFriends,
       children: [
         IconButton(
           onPressed: () => service.declineRequest(friendship.id),
           icon: const Icon(Icons.close, size: 20),
           color: AppTheme.inkFaint,
-          tooltip: 'Απόρριψη',
+          tooltip: loc.pareaInboxDecline,
         ),
         const SizedBox(width: 4),
         FilledButton(
           onPressed: () => service.acceptRequest(friendship.id),
           style: FilledButton.styleFrom(
-            backgroundColor: AppTheme.olive,
+            backgroundColor: Theme.of(context).colorScheme.secondary,
             minimumSize: const Size(0, 36),
             padding:
                 const EdgeInsets.symmetric(horizontal: AppTheme.space3),
           ),
-          child: const Text('Δέξου'),
+          child: Text(loc.pareaInboxAccept),
         ),
       ],
     );
@@ -398,10 +447,11 @@ class _FriendRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _FriendshipRow(
+    final scheme = Theme.of(context).colorScheme;
+    return _PareaRow(
       name: name,
       children: [
-        const Icon(Icons.check_circle, size: 16, color: AppTheme.olive),
+        Icon(Icons.check_circle, size: 16, color: scheme.secondary),
         IconButton(
           onPressed: () async {
             final confirm = await _confirmUnfriend(context, name);
@@ -409,27 +459,27 @@ class _FriendRow extends StatelessWidget {
           },
           icon: const Icon(Icons.more_horiz, size: 18),
           color: AppTheme.inkFaint,
-          tooltip: 'Ενέργειες',
         ),
       ],
     );
   }
 
   Future<bool?> _confirmUnfriend(BuildContext context, String name) {
+    final loc = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Αφαίρεση @$name;'),
-        content: const Text('Η φιλία θα διαγραφεί και για τους δύο.'),
+        title: Text(loc.pareaUnfriendTitle(name)),
+        content: Text(loc.pareaUnfriendBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Άκυρο'),
+            child: Text(loc.pareaUnfriendCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
-            child: const Text('Αφαίρεσε'),
+            child: Text(loc.pareaUnfriendConfirm),
           ),
         ],
       ),
@@ -450,43 +500,19 @@ class _OutboundRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _FriendshipRow(
+    final loc = AppLocalizations.of(context)!;
+    return _PareaRow(
       name: name,
-      subtitle: 'αναμονή επιβεβαίωσης',
-      nameColor: AppTheme.inkSoft,
+      subtitle: loc.pareaSentLabel,
+      dim: true,
       children: [
         IconButton(
           onPressed: () => service.cancelRequest(friendship.id),
           icon: const Icon(Icons.close, size: 20),
           color: AppTheme.inkFaint,
-          tooltip: 'Ακύρωση',
+          tooltip: loc.pareaSentCancel,
         ),
       ],
-    );
-  }
-}
-
-// ── Empty state ───────────────────────────────────────────────────────────────
-
-class _EmptyHint extends StatelessWidget {
-  const _EmptyHint(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppTheme.space2,
-        vertical: AppTheme.space3,
-      ),
-      child: Text(
-        text,
-        style: GoogleFonts.caveat(
-          fontSize: 18,
-          color: AppTheme.inkFaint,
-        ),
-      ),
     );
   }
 }

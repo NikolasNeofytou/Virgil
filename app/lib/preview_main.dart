@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'l10n/generated/app_localizations.dart';
+import 'models/leaderboard_entry.dart';
 import 'providers/active_game_provider.dart';
 import 'screens/estimation/widgets/number_picker.dart';
 import 'screens/estimation/widgets/player_score_row.dart';
 import 'screens/estimation/widgets/round_header.dart';
+import 'screens/tabs/leaderboard_tab.dart';
 import 'screens/tabs/play_tab.dart';
 import 'theme/app_background.dart';
 import 'theme/app_theme.dart';
@@ -177,6 +179,10 @@ class _GalleryState extends State<_Gallery> {
                   const AppSectionLabel('§ 11 · LOBBY', showRule: true),
                   const SizedBox(height: AppTheme.space4),
                   const _LobbyPreview(),
+                  const _Rule(),
+                  const AppSectionLabel('§ 12 · TOURNAMENT', showRule: true),
+                  const SizedBox(height: AppTheme.space4),
+                  const _TournamentPreview(),
                   const SizedBox(height: AppTheme.space6),
                   Text(
                     '— FIN —',
@@ -946,6 +952,77 @@ class _LobbyPreview extends StatelessWidget {
         ),
         const SizedBox(height: AppTheme.space5),
         GamesSection(onEstimationTap: () {}),
+      ],
+    );
+  }
+}
+
+/// §12 — Tournament preview. Shows the editorial header, my-stats hero card,
+/// and four leaderboard rows including a top-3 ochre advancement, the signed-
+/// in player highlight, and a rank-change ↑ chip.
+class _TournamentPreview extends StatelessWidget {
+  const _TournamentPreview();
+
+  @override
+  Widget build(BuildContext context) {
+    const mine = LeaderboardEntry(
+      playerId: 'me',
+      username: 'nikolas',
+      gamesPlayed: 14,
+      wins: 6,
+      lifetimePoints: 247,
+      avgScorePerGame: 17.6,
+      accuracy: 0.62,
+    );
+    final rows = <LeaderboardEntry>[
+      const LeaderboardEntry(
+        playerId: 'caesar',
+        username: 'caesar',
+        gamesPlayed: 28,
+        wins: 18,
+        lifetimePoints: 612,
+        avgScorePerGame: 21.8,
+        accuracy: 0.74,
+      ),
+      const LeaderboardEntry(
+        playerId: 'marios',
+        username: 'marios.k',
+        gamesPlayed: 24,
+        wins: 12,
+        lifetimePoints: 488,
+        avgScorePerGame: 20.3,
+        accuracy: 0.66,
+      ),
+      mine,
+      const LeaderboardEntry(
+        playerId: 'anna',
+        username: 'anna_g',
+        gamesPlayed: 19,
+        wins: 5,
+        lifetimePoints: 213,
+        avgScorePerGame: 11.2,
+        accuracy: 0.55,
+      ),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const TournamentHeader(),
+        const SizedBox(height: AppTheme.space5),
+        const TournamentMyStatsCard(stats: mine),
+        const SizedBox(height: AppTheme.space5),
+        for (var i = 0; i < rows.length; i++)
+          Padding(
+            padding: EdgeInsets.only(
+              bottom: i == rows.length - 1 ? 0 : AppTheme.space2,
+            ),
+            child: TournamentLeaderRow(
+              rank: i + 1,
+              stats: rows[i],
+              isMe: rows[i].playerId == 'me',
+              previousRank: rows[i].playerId == 'me' ? 5 : null,
+            ),
+          ),
       ],
     );
   }
