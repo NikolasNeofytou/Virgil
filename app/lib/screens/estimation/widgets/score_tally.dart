@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../providers/auth_providers.dart';
 import '../../../providers/estimation_providers.dart';
 import '../../../theme/app_theme.dart';
+import '../../../theme/meraki_fonts.dart';
 
 /// Running totals for every seat. A compact kafeneio-receipt strip showing
 /// `@username ········· N` for each player, leader first. Meant to sit just
@@ -45,9 +46,9 @@ class ScoreTally extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          const Text(
             'ΣΚΟΡ · SCORE',
-            style: GoogleFonts.jetBrainsMono(
+            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
               fontSize: 9,
               letterSpacing: 3,
               color: AppTheme.terra,
@@ -153,7 +154,7 @@ class _TallyRowState extends State<_TallyRow>
       children: [
         Text(
           widget.name,
-          style: GoogleFonts.caveat(
+          style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: nameColor,
@@ -163,9 +164,9 @@ class _TallyRowState extends State<_TallyRow>
         ),
         if (widget.isMe) ...[
           const SizedBox(width: 6),
-          Text(
+          const Text(
             'ΕΣΥ',
-            style: GoogleFonts.jetBrainsMono(
+            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
               fontSize: 8,
               fontWeight: FontWeight.w500,
               letterSpacing: 2,
@@ -205,7 +206,7 @@ class _TallyRowState extends State<_TallyRow>
           children: [
             Text(
               '$_displayedScore',
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 20,
                 color: scoreColor,
                 height: 1.0,
@@ -228,7 +229,7 @@ class _TallyRowState extends State<_TallyRow>
                       opacity: opacity,
                       child: Text(
                         '+${_pendingFloater!}',
-                        style: GoogleFonts.caveat(
+                        style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: AppTheme.terra,

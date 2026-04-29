@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../../theme/meraki_fonts.dart';
 
 /// Masthead for every in-game phase. Gloock round numeral, JetBrains Mono
 /// eyebrow, Caveat dealer + starter bylines.
@@ -44,9 +45,9 @@ class RoundHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'ΓΥΡΟΣ · ROUND',
-                      style: GoogleFonts.jetBrainsMono(
+                      style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                         fontSize: 9,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 3,
@@ -60,7 +61,7 @@ class RoundHeader extends StatelessWidget {
                       children: [
                         Text(
                           '$currentRound',
-                          style: GoogleFonts.gloock(
+                          style: GoogleFonts.fraunces(
                             fontSize: 36,
                             color: AppTheme.ink,
                             height: 1.0,
@@ -69,7 +70,7 @@ class RoundHeader extends StatelessWidget {
                         ),
                         Text(
                           ' / $totalRounds',
-                          style: GoogleFonts.gloock(
+                          style: GoogleFonts.fraunces(
                             fontSize: 20,
                             color: AppTheme.inkFaint,
                             height: 1.0,
@@ -80,7 +81,7 @@ class RoundHeader extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       '$cardsThisRound ${cardsThisRound == 1 ? 'κάρτα' : 'κάρτες'}',
-                      style: GoogleFonts.kalam(
+                      style: GoogleFonts.inter(
                         fontSize: 13,
                         color: AppTheme.inkSoft,
                         height: 1.2,
@@ -142,7 +143,7 @@ class _HeaderLine extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.jetBrainsMono(
+          style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
             fontSize: 9,
             fontWeight: FontWeight.w500,
             letterSpacing: 3,
@@ -152,7 +153,7 @@ class _HeaderLine extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           value,
-          style: GoogleFonts.caveat(
+          style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
             fontSize: 20,
             fontWeight: FontWeight.w700,
             color: AppTheme.ink,

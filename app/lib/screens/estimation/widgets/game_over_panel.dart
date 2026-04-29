@@ -23,6 +23,7 @@ import '../../../theme/app_theme.dart';
 import '../room_lobby_screen.dart';
 import 'game_share_card.dart';
 import 'moments_section.dart';
+import '../../../theme/meraki_fonts.dart';
 
 /// Final standings — the Virgil winner moment. A laurel wreath cradles the
 /// winner's name; a terracotta ribbon unfurls below with "ΝΙΚΗΤΗΣ · WINNER".
@@ -255,7 +256,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
               Center(
                 child: Text(
                   sessionLabel,
-                  style: GoogleFonts.jetBrainsMono(
+                  style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 2.5,
@@ -408,7 +409,7 @@ class _NarrationCard extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: GoogleFonts.kalam(
+        style: GoogleFonts.inter(
           fontSize: 16,
           color: AppTheme.ink,
           height: 1.55,
@@ -460,7 +461,7 @@ class _AwardCard extends StatelessWidget {
               children: [
                 Text(
                   award.title,
-                  style: GoogleFonts.gloock(
+                  style: GoogleFonts.fraunces(
                     fontSize: 17,
                     color: AppTheme.ink,
                     height: 1.0,
@@ -470,7 +471,7 @@ class _AwardCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   award.description,
-                  style: GoogleFonts.kalam(
+                  style: GoogleFonts.inter(
                     fontSize: 13,
                     color: AppTheme.inkSoft,
                     height: 1.3,
@@ -482,7 +483,7 @@ class _AwardCard extends StatelessWidget {
           const SizedBox(width: AppTheme.space3),
           Text(
             award.username,
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               fontSize: 18,
               fontWeight: FontWeight.w700,
               color: AppTheme.terra,
@@ -575,7 +576,7 @@ class _WinnerCertificateState extends State<_WinnerCertificate>
                       opacity: captionT,
                       child: Text(
                         l10n.gameOverWinnerLabel,
-                        style: GoogleFonts.jetBrainsMono(
+                        style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                           letterSpacing: 3,
@@ -592,7 +593,7 @@ class _WinnerCertificateState extends State<_WinnerCertificate>
               opacity: captionT,
               child: Text(
                 l10n.gameOverPoints(widget.score),
-                style: GoogleFonts.caveat(
+                style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                   fontSize: 22,
                   color: AppTheme.inkSoft,
                   fontWeight: FontWeight.w700,
@@ -647,7 +648,7 @@ class _Letter extends StatelessWidget {
         opacity: t,
         child: Text(
           char,
-          style: GoogleFonts.gloock(
+          style: GoogleFonts.fraunces(
             fontSize: 40,
             color: AppTheme.ink,
             height: 1.0,
@@ -842,7 +843,7 @@ class _StandingRow extends StatelessWidget {
             width: 24,
             child: Text(
               '$rank',
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 20,
                 color: isWinner ? AppTheme.terra : AppTheme.inkFaint,
                 height: 1.0,
@@ -854,7 +855,7 @@ class _StandingRow extends StatelessWidget {
           Expanded(
             child: Text(
               name,
-              style: GoogleFonts.caveat(
+              style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
                 color: isWinner ? AppTheme.terra : AppTheme.ink,
@@ -865,7 +866,7 @@ class _StandingRow extends StatelessWidget {
           ),
           Text(
             '$score',
-            style: GoogleFonts.gloock(
+            style: GoogleFonts.fraunces(
               fontSize: 22,
               color: isWinner ? AppTheme.terra : AppTheme.ink,
               height: 1.0,
@@ -889,7 +890,7 @@ class AppSectionLabelMono extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.jetBrainsMono(
+      style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
         fontSize: 10,
         fontWeight: FontWeight.w500,
         letterSpacing: 3,

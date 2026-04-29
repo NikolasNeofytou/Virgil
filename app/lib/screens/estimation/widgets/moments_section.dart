@@ -10,6 +10,7 @@ import '../../../providers/estimation_providers.dart';
 import '../../../services/estimation_service.dart';
 import '../../../theme/app_theme.dart';
 import 'game_over_panel.dart' show AppSectionLabelMono;
+import '../../../theme/meraki_fonts.dart';
 
 /// "Στιγμές · MOMENTS" — user-curated 140-char notes attached to a game.
 /// Renders on the game-over panel (live and historical) below the auto
@@ -75,7 +76,7 @@ class _EmptyHint extends StatelessWidget {
       ),
       child: Text(
         'καμία στιγμή ακόμη.\nγράψε τη φράση που θα θυμόσαστε.',
-        style: GoogleFonts.kalam(
+        style: GoogleFonts.inter(
           fontSize: 13,
           color: AppTheme.inkSoft,
           height: 1.4,
@@ -120,7 +121,7 @@ class _MomentCard extends ConsumerWidget {
               Expanded(
                 child: Text(
                   authorName,
-                  style: GoogleFonts.caveat(
+                  style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: AppTheme.terra,
@@ -140,7 +141,7 @@ class _MomentCard extends ConsumerWidget {
                   ),
                   child: Text(
                     'ΓΥΡΟΣ ${moment.roundNumber}',
-                    style: GoogleFonts.jetBrainsMono(
+                    style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                       fontSize: 8,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 2,
@@ -168,7 +169,7 @@ class _MomentCard extends ConsumerWidget {
           const SizedBox(height: 4),
           Text(
             moment.body,
-            style: GoogleFonts.kalam(
+            style: GoogleFonts.inter(
               fontSize: 15,
               color: AppTheme.ink,
               height: 1.4,
@@ -305,7 +306,7 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
           children: [
             Text(
               'Πρόσθεσε στιγμή',
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 24,
                 color: AppTheme.ink,
                 height: 1.0,
@@ -315,7 +316,7 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
             const SizedBox(height: 4),
             Text(
               'μια φράση για να θυμάστε αυτό το παιχνίδι',
-              style: GoogleFonts.kalam(
+              style: GoogleFonts.inter(
                 fontSize: 14,
                 color: AppTheme.inkSoft,
               ),
@@ -329,14 +330,14 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
               minLines: 2,
               textInputAction: TextInputAction.newline,
               inputFormatters: [LengthLimitingTextInputFormatter(140)],
-              style: GoogleFonts.kalam(
+              style: GoogleFonts.inter(
                 fontSize: 16,
                 color: AppTheme.ink,
                 height: 1.4,
               ),
               decoration: InputDecoration(
                 hintText: 'π.χ. Ο Caesar κάλεσε 5, πήρε 0. Ωραία βραδιά.',
-                hintStyle: GoogleFonts.kalam(
+                hintStyle: GoogleFonts.inter(
                   fontSize: 16,
                   color: AppTheme.inkFaint,
                 ),
@@ -346,9 +347,9 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
             ),
             if (totalRounds > 0) ...[
               const SizedBox(height: AppTheme.space4),
-              Text(
+              const Text(
                 'ΓΥΡΟΣ · ROUND',
-                style: GoogleFonts.jetBrainsMono(
+                style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 3,
@@ -426,7 +427,7 @@ class _RoundChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: GoogleFonts.jetBrainsMono(
+          style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
             fontSize: 11,
             fontWeight: FontWeight.w600,
             letterSpacing: 1.5,

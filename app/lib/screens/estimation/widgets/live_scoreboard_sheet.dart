@@ -6,6 +6,7 @@ import '../../../models/live_player_stats.dart';
 import '../../../providers/auth_providers.dart';
 import '../../../providers/estimation_providers.dart';
 import '../../../theme/app_theme.dart';
+import '../../../theme/meraki_fonts.dart';
 
 /// Pull-up sheet showing live per-player rankings, prediction accuracy, and
 /// a round-by-round score-progression line chart. Open from the game screen
@@ -86,10 +87,10 @@ class _LiveScoreboardSheet extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Center(
+                    const Center(
                       child: Text(
                         'ΖΩΝΤΑΝΗ ΚΑΤΑΤΑΞΗ · LIVE',
-                        style: GoogleFonts.jetBrainsMono(
+                        style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                           fontSize: 9,
                           letterSpacing: 3,
                           color: AppTheme.terra,
@@ -132,9 +133,9 @@ class _LiveScoreboardSheet extends ConsumerWidget {
                         ),
                       if (anyScored) ...[
                         const SizedBox(height: AppTheme.space5),
-                        Text(
+                        const Text(
                           'ΕΞΕΛΙΞΗ ΣΚΟΡ · CHART',
-                          style: GoogleFonts.jetBrainsMono(
+                          style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                             fontSize: 9,
                             letterSpacing: 3,
                             color: AppTheme.inkFaint,
@@ -179,7 +180,7 @@ class _EmptyState extends StatelessWidget {
           const SizedBox(height: AppTheme.space3),
           Text(
             'περιμένουμε δεδομένα…',
-            style: GoogleFonts.kalam(
+            style: GoogleFonts.inter(
               fontSize: 14,
               color: AppTheme.inkSoft,
             ),
@@ -231,7 +232,7 @@ class _RankRow extends StatelessWidget {
             child: Text(
               '$rank',
               textAlign: TextAlign.center,
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 18,
                 color: rank == 1 ? AppTheme.terra : AppTheme.inkFaint,
                 height: 1.0,
@@ -257,7 +258,7 @@ class _RankRow extends StatelessWidget {
                   child: Text(
                     stats.username,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.caveat(
+                    style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: isMe ? AppTheme.terra : AppTheme.ink,
@@ -276,9 +277,9 @@ class _RankRow extends StatelessWidget {
                       color: AppTheme.terraMuted,
                       borderRadius: BorderRadius.circular(2),
                     ),
-                    child: Text(
+                    child: const Text(
                       'ΕΣΥ',
-                      style: GoogleFonts.jetBrainsMono(
+                      style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                         fontSize: 8,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 2,
@@ -297,15 +298,15 @@ class _RankRow extends StatelessWidget {
             children: [
               Text(
                 accLabel,
-                style: GoogleFonts.gloock(
+                style: GoogleFonts.fraunces(
                   fontSize: 16,
                   color: AppTheme.ink,
                   height: 1.0,
                 ),
               ),
-              Text(
+              const Text(
                 'ΑΚΡ.',
-                style: GoogleFonts.jetBrainsMono(
+                style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                   fontSize: 8,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 2,
@@ -321,16 +322,16 @@ class _RankRow extends StatelessWidget {
             children: [
               Text(
                 '${stats.totalScore}',
-                style: GoogleFonts.gloock(
+                style: GoogleFonts.fraunces(
                   fontSize: 22,
                   color: AppTheme.terra,
                   height: 1.0,
                   letterSpacing: -0.4,
                 ),
               ),
-              Text(
+              const Text(
                 'ΠΟΝΤΟΙ',
-                style: GoogleFonts.jetBrainsMono(
+                style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                   fontSize: 8,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 2,

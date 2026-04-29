@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../../theme/meraki_fonts.dart';
 
 /// The kafeneio ceremony for picking who deals round 1.
 ///
@@ -147,9 +148,9 @@ class _Reveal extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
+        const Text(
           'ΤΡΑΒΟΥΜΕ ΚΛΗΡΟ · DRAWING LOTS',
-          style: GoogleFonts.jetBrainsMono(
+          style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
             fontSize: 10,
             fontWeight: FontWeight.w500,
             letterSpacing: 3,
@@ -172,7 +173,7 @@ class _Reveal extends StatelessWidget {
             children: [
               Text(
                 'μοιράζει',
-                style: GoogleFonts.caveat(
+                style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                   fontSize: 20,
                   color: AppTheme.inkSoft,
                 ),
@@ -181,7 +182,7 @@ class _Reveal extends StatelessWidget {
               Text(
                 dealerName,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.gloock(
+                style: GoogleFonts.fraunces(
                   fontSize: 42,
                   color: AppTheme.ink,
                   letterSpacing: -0.5,
@@ -333,7 +334,7 @@ class _Straw extends StatelessWidget {
               padding: const EdgeInsets.only(top: 4),
               child: Text(
                 '$seatLabel',
-                style: GoogleFonts.jetBrainsMono(
+                style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                   fontSize: 9,
                   letterSpacing: 1,
                   color: isDealer && dealerGlow > 0.3

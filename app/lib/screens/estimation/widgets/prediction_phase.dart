@@ -12,6 +12,7 @@ import '../../../theme/app_theme.dart';
 import 'number_picker.dart';
 import 'round_header.dart';
 import 'score_tally.dart';
+import '../../../theme/meraki_fonts.dart';
 
 /// Sequential prediction phase.
 ///
@@ -277,9 +278,9 @@ class _WaitingCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
+          const Text(
             'ΓΥΡΟΣ ΠΡΟΒΛΕΨΕΩΝ',
-            style: GoogleFonts.jetBrainsMono(
+            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
               fontSize: 10,
               fontWeight: FontWeight.w500,
               letterSpacing: 3,
@@ -290,7 +291,7 @@ class _WaitingCard extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               fontSize: 26,
               fontWeight: FontWeight.w700,
               color: AppTheme.ink,
@@ -350,7 +351,7 @@ class _BidRow extends StatelessWidget {
             width: 28,
             child: Text(
               '$order',
-              style: GoogleFonts.jetBrainsMono(
+              style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 11,
                 letterSpacing: 2,
                 color: AppTheme.inkFaint,
@@ -363,7 +364,7 @@ class _BidRow extends StatelessWidget {
                 Flexible(
                   child: Text(
                     name,
-                    style: GoogleFonts.caveat(
+                    style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: isMe ? AppTheme.terra : AppTheme.ink,
@@ -383,9 +384,9 @@ class _BidRow extends StatelessWidget {
                       color: AppTheme.terraMuted,
                       borderRadius: BorderRadius.circular(2),
                     ),
-                    child: Text(
+                    child: const Text(
                       'ΕΣΥ',
-                      style: GoogleFonts.jetBrainsMono(
+                      style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                         fontSize: 8,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 2,
@@ -400,7 +401,7 @@ class _BidRow extends StatelessWidget {
           if (locked)
             Text(
               '${prediction ?? 0}',
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 22,
                 color: AppTheme.ink,
                 height: 1.0,
@@ -410,7 +411,7 @@ class _BidRow extends StatelessWidget {
           else if (isCurrent)
             Text(
               '…',
-              style: GoogleFonts.caveat(
+              style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                 fontSize: 20,
                 color: AppTheme.terra,
                 fontWeight: FontWeight.w700,
@@ -419,7 +420,7 @@ class _BidRow extends StatelessWidget {
           else
             Text(
               '—',
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 18,
                 color: AppTheme.inkFaint,
               ),

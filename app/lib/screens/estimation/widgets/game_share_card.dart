@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../models/game_award.dart';
 import '../../../theme/app_theme.dart';
+import '../../../theme/meraki_fonts.dart';
 
 /// Static, animation-free poster of the game result, sized for capture →
 /// PNG → share-sheet. Width is fixed at 360 logical pixels; capture at
@@ -49,7 +50,7 @@ class EstimationShareCard extends StatelessWidget {
             child: Text(
               sessionLabel,
               textAlign: TextAlign.center,
-              style: GoogleFonts.jetBrainsMono(
+              style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
                 letterSpacing: 2.5,
@@ -132,10 +133,10 @@ class _Masthead extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
+        const Text(
           'A GUIDE FOR THE TABLE',
           textAlign: TextAlign.center,
-          style: GoogleFonts.jetBrainsMono(
+          style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
             fontSize: 9,
             fontWeight: FontWeight.w500,
             letterSpacing: 3.5,
@@ -150,7 +151,7 @@ class _Masthead extends StatelessWidget {
         Text(
           'VIRGIL',
           textAlign: TextAlign.center,
-          style: GoogleFonts.gloock(
+          style: GoogleFonts.fraunces(
             fontSize: 38,
             color: AppTheme.ink,
             height: 1.0,
@@ -172,10 +173,10 @@ class _WinnerBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
+        const Text(
           'ΝΙΚΗΤΗΣ · WINNER',
           textAlign: TextAlign.center,
-          style: GoogleFonts.jetBrainsMono(
+          style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
             fontSize: 10,
             fontWeight: FontWeight.w500,
             letterSpacing: 3,
@@ -186,7 +187,7 @@ class _WinnerBlock extends StatelessWidget {
         Text(
           name,
           textAlign: TextAlign.center,
-          style: GoogleFonts.gloock(
+          style: GoogleFonts.fraunces(
             fontSize: 42,
             color: AppTheme.ink,
             height: 1.05,
@@ -201,7 +202,7 @@ class _WinnerBlock extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             '$score πόντοι',
-            style: GoogleFonts.gloock(
+            style: GoogleFonts.fraunces(
               fontSize: 16,
               color: AppTheme.paper,
               height: 1.0,
@@ -222,7 +223,7 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.jetBrainsMono(
+      style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
         fontSize: 10,
         fontWeight: FontWeight.w500,
         letterSpacing: 3,
@@ -269,7 +270,7 @@ class _StandingRow extends StatelessWidget {
             width: 24,
             child: Text(
               '$rank',
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 20,
                 color: isWinner ? AppTheme.terra : AppTheme.inkFaint,
                 height: 1.0,
@@ -281,7 +282,7 @@ class _StandingRow extends StatelessWidget {
           Expanded(
             child: Text(
               name,
-              style: GoogleFonts.caveat(
+              style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
                 color: isWinner ? AppTheme.terra : AppTheme.ink,
@@ -292,7 +293,7 @@ class _StandingRow extends StatelessWidget {
           ),
           Text(
             '$score',
-            style: GoogleFonts.gloock(
+            style: GoogleFonts.fraunces(
               fontSize: 22,
               color: isWinner ? AppTheme.terra : AppTheme.ink,
               height: 1.0,
@@ -326,7 +327,7 @@ class _NarrationCard extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: GoogleFonts.kalam(
+        style: GoogleFonts.inter(
           fontSize: 14,
           color: AppTheme.ink,
           height: 1.55,
@@ -374,7 +375,7 @@ class _AwardCard extends StatelessWidget {
               children: [
                 Text(
                   award.title,
-                  style: GoogleFonts.gloock(
+                  style: GoogleFonts.fraunces(
                     fontSize: 15,
                     color: AppTheme.ink,
                     height: 1.0,
@@ -384,7 +385,7 @@ class _AwardCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   award.description,
-                  style: GoogleFonts.kalam(
+                  style: GoogleFonts.inter(
                     fontSize: 12,
                     color: AppTheme.inkSoft,
                     height: 1.3,
@@ -396,7 +397,7 @@ class _AwardCard extends StatelessWidget {
           const SizedBox(width: AppTheme.space2),
           Text(
             award.username,
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: AppTheme.terra,
@@ -440,7 +441,7 @@ class _MomentShareCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   moment.authorName,
-                  style: GoogleFonts.caveat(
+                  style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: AppTheme.terra,
@@ -460,7 +461,7 @@ class _MomentShareCard extends StatelessWidget {
                   ),
                   child: Text(
                     'ΓΥΡΟΣ ${moment.roundNumber}',
-                    style: GoogleFonts.jetBrainsMono(
+                    style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                       fontSize: 8,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 2,
@@ -473,7 +474,7 @@ class _MomentShareCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             moment.body,
-            style: GoogleFonts.kalam(
+            style: GoogleFonts.inter(
               fontSize: 13,
               color: AppTheme.ink,
               height: 1.4,
@@ -498,7 +499,7 @@ class _Footer extends StatelessWidget {
         Text(
           'virgil · ${DateFormat('d MMM yyyy').format(date.toLocal())}',
           textAlign: TextAlign.center,
-          style: GoogleFonts.jetBrainsMono(
+          style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
             fontSize: 9,
             fontWeight: FontWeight.w500,
             letterSpacing: 2.5,

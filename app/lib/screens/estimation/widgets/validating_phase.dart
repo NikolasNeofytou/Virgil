@@ -9,6 +9,7 @@ import '../../../services/estimation_service.dart';
 import '../../../theme/app_background.dart';
 import '../../../theme/app_theme.dart';
 import 'round_header.dart';
+import '../../../theme/meraki_fonts.dart';
 
 class ValidatingPhase extends ConsumerStatefulWidget {
   const ValidatingPhase({super.key, required this.gameId});
@@ -376,7 +377,7 @@ class _ResultRowState extends State<_ResultRow>
                     Flexible(
                       child: Text(
                         widget.username,
-                        style: GoogleFonts.caveat(
+                        style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
                           color: widget.isMe
@@ -397,9 +398,9 @@ class _ResultRowState extends State<_ResultRow>
                           color: AppTheme.terraMuted,
                           borderRadius: BorderRadius.circular(2),
                         ),
-                        child: Text(
+                        child: const Text(
                           'ΕΣΥ',
-                          style: GoogleFonts.jetBrainsMono(
+                          style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                             fontSize: 8,
                             fontWeight: FontWeight.w500,
                             letterSpacing: 2,
@@ -424,7 +425,7 @@ class _ResultRowState extends State<_ResultRow>
                   opacity: predT,
                   child: Text(
                     '→',
-                    style: GoogleFonts.gloock(
+                    style: GoogleFonts.fraunces(
                       fontSize: 18,
                       color: AppTheme.inkFaint,
                       height: 1.0,
@@ -451,7 +452,7 @@ class _ResultRowState extends State<_ResultRow>
                           child: Text(
                             '★ +${widget.score}',
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.caveat(
+                            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
                               color: AppTheme.olive,
@@ -464,7 +465,7 @@ class _ResultRowState extends State<_ResultRow>
                         child: Text(
                           '+${widget.score}',
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.caveat(
+                          style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                             color: AppTheme.inkSoft,
@@ -532,7 +533,7 @@ class _RevealNumeral extends StatelessWidget {
             scale: scale,
             child: Text(
               '$value',
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 26,
                 color: color,
                 height: 1.0,
