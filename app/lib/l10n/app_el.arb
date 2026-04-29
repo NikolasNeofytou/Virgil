@@ -1,0 +1,51 @@
+{
+  "@@locale": "el",
+  "appTitle": "Virgil",
+  "appTagline": "ένας οδηγός για το τραπέζι",
+
+  "tabPlay": "Παίξε",
+  "tabFriends": "Φίλοι",
+  "tabLeaderboard": "Κατάταξη",
+  "tabProfile": "Προφίλ",
+
+  "signInTitle": "Καλώς ήρθες",
+  "signInSubtitle": "συνδέσου για να μπεις στο τραπέζι",
+
+  "usernamePickerSection": "§ 01 · ΟΝΟΜΑ · NAME",
+  "usernamePickerTitle": "Διάλεξε όνομα",
+  "usernamePickerSubtitle": "το όνομά σου στο τραπέζι",
+  "usernamePickerHint": "3–24 χαρακτήρες · γράμματα, αριθμοί, _",
+  "usernamePickerSubmit": "Συνέχεια",
+  "usernamePickerErrorInvalid": "3–24 χαρακτήρες · γράμματα, αριθμοί, _",
+  "usernamePickerErrorTaken": "αυτό το όνομα υπάρχει ήδη",
+  "usernamePickerErrorSession": "η σύνδεση έληξε · συνδέσου ξανά",
+  "usernamePickerErrorGeneric": "σφάλμα · δοκίμασε ξανά",
+
+  "gameOverWinnerLabel": "ΝΙΚΗΤΗΣ · WINNER",
+  "gameOverFinalLabel": "ΚΑΤΑΤΑΞΗ · FINAL",
+  "gameOverNarrationLabel": "ΝΑΡΡΗΣΗ · NIGHT NOTE",
+  "gameOverAwardsLabel": "ΒΡΑΒΕΙΑ · AWARDS",
+  "gameOverMomentsLabel": "ΣΤΙΓΜΕΣ · MOMENTS",
+  "gameOverPoints": "{score} πόντοι",
+  "@gameOverPoints": {
+    "placeholders": {
+      "score": { "type": "int" }
+    }
+  },
+  "gameOverRematch": "Νέο παιχνίδι",
+  "gameOverShare": "Κοινοποίηση",
+  "gameOverBackToMenu": "Πίσω στο μενού",
+
+  "leaderboardTitle": "Κατάταξη",
+  "leaderboardSubtitle": "τα σκορ του τραπεζιού",
+  "leaderboardYouSection": "§ 01 · ΟΙ ΣΤΑΤΙΣΤΙΚΕΣ ΣΟΥ · YOU",
+  "leaderboardTopSection": "§ 02 · TOP 10 · LEADERS",
+  "leaderboardYouBadge": "ΕΣΥ",
+  "leaderboardWinsLabel": "WINS",
+  "leaderboardYourPosition": "η θέση σου",
+  "leaderboardEmptyTitle": "κενό φύλλο",
+  "leaderboardEmptyBody": "γίνε ο πρώτος που θα μπει στην κατάταξη.\nένα κλειστό παιχνίδι αρκεί.",
+
+  "profileLanguageLabel": "Γλώσσα",
+  "profileSignOut": "Αποσύνδεση"
+}

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../providers/auth_providers.dart';
 import '../services/supabase_client.dart';
 import '../theme/app_background.dart';
@@ -43,9 +44,10 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     final username = _controller.text.trim();
     if (!_re.hasMatch(username)) {
-      _setError('3–24 χαρακτήρες · γράμματα, αριθμοί, _');
+      _setError(l10n.usernamePickerErrorInvalid);
       return;
     }
     setState(() {
@@ -78,8 +80,8 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
       if (mounted) {
         _setError(
           e.toString().contains('players_username_key')
-              ? 'αυτό το όνομα υπάρχει ήδη'
-              : 'σφάλμα · δοκίμασε ξανά',
+              ? l10n.usernamePickerErrorTaken
+              : l10n.usernamePickerErrorGeneric,
         );
       }
     } finally {
@@ -95,6 +97,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -116,7 +119,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
 
                     Center(
                       child: Text(
-                        '§ 01 · ΟΝΟΜΑ · NAME',
+                        l10n.usernamePickerSection,
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
@@ -128,7 +131,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
                     const SizedBox(height: AppTheme.space3),
                     Center(
                       child: Text(
-                        'Διάλεξε όνομα',
+                        l10n.usernamePickerTitle,
                         style: GoogleFonts.gloock(
                           fontSize: 40,
                           color: AppTheme.ink,
@@ -140,7 +143,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
                     const SizedBox(height: 4),
                     Center(
                       child: Text(
-                        'το όνομά σου στο τραπέζι',
+                        l10n.usernamePickerSubtitle,
                         style: GoogleFonts.caveat(
                           fontSize: 20,
                           color: AppTheme.terra,
@@ -159,7 +162,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
                     const SizedBox(height: AppTheme.space2),
                     Center(
                       child: Text(
-                        '3–24 χαρακτήρες · γράμματα, αριθμοί, _',
+                        l10n.usernamePickerHint,
                         style: GoogleFonts.kalam(
                           fontSize: 12,
                           color: AppTheme.inkFaint,
@@ -176,7 +179,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
                               width: 18,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('Συνέχεια'),
+                          : Text(l10n.usernamePickerSubmit),
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: AppTheme.space3),

@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/game_award.dart';
 import '../../../providers/active_game_provider.dart';
 import '../../../providers/estimation_providers.dart';
@@ -213,6 +214,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final players =
         ref.watch(estimationPlayersStreamProvider(widget.gameId)).valueOrNull ??
             [];
@@ -264,7 +266,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
               const SizedBox(height: AppTheme.space5),
               _WinnerCertificate(name: winnerName, score: winner.totalScore),
               const SizedBox(height: AppTheme.space6),
-              const AppSectionLabelMono('ΚΑΤΑΤΑΞΗ · FINAL'),
+              AppSectionLabelMono(l10n.gameOverFinalLabel),
               const SizedBox(height: AppTheme.space3),
               ...List.generate(sorted.length, (i) {
                 final p = sorted[i];
@@ -279,7 +281,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
 
               if (narration != null) ...[
                 const SizedBox(height: AppTheme.space6),
-                const AppSectionLabelMono('ΝΑΡΡΗΣΗ · NIGHT NOTE'),
+                AppSectionLabelMono(l10n.gameOverNarrationLabel),
                 const SizedBox(height: AppTheme.space3),
                 _NarrationCard(text: narration)
                     .animate()
@@ -295,7 +297,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
 
               if (awards.isNotEmpty) ...[
                 const SizedBox(height: AppTheme.space6),
-                const AppSectionLabelMono('ΒΡΑΒΕΙΑ · AWARDS'),
+                AppSectionLabelMono(l10n.gameOverAwardsLabel),
                 const SizedBox(height: AppTheme.space3),
                 for (var i = 0; i < awards.length; i++)
                   Padding(
@@ -328,7 +330,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
                           width: 18,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Νέο παιχνίδι'),
+                      : Text(l10n.gameOverRematch),
                 ),
                 const SizedBox(height: AppTheme.space2),
               ],
@@ -340,7 +342,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
                         width: 18,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Κοινοποίηση'),
+                    : Text(l10n.gameOverShare),
               ),
               if (!widget.isHistorical) ...[
                 const SizedBox(height: AppTheme.space2),
@@ -348,7 +350,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
                   onPressed: () => Navigator.of(context).popUntil(
                     (route) => route.isFirst,
                   ),
-                  child: const Text('Πίσω στο μενού'),
+                  child: Text(l10n.gameOverBackToMenu),
                 ),
               ],
             ],
@@ -532,6 +534,7 @@ class _WinnerCertificateState extends State<_WinnerCertificate>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AnimatedBuilder(
       animation: _ctrl,
       builder: (context, _) {
@@ -571,7 +574,7 @@ class _WinnerCertificateState extends State<_WinnerCertificate>
                     child: Opacity(
                       opacity: captionT,
                       child: Text(
-                        'ΝΙΚΗΤΗΣ · WINNER',
+                        l10n.gameOverWinnerLabel,
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
@@ -588,7 +591,7 @@ class _WinnerCertificateState extends State<_WinnerCertificate>
             Opacity(
               opacity: captionT,
               child: Text(
-                '${widget.score} πόντοι',
+                l10n.gameOverPoints(widget.score),
                 style: GoogleFonts.caveat(
                   fontSize: 22,
                   color: AppTheme.inkSoft,

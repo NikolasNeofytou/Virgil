@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/player_profile.dart';
 import '../../providers/auth_providers.dart';
 import '../../providers/stats_providers.dart';
@@ -140,7 +141,7 @@ class _ProfileBody extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Γλώσσα',
+                  AppLocalizations.of(context)!.profileLanguageLabel,
                   style: GoogleFonts.caveat(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
