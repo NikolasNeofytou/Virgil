@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/leaderboard_entry.dart';
+import '../services/last_seen_leaderboard.dart';
 import '../services/supabase_client.dart';
 import 'auth_providers.dart';
 
@@ -42,4 +43,23 @@ final myRankProvider = Provider<int?>((ref) {
   if (userId == null || list == null) return null;
   final idx = list.indexWhere((s) => s.playerId == userId);
   return idx == -1 ? null : idx + 1;
+});
+
+/// Service-instance provider — overrideable in tests to inject a fake
+/// `SharedPreferences`. Default delegates to the platform.
+final lastSeenLeaderboardServiceProvider =
+    Provider<LastSeenLeaderboardService>((ref) {
+  return LastSeenLeaderboardService();
+});
+
+/// playerId → 1-indexed rank of the previous leaderboard visit. Loaded
+/// once on first read; subsequent reads return the cached snapshot. The
+/// leaderboard tab calls `[lastSeenLeaderboardServiceProvider].save()`
+/// directly to write — we deliberately don't expose a setter on this
+/// provider so saves don't accidentally invalidate the cached value
+/// mid-session (we want deltas computed against the snapshot at *mount*).
+final lastSeenLeaderboardRanksProvider =
+    FutureProvider<Map<String, int>>((ref) async {
+  final service = ref.watch(lastSeenLeaderboardServiceProvider);
+  return service.load();
 });

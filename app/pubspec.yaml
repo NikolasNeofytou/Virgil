@@ -60,6 +60,9 @@ dependencies:
   share_plus: ^10.1.4
   path_provider: ^2.1.4
 
+  # Per-device "last seen" leaderboard ranks (rank-change delta chips)
+  shared_preferences: ^2.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
