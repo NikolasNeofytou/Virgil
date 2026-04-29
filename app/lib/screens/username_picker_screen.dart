@@ -9,6 +9,7 @@ import '../services/supabase_client.dart';
 import '../theme/app_background.dart';
 import '../theme/app_theme.dart';
 import '../theme/shake_on_error.dart';
+import '../theme/meraki_fonts.dart';
 
 /// Shown once, right after first sign-in. Username must be 3-24 chars,
 /// alphanumeric + underscore, and globally unique.
@@ -120,7 +121,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
                     Center(
                       child: Text(
                         l10n.usernamePickerSection,
-                        style: GoogleFonts.jetBrainsMono(
+                        style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                           letterSpacing: 3,
@@ -132,7 +133,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
                     Center(
                       child: Text(
                         l10n.usernamePickerTitle,
-                        style: GoogleFonts.gloock(
+                        style: GoogleFonts.fraunces(
                           fontSize: 40,
                           color: AppTheme.ink,
                           letterSpacing: -0.5,
@@ -144,7 +145,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
                     Center(
                       child: Text(
                         l10n.usernamePickerSubtitle,
-                        style: GoogleFonts.caveat(
+                        style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                           fontSize: 20,
                           color: AppTheme.terra,
                         ),
@@ -163,7 +164,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
                     Center(
                       child: Text(
                         l10n.usernamePickerHint,
-                        style: GoogleFonts.kalam(
+                        style: GoogleFonts.inter(
                           fontSize: 12,
                           color: AppTheme.inkFaint,
                         ),
@@ -186,7 +187,7 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
                       Text(
                         _error!,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.caveat(
+                        style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                           color: AppTheme.danger,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -267,7 +268,7 @@ class _UsernameFieldState extends State<_UsernameField> {
         children: [
           Text(
             '@',
-            style: GoogleFonts.gloock(
+            style: GoogleFonts.fraunces(
               fontSize: 24,
               color: hasText ? AppTheme.terra : AppTheme.inkFaint,
               height: 1.0,
@@ -284,7 +285,7 @@ class _UsernameFieldState extends State<_UsernameField> {
               autocorrect: false,
               enableSuggestions: false,
               textCapitalization: TextCapitalization.none,
-              style: GoogleFonts.caveat(
+              style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
                 color: AppTheme.ink,
@@ -298,7 +299,7 @@ class _UsernameFieldState extends State<_UsernameField> {
               decoration: InputDecoration(
                 counterText: '',
                 hintText: 'όνομα…',
-                hintStyle: GoogleFonts.caveat(
+                hintStyle: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
                   color: AppTheme.inkFaint,
@@ -325,12 +326,12 @@ class _MiniMasthead extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'VOL. I · APR 2026',
-              style: GoogleFonts.jetBrainsMono(
+              style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 9,
                 letterSpacing: 3,
                 color: AppTheme.inkSoft,
@@ -338,7 +339,7 @@ class _MiniMasthead extends StatelessWidget {
             ),
             Text(
               'KAFENEIO',
-              style: GoogleFonts.jetBrainsMono(
+              style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 9,
                 letterSpacing: 3,
                 color: AppTheme.inkSoft,
@@ -354,7 +355,7 @@ class _MiniMasthead extends StatelessWidget {
         Center(
           child: Text(
             'Virgil',
-            style: GoogleFonts.gloock(
+            style: GoogleFonts.fraunces(
               fontSize: 56,
               color: AppTheme.ink,
               letterSpacing: -1.2,
@@ -366,7 +367,7 @@ class _MiniMasthead extends StatelessWidget {
         Center(
           child: Text(
             'a guide for the table',
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               fontSize: 18,
               color: AppTheme.terra,
             ),
