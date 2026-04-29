@@ -122,4 +122,81 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get profileSignOut => 'Αποσύνδεση';
+
+  @override
+  String get lobbyGreetingMorning => 'Καλημέρα';
+
+  @override
+  String get lobbyGreetingAfternoon => 'Καλησπέρα';
+
+  @override
+  String get lobbyGreetingEvening => 'Καλό βράδυ';
+
+  @override
+  String get lobbyGreetingFallback => 'Καλώς ήρθες';
+
+  @override
+  String get lobbyHeroTitle => 'Στρώθηκε τραπέζι για εσένα.';
+
+  @override
+  String get lobbyTodayLabel => 'ΣΗΜΕΡΑ';
+
+  @override
+  String get lobbyTonightSection => 'ΑΠΟΨΕ · TONIGHT';
+
+  @override
+  String get lobbyEstimationName => 'Πρόβλεψη';
+
+  @override
+  String get lobbyEstimationDescription =>
+      'Πες πόσες μπάζες θα πάρεις. Δες ποιος ξέρει τα χαρτιά του.';
+
+  @override
+  String get lobbyTakeYourSeat => 'Πιάσε θέση';
+
+  @override
+  String get lobbyJoin => 'Μπες';
+
+  @override
+  String get lobbyContinueLabel => 'Συνέχισε';
+
+  @override
+  String get lobbyInProgressSection => 'ΣΕ ΕΞΕΛΙΞΗ · IN PROGRESS';
+
+  @override
+  String get lobbyInProgressLobby => 'στο δωμάτιο';
+
+  @override
+  String lobbyInProgressRound(int round) {
+    return 'Γύρος $round';
+  }
+
+  @override
+  String get lobbyGamesSection => 'ΠΑΙΧΝΙΔΙΑ · GAMES';
+
+  @override
+  String get lobbyGamePilotta => 'Πιλόττα';
+
+  @override
+  String get lobbyGamePilottaTagline => 'Η Κυπριακή κλασική του καφενείου.';
+
+  @override
+  String get lobbyGameTavli => 'Ταβλί';
+
+  @override
+  String get lobbyGameTavliTagline =>
+      'Τρία παιχνίδια — Πόρτες, Πλακωτό, Φεύγα.';
+
+  @override
+  String get lobbyGameBiriba => 'Μπιρίμπα';
+
+  @override
+  String get lobbyGameBiribaTagline =>
+      'Δύο τράπουλες. Μεγάλα παιχνίδια. Οικογενειακό.';
+
+  @override
+  String get lobbyChipLive => 'live';
+
+  @override
+  String get lobbyChipSoon => 'σύντομα';
 }

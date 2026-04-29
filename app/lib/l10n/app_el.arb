@@ -47,5 +47,35 @@
   "leaderboardEmptyBody": "γίνε ο πρώτος που θα μπει στην κατάταξη.\nένα κλειστό παιχνίδι αρκεί.",
 
   "profileLanguageLabel": "Γλώσσα",
-  "profileSignOut": "Αποσύνδεση"
+  "profileSignOut": "Αποσύνδεση",
+
+  "lobbyGreetingMorning": "Καλημέρα",
+  "lobbyGreetingAfternoon": "Καλησπέρα",
+  "lobbyGreetingEvening": "Καλό βράδυ",
+  "lobbyGreetingFallback": "Καλώς ήρθες",
+  "lobbyHeroTitle": "Στρώθηκε τραπέζι για εσένα.",
+  "lobbyTodayLabel": "ΣΗΜΕΡΑ",
+  "lobbyTonightSection": "ΑΠΟΨΕ · TONIGHT",
+  "lobbyEstimationName": "Πρόβλεψη",
+  "lobbyEstimationDescription": "Πες πόσες μπάζες θα πάρεις. Δες ποιος ξέρει τα χαρτιά του.",
+  "lobbyTakeYourSeat": "Πιάσε θέση",
+  "lobbyJoin": "Μπες",
+  "lobbyContinueLabel": "Συνέχισε",
+  "lobbyInProgressSection": "ΣΕ ΕΞΕΛΙΞΗ · IN PROGRESS",
+  "lobbyInProgressLobby": "στο δωμάτιο",
+  "lobbyInProgressRound": "Γύρος {round}",
+  "@lobbyInProgressRound": {
+    "placeholders": {
+      "round": { "type": "int" }
+    }
+  },
+  "lobbyGamesSection": "ΠΑΙΧΝΙΔΙΑ · GAMES",
+  "lobbyGamePilotta": "Πιλόττα",
+  "lobbyGamePilottaTagline": "Η Κυπριακή κλασική του καφενείου.",
+  "lobbyGameTavli": "Ταβλί",
+  "lobbyGameTavliTagline": "Τρία παιχνίδια — Πόρτες, Πλακωτό, Φεύγα.",
+  "lobbyGameBiriba": "Μπιρίμπα",
+  "lobbyGameBiribaTagline": "Δύο τράπουλες. Μεγάλα παιχνίδια. Οικογενειακό.",
+  "lobbyChipLive": "live",
+  "lobbyChipSoon": "σύντομα"
 }

@@ -47,5 +47,35 @@
   "leaderboardEmptyBody": "be the first one on the board.\none finished game is enough.",
 
   "profileLanguageLabel": "Language",
-  "profileSignOut": "Sign out"
+  "profileSignOut": "Sign out",
+
+  "lobbyGreetingMorning": "Good morning",
+  "lobbyGreetingAfternoon": "Good afternoon",
+  "lobbyGreetingEvening": "Good evening",
+  "lobbyGreetingFallback": "Welcome",
+  "lobbyHeroTitle": "A table is set for you.",
+  "lobbyTodayLabel": "TODAY",
+  "lobbyTonightSection": "TONIGHT",
+  "lobbyEstimationName": "Estimation",
+  "lobbyEstimationDescription": "Call your tricks. See who reads the cards.",
+  "lobbyTakeYourSeat": "Take your seat",
+  "lobbyJoin": "Join",
+  "lobbyContinueLabel": "Continue",
+  "lobbyInProgressSection": "IN PROGRESS",
+  "lobbyInProgressLobby": "lobby",
+  "lobbyInProgressRound": "Round {round}",
+  "@lobbyInProgressRound": {
+    "placeholders": {
+      "round": { "type": "int" }
+    }
+  },
+  "lobbyGamesSection": "GAMES",
+  "lobbyGamePilotta": "Pilotta",
+  "lobbyGamePilottaTagline": "Cypriot living-room classic.",
+  "lobbyGameTavli": "Tavli",
+  "lobbyGameTavliTagline": "Three games — Portes, Plakoto, Fevga.",
+  "lobbyGameBiriba": "Biriba",
+  "lobbyGameBiribaTagline": "Two decks. Long sittings. Family staple.",
+  "lobbyChipLive": "live",
+  "lobbyChipSoon": "soon"
 }
