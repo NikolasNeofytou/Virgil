@@ -8,6 +8,7 @@ import '../../theme/app_route.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/shake_on_error.dart';
 import 'room_lobby_screen.dart';
+import '../../theme/meraki_fonts.dart';
 
 /// Join-room screen. Renders four paper tiles that mirror a single hidden
 /// [TextField] so we get the full keyboard / paste / autofill experience
@@ -155,7 +156,7 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
                       Text(
                         _error!,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.caveat(
+                        style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                           color: AppTheme.danger,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -180,12 +181,12 @@ class _MiniMasthead extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'VOL. I · APR 2026',
-              style: GoogleFonts.jetBrainsMono(
+              style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 9,
                 letterSpacing: 3,
                 color: AppTheme.inkSoft,
@@ -193,7 +194,7 @@ class _MiniMasthead extends StatelessWidget {
             ),
             Text(
               'KAFENEIO',
-              style: GoogleFonts.jetBrainsMono(
+              style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 9,
                 letterSpacing: 3,
                 color: AppTheme.inkSoft,
@@ -209,7 +210,7 @@ class _MiniMasthead extends StatelessWidget {
         Center(
           child: Text(
             'Μπες στο δωμάτιο',
-            style: GoogleFonts.gloock(
+            style: GoogleFonts.fraunces(
               fontSize: 36,
               color: AppTheme.ink,
               letterSpacing: -0.5,
@@ -221,7 +222,7 @@ class _MiniMasthead extends StatelessWidget {
         Center(
           child: Text(
             'στο ίδιο τραπέζι',
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               fontSize: 20,
               color: AppTheme.terra,
             ),
@@ -355,7 +356,7 @@ class _CodeTile extends StatelessWidget {
           children: [
             Text(
               character ?? '',
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 44,
                 color: AppTheme.ink,
                 height: 1.0,

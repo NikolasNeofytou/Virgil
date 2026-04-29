@@ -9,6 +9,7 @@ import '../../theme/app_background.dart';
 import '../../theme/app_route.dart';
 import '../../theme/app_theme.dart';
 import 'game_summary_screen.dart';
+import '../../theme/meraki_fonts.dart';
 
 /// Profile → "Τα παιχνίδια μου". Paper-and-ink list of every finished
 /// estimation game the signed-in user took part in, newest first. Tapping
@@ -69,7 +70,7 @@ class _Error extends StatelessWidget {
         Text(
           'σφάλμα',
           textAlign: TextAlign.center,
-          style: GoogleFonts.gloock(
+          style: GoogleFonts.fraunces(
             fontSize: 28,
             color: AppTheme.danger,
             height: 1.0,
@@ -79,7 +80,7 @@ class _Error extends StatelessWidget {
         Text(
           message,
           textAlign: TextAlign.center,
-          style: GoogleFonts.kalam(
+          style: GoogleFonts.inter(
             fontSize: 13,
             color: AppTheme.inkSoft,
           ),
@@ -101,7 +102,7 @@ class _Empty extends StatelessWidget {
         Text(
           'κενό φύλλο',
           textAlign: TextAlign.center,
-          style: GoogleFonts.gloock(
+          style: GoogleFonts.fraunces(
             fontSize: 28,
             color: AppTheme.ink,
             height: 1.0,
@@ -112,7 +113,7 @@ class _Empty extends StatelessWidget {
           'δεν έχεις τελειώσει κανένα παιχνίδι ακόμη.\n'
           'το πρώτο σου σύνολο θα φανεί εδώ.',
           textAlign: TextAlign.center,
-          style: GoogleFonts.kalam(
+          style: GoogleFonts.inter(
             fontSize: 14,
             color: AppTheme.inkSoft,
             height: 1.5,
@@ -208,7 +209,7 @@ class _HistoryRow extends StatelessWidget {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.gloock(
+                      style: GoogleFonts.fraunces(
                         fontSize: 20,
                         color: AppTheme.ink,
                         height: 1.0,
@@ -218,7 +219,7 @@ class _HistoryRow extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '$dateLabel · ${s.playerCount} ΠΑΙΚΤΕΣ',
-                      style: GoogleFonts.jetBrainsMono(
+                      style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                         fontSize: 9,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 2,
@@ -230,7 +231,7 @@ class _HistoryRow extends StatelessWidget {
                       winnerLabel,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.caveat(
+                      style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: s.isWin ? AppTheme.terra : AppTheme.inkSoft,
@@ -246,7 +247,7 @@ class _HistoryRow extends StatelessWidget {
                 children: [
                   Text(
                     '${s.myScore}',
-                    style: GoogleFonts.gloock(
+                    style: GoogleFonts.fraunces(
                       fontSize: 28,
                       color: s.isWin ? AppTheme.terra : AppTheme.ink,
                       height: 1.0,
@@ -256,7 +257,7 @@ class _HistoryRow extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     '#${s.myRank}/${s.playerCount}',
-                    style: GoogleFonts.jetBrainsMono(
+                    style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                       fontSize: 9,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 2,

@@ -8,6 +8,7 @@ import '../../theme/app_background.dart';
 import '../../theme/app_route.dart';
 import '../../theme/app_theme.dart';
 import 'room_lobby_screen.dart';
+import '../../theme/meraki_fonts.dart';
 
 /// Create-room screen. Virgil masthead → player-count picker (paper tiles
 /// with the same terracotta stamp-ring animation as [NumberPicker]) → a
@@ -115,7 +116,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                       Text(
                         _error!,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.caveat(
+                        style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                           color: AppTheme.danger,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -143,12 +144,12 @@ class _MiniMasthead extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'VOL. I · APR 2026',
-              style: GoogleFonts.jetBrainsMono(
+              style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 9,
                 letterSpacing: 3,
                 color: AppTheme.inkSoft,
@@ -156,7 +157,7 @@ class _MiniMasthead extends StatelessWidget {
             ),
             Text(
               'KAFENEIO',
-              style: GoogleFonts.jetBrainsMono(
+              style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 9,
                 letterSpacing: 3,
                 color: AppTheme.inkSoft,
@@ -172,7 +173,7 @@ class _MiniMasthead extends StatelessWidget {
         Center(
           child: Text(
             'Νέο δωμάτιο',
-            style: GoogleFonts.gloock(
+            style: GoogleFonts.fraunces(
               fontSize: 40,
               color: AppTheme.ink,
               letterSpacing: -0.6,
@@ -184,7 +185,7 @@ class _MiniMasthead extends StatelessWidget {
         Center(
           child: Text(
             'στήσε το τραπέζι',
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               fontSize: 20,
               color: AppTheme.terra,
             ),
@@ -277,7 +278,7 @@ class _CountTile extends StatelessWidget {
                 children: [
                   Text(
                     '$count',
-                    style: GoogleFonts.gloock(
+                    style: GoogleFonts.fraunces(
                       fontSize: 44,
                       color: selected ? AppTheme.terra : AppTheme.ink,
                       height: 1.0,
@@ -287,7 +288,7 @@ class _CountTile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     _labels[count]!,
-                    style: GoogleFonts.caveat(
+                    style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                       fontSize: 16,
                       color: selected ? AppTheme.terra : AppTheme.inkSoft,
                       fontWeight: FontWeight.w700,
@@ -348,7 +349,7 @@ class _Stat extends StatelessWidget {
       children: [
         Text(
           value,
-          style: GoogleFonts.gloock(
+          style: GoogleFonts.fraunces(
             fontSize: 32,
             color: AppTheme.ink,
             height: 1.0,
@@ -358,7 +359,7 @@ class _Stat extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: GoogleFonts.kalam(
+          style: GoogleFonts.inter(
             fontSize: 13,
             color: AppTheme.inkSoft,
             height: 1.2,

@@ -7,6 +7,7 @@ import '../services/auth_service.dart';
 import '../theme/app_background.dart';
 import '../theme/app_theme.dart';
 import '../theme/shake_on_error.dart';
+import '../theme/meraki_fonts.dart';
 
 /// Sign-in screen: email + password (primary) or email OTP (fallback).
 class SignInScreen extends ConsumerStatefulWidget {
@@ -188,12 +189,12 @@ class _Brand extends StatelessWidget {
     return Column(
       children: [
         // Masthead eyebrow — VOL. I · IDENTITY · KAFENEIO SERIES
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'VOL. I · APR 2026',
-              style: GoogleFonts.jetBrainsMono(
+              style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 9,
                 letterSpacing: 3,
                 color: AppTheme.inkSoft,
@@ -201,7 +202,7 @@ class _Brand extends StatelessWidget {
             ),
             Text(
               'KAFENEIO SERIES',
-              style: GoogleFonts.jetBrainsMono(
+              style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 9,
                 letterSpacing: 3,
                 color: AppTheme.inkSoft,
@@ -219,7 +220,7 @@ class _Brand extends StatelessWidget {
         Text(
           'Virgil',
           textAlign: TextAlign.center,
-          style: GoogleFonts.gloock(
+          style: GoogleFonts.fraunces(
             fontSize: 72,
             color: AppTheme.ink,
             letterSpacing: -1.5,
@@ -230,7 +231,7 @@ class _Brand extends StatelessWidget {
         Text(
           'a guide for the table',
           textAlign: TextAlign.center,
-          style: GoogleFonts.caveat(
+          style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
             fontSize: 22,
             color: AppTheme.terra,
           ),
@@ -244,7 +245,7 @@ class _Brand extends StatelessWidget {
         Text(
           'ένας οδηγός για το τραπέζι',
           textAlign: TextAlign.center,
-          style: GoogleFonts.kalam(
+          style: GoogleFonts.inter(
             fontSize: 14,
             color: AppTheme.inkSoft,
             height: 1.4,
@@ -375,10 +376,10 @@ class _OtpFormState extends State<_OtpForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Eyebrow stamp
-        Center(
+        const Center(
           child: Text(
             'ΕΛΕΓΞΕ ΤΟ EMAIL · CHECK YOUR EMAIL',
-            style: GoogleFonts.jetBrainsMono(
+            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
               fontSize: 10,
               fontWeight: FontWeight.w500,
               letterSpacing: 3,
@@ -390,7 +391,7 @@ class _OtpFormState extends State<_OtpForm> {
         Center(
           child: Text(
             'σου στείλαμε κωδικό',
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               fontSize: 22,
               color: AppTheme.ink,
               height: 1.0,
@@ -401,7 +402,7 @@ class _OtpFormState extends State<_OtpForm> {
         Center(
           child: Text(
             widget.emailController.text.trim(),
-            style: GoogleFonts.jetBrainsMono(
+            style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
               fontSize: 12,
               letterSpacing: 1,
               color: AppTheme.inkSoft,
@@ -546,7 +547,7 @@ class _DigitTile extends StatelessWidget {
           children: [
             Text(
               digit ?? '',
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 30,
                 color: AppTheme.ink,
                 height: 1.0,

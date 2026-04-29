@@ -129,7 +129,7 @@ class _SplashState extends State<_Splash>
                         ),
                         child: Text(
                           'Virgil',
-                          style: GoogleFonts.gloock(
+                          style: GoogleFonts.fraunces(
                             fontSize: 72,
                             color: AppTheme.ink,
                             letterSpacing: -1.5,
@@ -150,7 +150,7 @@ class _SplashState extends State<_Splash>
                     opacity: tagT,
                     child: Text(
                       'a guide for the table',
-                      style: GoogleFonts.caveat(
+                      style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                         fontSize: 20,
                         color: AppTheme.terra,
                       ),

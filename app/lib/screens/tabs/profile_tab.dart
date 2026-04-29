@@ -12,6 +12,7 @@ import '../../theme/app_background.dart';
 import '../../theme/app_route.dart';
 import '../../theme/app_theme.dart';
 import '../history/game_history_screen.dart';
+import '../../theme/meraki_fonts.dart';
 
 /// Profile tab — ink-stamp avatar, Caveat username, JetBrains Mono email,
 /// paper stats card over the player's Estimation history, language toggle,
@@ -31,7 +32,7 @@ class ProfileTab extends ConsumerWidget {
         error: (e, _) => Center(
           child: Text(
             'σφάλμα · $e',
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               color: AppTheme.danger,
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -72,7 +73,7 @@ class _ProfileBody extends ConsumerWidget {
         Center(
           child: Text(
             '@${p.username}',
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               fontSize: 36,
               fontWeight: FontWeight.w700,
               color: AppTheme.ink,
@@ -85,7 +86,7 @@ class _ProfileBody extends ConsumerWidget {
           Center(
             child: Text(
               email,
-              style: GoogleFonts.jetBrainsMono(
+              style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 11,
                 letterSpacing: 1,
                 color: AppTheme.inkSoft,
@@ -98,7 +99,7 @@ class _ProfileBody extends ConsumerWidget {
           Center(
             child: Text(
               p.displayName!,
-              style: GoogleFonts.kalam(
+              style: GoogleFonts.inter(
                 fontSize: 14,
                 color: AppTheme.inkSoft,
               ),
@@ -142,7 +143,7 @@ class _ProfileBody extends ConsumerWidget {
               Expanded(
                 child: Text(
                   AppLocalizations.of(context)!.profileLanguageLabel,
-                  style: GoogleFonts.caveat(
+                  style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: AppTheme.ink,
@@ -212,7 +213,7 @@ class _StampAvatar extends StatelessWidget {
           ? ClipOval(child: Image.network(url!, fit: BoxFit.cover))
           : Text(
               username.isEmpty ? '?' : username.substring(0, 1).toUpperCase(),
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 48,
                 color: AppTheme.ink,
                 height: 1.0,
@@ -291,7 +292,7 @@ class _StatCell extends StatelessWidget {
       children: [
         Text(
           value,
-          style: GoogleFonts.gloock(
+          style: GoogleFonts.fraunces(
             fontSize: 32,
             color: highlight ? AppTheme.goldReserved : AppTheme.ink,
             height: 1.0,
@@ -301,7 +302,7 @@ class _StatCell extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: GoogleFonts.kalam(
+          style: GoogleFonts.inter(
             fontSize: 12,
             color: AppTheme.inkSoft,
             height: 1.2,
@@ -369,7 +370,7 @@ class _HistoryEntry extends StatelessWidget {
                   children: [
                     Text(
                       'Τα παιχνίδια μου',
-                      style: GoogleFonts.gloock(
+                      style: GoogleFonts.fraunces(
                         fontSize: 20,
                         color: AppTheme.ink,
                         height: 1.0,
@@ -379,7 +380,7 @@ class _HistoryEntry extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'άνοιξε ένα παλιό σύνολο · ξαναδές · ξαναμοιράσου',
-                      style: GoogleFonts.kalam(
+                      style: GoogleFonts.inter(
                         fontSize: 13,
                         color: AppTheme.inkSoft,
                         height: 1.3,

@@ -12,6 +12,7 @@ import '../../theme/app_background.dart';
 import '../../theme/app_route.dart';
 import '../../theme/app_theme.dart';
 import 'estimation_game_screen.dart';
+import '../../theme/meraki_fonts.dart';
 
 /// Room lobby — players see the room code, watch seats fill in realtime, and
 /// the host starts the game once all seats are taken.
@@ -288,7 +289,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                                 const Spacer(),
                                 Text(
                                   '${_visibleSeats.length} / $playerCount',
-                                  style: GoogleFonts.jetBrainsMono(
+                                  style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                     letterSpacing: 2,
@@ -356,7 +357,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                 textInputAction: TextInputAction.done,
                 maxLength: 48,
                 onChanged: _onSessionNameChanged,
-                style: GoogleFonts.caveat(
+                style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: AppTheme.ink,
@@ -364,7 +365,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                 ),
                 decoration: InputDecoration(
                   hintText: 'όνομα παιχνιδιού (προαιρετικό)',
-                  hintStyle: GoogleFonts.caveat(
+                  hintStyle: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                     fontSize: 20,
                     color: AppTheme.inkFaint,
                     fontWeight: FontWeight.w400,
@@ -406,7 +407,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
           Expanded(
             child: Text(
               remote,
-              style: GoogleFonts.caveat(
+              style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: AppTheme.ink,
@@ -455,7 +456,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
           const SizedBox(width: AppTheme.space3),
           Text(
             'περιμένοντας τον host…',
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               fontSize: 18,
               color: AppTheme.inkSoft,
             ),
@@ -503,7 +504,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
             child: Text(
               '${seatIndex + 1}',
               textAlign: TextAlign.center,
-              style: GoogleFonts.gloock(
+              style: GoogleFonts.fraunces(
                 fontSize: 22,
                 color: isEmpty ? AppTheme.inkFaint : AppTheme.terra,
                 height: 1.0,
@@ -516,7 +517,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
             child: isEmpty
                 ? Text(
                     'αναμονή…',
-                    style: GoogleFonts.caveat(
+                    style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                       fontSize: 18,
                       color: AppTheme.inkFaint,
                     ),
@@ -526,7 +527,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                       Flexible(
                         child: Text(
                           username ?? '…',
-                          style: GoogleFonts.caveat(
+                          style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                             color: isMe ? AppTheme.terra : AppTheme.ink,
@@ -546,9 +547,9 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                             color: AppTheme.terraMuted,
                             borderRadius: BorderRadius.circular(2),
                           ),
-                          child: Text(
+                          child: const Text(
                             'ΕΣΥ',
-                            style: GoogleFonts.jetBrainsMono(
+                            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                               fontSize: 8,
                               fontWeight: FontWeight.w500,
                               letterSpacing: 2,
@@ -570,9 +571,9 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                 color: AppTheme.oliveMuted,
                 borderRadius: BorderRadius.circular(2),
               ),
-              child: Text(
+              child: const Text(
                 'HOST',
-                style: GoogleFonts.jetBrainsMono(
+                style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                   fontSize: 9,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 2,
@@ -614,9 +615,9 @@ class _RoomCodeCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
+          const Text(
             'ROOM · ΚΩΔΙΚΟΣ',
-            style: GoogleFonts.jetBrainsMono(
+            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
               fontSize: 10,
               fontWeight: FontWeight.w500,
               letterSpacing: 3,
@@ -647,7 +648,7 @@ class _RoomCodeCard extends StatelessWidget {
                   children: [
                     Text(
                       code,
-                      style: GoogleFonts.jetBrainsMono(
+                      style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                         fontSize: 44,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 10,
@@ -675,7 +676,7 @@ class _RoomCodeCard extends StatelessWidget {
           const SizedBox(height: AppTheme.space2),
           Text(
             'μοιράσου με τους παίκτες',
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               fontSize: 18,
               color: AppTheme.inkSoft,
             ),

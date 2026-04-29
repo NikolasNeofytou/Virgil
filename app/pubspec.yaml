@@ -76,6 +76,17 @@ dev_dependencies:
   json_serializable: ^6.8.0
   riverpod_generator: ^2.4.0
 
+  # App icon generation — Aegean-on-Linen "V" mark, deck §04 / §04.B.
+  # Run: `dart run flutter_launcher_icons` after editing assets/icon/icon.png.
+  flutter_launcher_icons: ^0.14.1
+
+flutter_launcher_icons:
+  ios: true
+  android: false # mipmap PNGs are committed by hand; revisit when we stand
+                 # up the Android build pipeline.
+  remove_alpha_ios: true
+  image_path: assets/icon/icon.png
+
 flutter:
   uses-material-design: true
   generate: true
