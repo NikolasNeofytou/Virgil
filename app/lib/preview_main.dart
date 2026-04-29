@@ -10,6 +10,11 @@ import 'theme/app_background.dart';
 import 'theme/app_theme.dart';
 import 'theme/meraki_fonts.dart';
 import 'theme/virgil_icons.dart';
+import 'widgets/virgil_button.dart';
+import 'widgets/virgil_card.dart';
+import 'widgets/virgil_chip.dart';
+import 'widgets/virgil_ornament.dart';
+import 'widgets/virgil_score.dart';
 
 /// Design-preview entry point. Renders a scrollable gallery of Virgil
 /// identity surfaces without needing Supabase or any backend. Run with:
@@ -159,6 +164,10 @@ class _GalleryState extends State<_Gallery> {
                   const AppSectionLabel('§ 09 · PALETTE', showRule: true),
                   const SizedBox(height: AppTheme.space3),
                   const _PaletteBlock(),
+                  const _Rule(),
+                  const AppSectionLabel('§ 10 · COMPONENTS', showRule: true),
+                  const SizedBox(height: AppTheme.space4),
+                  const _ComponentsBlock(),
                   const SizedBox(height: AppTheme.space6),
                   Text(
                     '— FIN —',
@@ -802,6 +811,100 @@ class _PaletteBlock extends StatelessWidget {
               ],
             ),
           ),
+      ],
+    );
+  }
+}
+
+/// §10 — Showcase the Meraki component library introduced in PR 3.
+class _ComponentsBlock extends StatelessWidget {
+  const _ComponentsBlock();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Buttons
+        Wrap(
+          spacing: AppTheme.space3,
+          runSpacing: AppTheme.space3,
+          alignment: WrapAlignment.center,
+          children: [
+            VirgilButton(
+              label: 'Take your seat',
+              onPressed: () {},
+              trailingArrow: true,
+            ),
+            VirgilButton(
+              label: 'Sit',
+              onPressed: () {},
+              variant: VirgilButtonVariant.ghost,
+              trailingArrow: true,
+            ),
+            const VirgilButton(label: 'Locked', onPressed: null),
+          ],
+        ),
+        const SizedBox(height: AppTheme.space4),
+        // Chips
+        const Wrap(
+          spacing: AppTheme.space2,
+          runSpacing: AppTheme.space2,
+          alignment: WrapAlignment.center,
+          children: [
+            VirgilChip(
+              label: 'online',
+              variant: VirgilChipVariant.success,
+              dot: true,
+            ),
+            VirgilChip(label: 'live', variant: VirgilChipVariant.accent),
+            VirgilChip(label: 'ezy', variant: VirgilChipVariant.reward),
+            VirgilChip(label: 'soon', variant: VirgilChipVariant.neutral),
+          ],
+        ),
+        const SizedBox(height: AppTheme.space4),
+        // Cards (standard + hero)
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: VirgilCard(
+                child: Text(
+                  'standard',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+            ),
+            const SizedBox(width: AppTheme.space3),
+            Expanded(
+              child: VirgilCard(
+                variant: VirgilCardVariant.hero,
+                child: Text(
+                  'hero',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppTheme.space4),
+        // Ornament
+        const VirgilOrnament(glyph: '·'),
+        // Score (oldstyle figures, fraction display)
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            VirgilScore(value: 247, fontSize: 48),
+            VirgilScore(
+              value: 21,
+              outOf: 14,
+              fontSize: 48,
+              color: AppTheme.coral,
+            ),
+          ],
+        ),
       ],
     );
   }

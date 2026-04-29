@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'meraki_fonts.dart';
+import 'meraki_tokens.dart';
 
 /// Virgil identity — Vol. II "Meraki, refined".
 ///
@@ -528,6 +529,11 @@ class AppTheme {
 
       splashFactory: NoSplash.splashFactory,
       highlightColor: Colors.transparent,
+
+      // Meraki tokens that don't fit Material's slot system — Aegean, Bone,
+      // muted accents, hero radius, italic-verb / eyebrow / score text roles.
+      // Read with `MerakiTokens.of(context)`.
+      extensions: [MerakiTokens.light],
     );
   }
 }
