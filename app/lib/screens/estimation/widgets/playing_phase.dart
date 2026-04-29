@@ -11,6 +11,7 @@ import '../../../theme/app_background.dart';
 import '../../../theme/app_theme.dart';
 import 'round_header.dart';
 import 'score_tally.dart';
+import '../../../theme/meraki_fonts.dart';
 
 /// Per-trick tracking with peer confirmation.
 ///
@@ -199,7 +200,7 @@ class _PlayingPhaseState extends ConsumerState<PlayingPhase> {
                 ? Center(
                     child: Text(
                       'καμιά μπάζα ακόμα',
-                      style: GoogleFonts.caveat(
+                      style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                         fontSize: 18,
                         color: AppTheme.inkFaint,
                       ),
@@ -270,9 +271,9 @@ class _TrickHeader extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'ΜΠΑΖΑ · TRICK',
-                style: GoogleFonts.jetBrainsMono(
+                style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                   fontSize: 9,
                   letterSpacing: 3,
                   color: AppTheme.inkSoft,
@@ -285,7 +286,7 @@ class _TrickHeader extends StatelessWidget {
                 children: [
                   Text(
                     '$trickNumber',
-                    style: GoogleFonts.gloock(
+                    style: GoogleFonts.fraunces(
                       fontSize: 30,
                       color: AppTheme.ink,
                       height: 1.0,
@@ -294,7 +295,7 @@ class _TrickHeader extends StatelessWidget {
                   ),
                   Text(
                     ' / $totalTricks',
-                    style: GoogleFonts.gloock(
+                    style: GoogleFonts.fraunces(
                       fontSize: 18,
                       color: AppTheme.inkFaint,
                       height: 1.0,
@@ -308,9 +309,9 @@ class _TrickHeader extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
+              const Text(
                 'LEADS',
-                style: GoogleFonts.jetBrainsMono(
+                style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                   fontSize: 9,
                   letterSpacing: 3,
                   color: AppTheme.terra,
@@ -319,7 +320,7 @@ class _TrickHeader extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 leaderName ?? '…',
-                style: GoogleFonts.caveat(
+                style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: AppTheme.ink,
@@ -359,7 +360,7 @@ class _SeatGrid extends StatelessWidget {
         Text(
           'ποιος πήρε τη μπάζα;',
           textAlign: TextAlign.center,
-          style: GoogleFonts.caveat(
+          style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
             fontSize: 22,
             fontWeight: FontWeight.w700,
             color: AppTheme.ink,
@@ -428,7 +429,7 @@ class _SeatTile extends StatelessWidget {
             children: [
               Text(
                 '${seat + 1}',
-                style: GoogleFonts.gloock(
+                style: GoogleFonts.fraunces(
                   fontSize: 20,
                   color: AppTheme.terra,
                   height: 1.0,
@@ -437,7 +438,7 @@ class _SeatTile extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 name,
-                style: GoogleFonts.caveat(
+                style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: AppTheme.ink,
@@ -498,9 +499,9 @@ class _ProposalCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
+          const Text(
             'ΠΡΟΤΑΣΗ · PROPOSED WINNER',
-            style: GoogleFonts.jetBrainsMono(
+            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
               fontSize: 10,
               fontWeight: FontWeight.w500,
               letterSpacing: 3,
@@ -510,7 +511,7 @@ class _ProposalCard extends StatelessWidget {
           const SizedBox(height: AppTheme.space3),
           Text(
             proposedName ?? '…',
-            style: GoogleFonts.gloock(
+            style: GoogleFonts.fraunces(
               fontSize: 40,
               color: AppTheme.ink,
               height: 1.0,
@@ -526,7 +527,7 @@ class _ProposalCard extends StatelessWidget {
           const SizedBox(height: AppTheme.space2),
           Text(
             'από ${proposedByName ?? '…'}',
-            style: GoogleFonts.caveat(
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
               fontSize: 18,
               color: AppTheme.inkSoft,
             ),
@@ -534,7 +535,7 @@ class _ProposalCard extends StatelessWidget {
           const SizedBox(height: AppTheme.space4),
           Text(
             'συμφωνίες ${trick.confirmedByIds.length} / $threshold',
-            style: GoogleFonts.jetBrainsMono(
+            style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
               fontSize: 10,
               letterSpacing: 2,
               color: AppTheme.inkSoft,
@@ -544,7 +545,7 @@ class _ProposalCard extends StatelessWidget {
           if (iProposed)
             Text(
               'αναμονή για τους υπόλοιπους…',
-              style: GoogleFonts.caveat(
+              style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                 fontSize: 18,
                 color: AppTheme.inkSoft,
               ),
@@ -613,7 +614,7 @@ class _PastTrickRow extends StatelessWidget {
             width: 40,
             child: Text(
               '#$trickNumber',
-              style: GoogleFonts.jetBrainsMono(
+              style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                 fontSize: 11,
                 letterSpacing: 2,
                 color: AppTheme.inkFaint,
@@ -625,7 +626,7 @@ class _PastTrickRow extends StatelessWidget {
           Expanded(
             child: Text(
               winnerName,
-              style: GoogleFonts.caveat(
+              style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: AppTheme.ink,

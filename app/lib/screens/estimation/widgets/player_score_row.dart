@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../../theme/meraki_fonts.dart';
 
 /// Reusable row showing a player's status in the current phase.
 class PlayerScoreRow extends StatelessWidget {
@@ -54,7 +55,7 @@ class PlayerScoreRow extends StatelessWidget {
                 Flexible(
                   child: Text(
                     username,
-                    style: GoogleFonts.caveat(
+                    style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: isMe ? AppTheme.terra : AppTheme.ink,
@@ -74,9 +75,9 @@ class PlayerScoreRow extends StatelessWidget {
                       color: AppTheme.terraMuted,
                       borderRadius: BorderRadius.circular(2),
                     ),
-                    child: Text(
+                    child: const Text(
                       'ΕΣΥ',
-                      style: GoogleFonts.jetBrainsMono(
+                      style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
                         fontSize: 8,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 2,
@@ -115,7 +116,7 @@ class PlayerScoreRow extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 statusText!,
-                style: GoogleFonts.kalam(
+                style: GoogleFonts.inter(
                   fontSize: 13,
                   color: AppTheme.inkSoft,
                 ),
@@ -148,7 +149,7 @@ class _ValueChip extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.jetBrainsMono(
+          style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
             fontSize: 8,
             fontWeight: FontWeight.w500,
             letterSpacing: 2,
@@ -158,7 +159,7 @@ class _ValueChip extends StatelessWidget {
         const SizedBox(height: 1),
         Text(
           value,
-          style: GoogleFonts.gloock(
+          style: GoogleFonts.fraunces(
             fontSize: 18,
             color: fg,
             height: 1.0,

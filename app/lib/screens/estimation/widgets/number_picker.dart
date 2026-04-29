@@ -114,7 +114,7 @@ class _NumberTile extends StatelessWidget {
                 ),
               Text(
                 '$number',
-                style: GoogleFonts.gloock(
+                style: GoogleFonts.fraunces(
                   fontSize: 22,
                   color: numeralColor,
                   height: 1.0,
