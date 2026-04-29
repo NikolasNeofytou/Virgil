@@ -77,5 +77,58 @@
   "lobbyGameBiriba": "Biriba",
   "lobbyGameBiribaTagline": "Two decks. Long sittings. Family staple.",
   "lobbyChipLive": "live",
-  "lobbyChipSoon": "soon"
+  "lobbyChipSoon": "soon",
+
+  "pareaTitle": "Parea",
+  "pareaSubtitle": "your company",
+  "pareaAddPrompt": "Add a friend",
+  "pareaAddHint": "username",
+  "pareaAddSubmit": "Send",
+  "pareaAddSuccess": "sent to @{username}",
+  "@pareaAddSuccess": {
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "pareaAddErrorGeneric": "error · try again",
+  "pareaInboxSection": "INBOX",
+  "pareaInboxEmpty": "no requests right now",
+  "pareaInboxWantsToBeFriends": "wants to be friends",
+  "pareaInboxAccept": "Accept",
+  "pareaInboxDecline": "Decline",
+  "pareaYoursSection": "YOURS",
+  "pareaYoursEmpty": "add your first friend above",
+  "pareaSentSection": "SENT",
+  "pareaSentEmpty": "no requests pending",
+  "pareaSentLabel": "awaiting confirmation",
+  "pareaSentCancel": "Cancel",
+  "pareaUnfriendTitle": "Remove @{username}?",
+  "@pareaUnfriendTitle": {
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "pareaUnfriendBody": "The friendship will be removed for both of you.",
+  "pareaUnfriendConfirm": "Remove",
+  "pareaUnfriendCancel": "Cancel",
+
+  "tournamentSection": "TOURNAMENT",
+  "tournamentTopSection": "TOP 10",
+  "tournamentYouSection": "YOU",
+  "tournamentStatGames": "GAMES",
+  "tournamentStatWins": "WINS",
+  "tournamentStatAccuracy": "ACCURACY",
+  "tournamentStatPoints": "POINTS",
+  "tournamentEmptyTitle": "empty page",
+  "tournamentEmptyBody": "be the first one on the board.\none finished game is enough.",
+  "tournamentYouAreHere": "your position",
+  "tournamentNoGamesTitle": "no closed games yet",
+  "tournamentNoGamesBody": "start one to enter the tournament.",
+  "tournamentGamesPointsLabel": "{games} games · {points} pts",
+  "@tournamentGamesPointsLabel": {
+    "placeholders": {
+      "games": { "type": "int" },
+      "points": { "type": "int" }
+    }
+  }
 }

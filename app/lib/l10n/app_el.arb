@@ -77,5 +77,58 @@
   "lobbyGameBiriba": "Μπιρίμπα",
   "lobbyGameBiribaTagline": "Δύο τράπουλες. Μεγάλα παιχνίδια. Οικογενειακό.",
   "lobbyChipLive": "live",
-  "lobbyChipSoon": "σύντομα"
+  "lobbyChipSoon": "σύντομα",
+
+  "pareaTitle": "Παρέα",
+  "pareaSubtitle": "η παρέα σου",
+  "pareaAddPrompt": "Πρόσθεσε φίλο",
+  "pareaAddHint": "όνομα",
+  "pareaAddSubmit": "Στείλε",
+  "pareaAddSuccess": "στάλθηκε στον @{username}",
+  "@pareaAddSuccess": {
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "pareaAddErrorGeneric": "σφάλμα · δοκίμασε ξανά",
+  "pareaInboxSection": "ΑΙΤΗΣΕΙΣ · INBOX",
+  "pareaInboxEmpty": "δεν έχεις αιτήσεις αυτή τη στιγμή",
+  "pareaInboxWantsToBeFriends": "θέλει να γίνει φίλος σου",
+  "pareaInboxAccept": "Δέξου",
+  "pareaInboxDecline": "Απόρριψη",
+  "pareaYoursSection": "ΦΙΛΟΙ · YOURS",
+  "pareaYoursEmpty": "πρόσθεσε τον πρώτο σου φίλο πιο πάνω",
+  "pareaSentSection": "ΣΕ ΑΝΑΜΟΝΗ · SENT",
+  "pareaSentEmpty": "καμία αίτηση σε αναμονή",
+  "pareaSentLabel": "αναμονή επιβεβαίωσης",
+  "pareaSentCancel": "Ακύρωση",
+  "pareaUnfriendTitle": "Αφαίρεση @{username};",
+  "@pareaUnfriendTitle": {
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "pareaUnfriendBody": "Η φιλία θα διαγραφεί και για τους δύο.",
+  "pareaUnfriendConfirm": "Αφαίρεσε",
+  "pareaUnfriendCancel": "Άκυρο",
+
+  "tournamentSection": "ΤΟΥΡΝΟΥΑ · TOURNAMENT",
+  "tournamentTopSection": "ΚΟΡΥΦΗ · TOP 10",
+  "tournamentYouSection": "ΕΣΥ · YOU",
+  "tournamentStatGames": "GAMES",
+  "tournamentStatWins": "WINS",
+  "tournamentStatAccuracy": "ACCURACY",
+  "tournamentStatPoints": "POINTS",
+  "tournamentEmptyTitle": "κενό φύλλο",
+  "tournamentEmptyBody": "γίνε ο πρώτος που θα μπει στην κατάταξη.\nένα κλειστό παιχνίδι αρκεί.",
+  "tournamentYouAreHere": "η θέση σου",
+  "tournamentNoGamesTitle": "κανένα κλειστό παιχνίδι ακόμη",
+  "tournamentNoGamesBody": "ξεκίνα ένα για να μπεις στο τουρνουά.",
+  "tournamentGamesPointsLabel": "{games} παιχνίδια · {points} π.",
+  "@tournamentGamesPointsLabel": {
+    "placeholders": {
+      "games": { "type": "int" },
+      "points": { "type": "int" }
+    }
+  }
 }

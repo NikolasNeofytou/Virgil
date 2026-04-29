@@ -199,4 +199,116 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get lobbyChipSoon => 'σύντομα';
+
+  @override
+  String get pareaTitle => 'Παρέα';
+
+  @override
+  String get pareaSubtitle => 'η παρέα σου';
+
+  @override
+  String get pareaAddPrompt => 'Πρόσθεσε φίλο';
+
+  @override
+  String get pareaAddHint => 'όνομα';
+
+  @override
+  String get pareaAddSubmit => 'Στείλε';
+
+  @override
+  String pareaAddSuccess(String username) {
+    return 'στάλθηκε στον @$username';
+  }
+
+  @override
+  String get pareaAddErrorGeneric => 'σφάλμα · δοκίμασε ξανά';
+
+  @override
+  String get pareaInboxSection => 'ΑΙΤΗΣΕΙΣ · INBOX';
+
+  @override
+  String get pareaInboxEmpty => 'δεν έχεις αιτήσεις αυτή τη στιγμή';
+
+  @override
+  String get pareaInboxWantsToBeFriends => 'θέλει να γίνει φίλος σου';
+
+  @override
+  String get pareaInboxAccept => 'Δέξου';
+
+  @override
+  String get pareaInboxDecline => 'Απόρριψη';
+
+  @override
+  String get pareaYoursSection => 'ΦΙΛΟΙ · YOURS';
+
+  @override
+  String get pareaYoursEmpty => 'πρόσθεσε τον πρώτο σου φίλο πιο πάνω';
+
+  @override
+  String get pareaSentSection => 'ΣΕ ΑΝΑΜΟΝΗ · SENT';
+
+  @override
+  String get pareaSentEmpty => 'καμία αίτηση σε αναμονή';
+
+  @override
+  String get pareaSentLabel => 'αναμονή επιβεβαίωσης';
+
+  @override
+  String get pareaSentCancel => 'Ακύρωση';
+
+  @override
+  String pareaUnfriendTitle(String username) {
+    return 'Αφαίρεση @$username;';
+  }
+
+  @override
+  String get pareaUnfriendBody => 'Η φιλία θα διαγραφεί και για τους δύο.';
+
+  @override
+  String get pareaUnfriendConfirm => 'Αφαίρεσε';
+
+  @override
+  String get pareaUnfriendCancel => 'Άκυρο';
+
+  @override
+  String get tournamentSection => 'ΤΟΥΡΝΟΥΑ · TOURNAMENT';
+
+  @override
+  String get tournamentTopSection => 'ΚΟΡΥΦΗ · TOP 10';
+
+  @override
+  String get tournamentYouSection => 'ΕΣΥ · YOU';
+
+  @override
+  String get tournamentStatGames => 'GAMES';
+
+  @override
+  String get tournamentStatWins => 'WINS';
+
+  @override
+  String get tournamentStatAccuracy => 'ACCURACY';
+
+  @override
+  String get tournamentStatPoints => 'POINTS';
+
+  @override
+  String get tournamentEmptyTitle => 'κενό φύλλο';
+
+  @override
+  String get tournamentEmptyBody =>
+      'γίνε ο πρώτος που θα μπει στην κατάταξη.\nένα κλειστό παιχνίδι αρκεί.';
+
+  @override
+  String get tournamentYouAreHere => 'η θέση σου';
+
+  @override
+  String get tournamentNoGamesTitle => 'κανένα κλειστό παιχνίδι ακόμη';
+
+  @override
+  String get tournamentNoGamesBody => 'ξεκίνα ένα για να μπεις στο τουρνουά.';
+
+  @override
+  String tournamentGamesPointsLabel(int games, int points) {
+    return '$games παιχνίδια · $points π.';
+  }
 }

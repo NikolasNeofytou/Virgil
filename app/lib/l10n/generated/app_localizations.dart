@@ -463,6 +463,216 @@ abstract class AppLocalizations {
   /// In el, this message translates to:
   /// **'σύντομα'**
   String get lobbyChipSoon;
+
+  /// No description provided for @pareaTitle.
+  ///
+  /// In el, this message translates to:
+  /// **'Παρέα'**
+  String get pareaTitle;
+
+  /// No description provided for @pareaSubtitle.
+  ///
+  /// In el, this message translates to:
+  /// **'η παρέα σου'**
+  String get pareaSubtitle;
+
+  /// No description provided for @pareaAddPrompt.
+  ///
+  /// In el, this message translates to:
+  /// **'Πρόσθεσε φίλο'**
+  String get pareaAddPrompt;
+
+  /// No description provided for @pareaAddHint.
+  ///
+  /// In el, this message translates to:
+  /// **'όνομα'**
+  String get pareaAddHint;
+
+  /// No description provided for @pareaAddSubmit.
+  ///
+  /// In el, this message translates to:
+  /// **'Στείλε'**
+  String get pareaAddSubmit;
+
+  /// No description provided for @pareaAddSuccess.
+  ///
+  /// In el, this message translates to:
+  /// **'στάλθηκε στον @{username}'**
+  String pareaAddSuccess(String username);
+
+  /// No description provided for @pareaAddErrorGeneric.
+  ///
+  /// In el, this message translates to:
+  /// **'σφάλμα · δοκίμασε ξανά'**
+  String get pareaAddErrorGeneric;
+
+  /// No description provided for @pareaInboxSection.
+  ///
+  /// In el, this message translates to:
+  /// **'ΑΙΤΗΣΕΙΣ · INBOX'**
+  String get pareaInboxSection;
+
+  /// No description provided for @pareaInboxEmpty.
+  ///
+  /// In el, this message translates to:
+  /// **'δεν έχεις αιτήσεις αυτή τη στιγμή'**
+  String get pareaInboxEmpty;
+
+  /// No description provided for @pareaInboxWantsToBeFriends.
+  ///
+  /// In el, this message translates to:
+  /// **'θέλει να γίνει φίλος σου'**
+  String get pareaInboxWantsToBeFriends;
+
+  /// No description provided for @pareaInboxAccept.
+  ///
+  /// In el, this message translates to:
+  /// **'Δέξου'**
+  String get pareaInboxAccept;
+
+  /// No description provided for @pareaInboxDecline.
+  ///
+  /// In el, this message translates to:
+  /// **'Απόρριψη'**
+  String get pareaInboxDecline;
+
+  /// No description provided for @pareaYoursSection.
+  ///
+  /// In el, this message translates to:
+  /// **'ΦΙΛΟΙ · YOURS'**
+  String get pareaYoursSection;
+
+  /// No description provided for @pareaYoursEmpty.
+  ///
+  /// In el, this message translates to:
+  /// **'πρόσθεσε τον πρώτο σου φίλο πιο πάνω'**
+  String get pareaYoursEmpty;
+
+  /// No description provided for @pareaSentSection.
+  ///
+  /// In el, this message translates to:
+  /// **'ΣΕ ΑΝΑΜΟΝΗ · SENT'**
+  String get pareaSentSection;
+
+  /// No description provided for @pareaSentEmpty.
+  ///
+  /// In el, this message translates to:
+  /// **'καμία αίτηση σε αναμονή'**
+  String get pareaSentEmpty;
+
+  /// No description provided for @pareaSentLabel.
+  ///
+  /// In el, this message translates to:
+  /// **'αναμονή επιβεβαίωσης'**
+  String get pareaSentLabel;
+
+  /// No description provided for @pareaSentCancel.
+  ///
+  /// In el, this message translates to:
+  /// **'Ακύρωση'**
+  String get pareaSentCancel;
+
+  /// No description provided for @pareaUnfriendTitle.
+  ///
+  /// In el, this message translates to:
+  /// **'Αφαίρεση @{username};'**
+  String pareaUnfriendTitle(String username);
+
+  /// No description provided for @pareaUnfriendBody.
+  ///
+  /// In el, this message translates to:
+  /// **'Η φιλία θα διαγραφεί και για τους δύο.'**
+  String get pareaUnfriendBody;
+
+  /// No description provided for @pareaUnfriendConfirm.
+  ///
+  /// In el, this message translates to:
+  /// **'Αφαίρεσε'**
+  String get pareaUnfriendConfirm;
+
+  /// No description provided for @pareaUnfriendCancel.
+  ///
+  /// In el, this message translates to:
+  /// **'Άκυρο'**
+  String get pareaUnfriendCancel;
+
+  /// No description provided for @tournamentSection.
+  ///
+  /// In el, this message translates to:
+  /// **'ΤΟΥΡΝΟΥΑ · TOURNAMENT'**
+  String get tournamentSection;
+
+  /// No description provided for @tournamentTopSection.
+  ///
+  /// In el, this message translates to:
+  /// **'ΚΟΡΥΦΗ · TOP 10'**
+  String get tournamentTopSection;
+
+  /// No description provided for @tournamentYouSection.
+  ///
+  /// In el, this message translates to:
+  /// **'ΕΣΥ · YOU'**
+  String get tournamentYouSection;
+
+  /// No description provided for @tournamentStatGames.
+  ///
+  /// In el, this message translates to:
+  /// **'GAMES'**
+  String get tournamentStatGames;
+
+  /// No description provided for @tournamentStatWins.
+  ///
+  /// In el, this message translates to:
+  /// **'WINS'**
+  String get tournamentStatWins;
+
+  /// No description provided for @tournamentStatAccuracy.
+  ///
+  /// In el, this message translates to:
+  /// **'ACCURACY'**
+  String get tournamentStatAccuracy;
+
+  /// No description provided for @tournamentStatPoints.
+  ///
+  /// In el, this message translates to:
+  /// **'POINTS'**
+  String get tournamentStatPoints;
+
+  /// No description provided for @tournamentEmptyTitle.
+  ///
+  /// In el, this message translates to:
+  /// **'κενό φύλλο'**
+  String get tournamentEmptyTitle;
+
+  /// No description provided for @tournamentEmptyBody.
+  ///
+  /// In el, this message translates to:
+  /// **'γίνε ο πρώτος που θα μπει στην κατάταξη.\nένα κλειστό παιχνίδι αρκεί.'**
+  String get tournamentEmptyBody;
+
+  /// No description provided for @tournamentYouAreHere.
+  ///
+  /// In el, this message translates to:
+  /// **'η θέση σου'**
+  String get tournamentYouAreHere;
+
+  /// No description provided for @tournamentNoGamesTitle.
+  ///
+  /// In el, this message translates to:
+  /// **'κανένα κλειστό παιχνίδι ακόμη'**
+  String get tournamentNoGamesTitle;
+
+  /// No description provided for @tournamentNoGamesBody.
+  ///
+  /// In el, this message translates to:
+  /// **'ξεκίνα ένα για να μπεις στο τουρνουά.'**
+  String get tournamentNoGamesBody;
+
+  /// No description provided for @tournamentGamesPointsLabel.
+  ///
+  /// In el, this message translates to:
+  /// **'{games} παιχνίδια · {points} π.'**
+  String tournamentGamesPointsLabel(int games, int points);
 }
 
 class _AppLocalizationsDelegate

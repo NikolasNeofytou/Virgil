@@ -8,15 +8,17 @@ import '../../models/leaderboard_entry.dart';
 import '../../providers/auth_providers.dart';
 import '../../providers/leaderboard_providers.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/meraki_fonts.dart';
+import '../../theme/meraki_tokens.dart';
+import '../../widgets/virgil_card.dart';
+import '../../widgets/virgil_chip.dart';
 
-/// Cross-game leaderboard — paper masthead + your-stats receipt + Top 10 list
-/// + your-rank footer. Pulls aggregates from the `estimation_stats` view via
-/// [leaderboardProvider]; everything is reactive to the signed-in user.
-///
-/// Stateful so we can hold a snapshot of the previous-visit ranks for the
-/// duration of this mount: we want delta chips to compute against ranks
-/// from the *previous* visit, not the ranks we just persisted seconds ago.
-/// Persistence happens once after the first paint via a post-frame callback.
+/// Tournament — leaderboard, restyled per the deck §05 SCREEN 04 pattern.
+/// "A tournament, printed in the paper." Linen canvas, pure-typography
+/// ranking (Fraunces oldstyle numerals, no badges/trophies), ochre on the
+/// top three (the deck's "advancement" colour), coral for the signed-in
+/// player. Rank-change ↑↓ chips that shipped earlier are preserved, just
+/// restyled — myrtle / danger on a tinted pill.
 class LeaderboardTab extends ConsumerStatefulWidget {
   const LeaderboardTab({super.key});
 
@@ -25,30 +27,23 @@ class LeaderboardTab extends ConsumerStatefulWidget {
 }
 
 class _LeaderboardTabState extends ConsumerState<LeaderboardTab> {
-  /// Snapshot of `playerId → rank` from the previous visit. Empty until
-  /// `lastSeenLeaderboardRanksProvider` resolves; after the first non-null
-  /// resolution we freeze it here so subsequent saves don't re-trigger
+  /// Snapshot of `playerId → rank` from the previous visit. Frozen on the
+  /// first non-null resolution so subsequent saves don't re-trigger
   /// computation against fresh-just-persisted data.
   Map<String, int>? _previousRanks;
 
   /// True after we've persisted the current ranks once for this mount.
-  /// Prevents re-saving on every rebuild (e.g. when myStatsProvider ticks).
   bool _saved = false;
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
     final async = ref.watch(leaderboardProvider);
-    // Pull the previous-visit snapshot once. ref.watch is fine here — once
-    // the FutureProvider resolves we cache into `_previousRanks` and never
-    // overwrite, so chip deltas stay stable for this mount even if the
-    // provider's value is later invalidated by a save.
     final lastSeenAsync = ref.watch(lastSeenLeaderboardRanksProvider);
     if (_previousRanks == null && lastSeenAsync.hasValue) {
       _previousRanks = Map.unmodifiable(lastSeenAsync.value!);
     }
-
-    // Once both the leaderboard and the previous snapshot are loaded,
-    // persist the new ranks for next time. One-shot per mount.
     if (!_saved && async.hasValue && _previousRanks != null) {
       _saved = true;
       final rows = async.value!;
@@ -62,13 +57,13 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.leaderboardTitle)),
+      appBar: AppBar(title: Text(loc.leaderboardTitle)),
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(leaderboardProvider.future),
-        color: AppTheme.terra,
-        backgroundColor: AppTheme.paper,
+        color: scheme.primary,
+        backgroundColor: scheme.surface,
         child: async.when(
-          loading: () => const _Loading(),
+          loading: () => _Loading(color: scheme.primary),
           error: (e, _) => _Error(message: '$e'),
           data: (rows) => _Body(
             rows: rows,
@@ -81,14 +76,15 @@ class _LeaderboardTabState extends ConsumerState<LeaderboardTab> {
 }
 
 class _Loading extends StatelessWidget {
-  const _Loading();
+  const _Loading({required this.color});
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: const [
-        SizedBox(height: 200),
-        Center(child: CircularProgressIndicator(color: AppTheme.terra)),
+      children: [
+        const SizedBox(height: 200),
+        Center(child: CircularProgressIndicator(color: color)),
       ],
     );
   }
@@ -105,9 +101,9 @@ class _Error extends StatelessWidget {
       children: [
         const SizedBox(height: 80),
         Text(
-          'σφάλμα',
+          'error',
           textAlign: TextAlign.center,
-          style: GoogleFonts.gloock(
+          style: GoogleFonts.fraunces(
             fontSize: 28,
             color: AppTheme.danger,
             height: 1.0,
@@ -117,7 +113,7 @@ class _Error extends StatelessWidget {
         Text(
           message,
           textAlign: TextAlign.center,
-          style: GoogleFonts.kalam(
+          style: GoogleFonts.inter(
             fontSize: 13,
             color: AppTheme.inkSoft,
           ),
@@ -132,13 +128,11 @@ class _Body extends ConsumerWidget {
   final List<LeaderboardEntry> rows;
 
   /// Snapshot of `playerId → 1-indexed rank` from the previous visit.
-  /// Empty for first-ever visits — `_LeaderRow` interprets a missing
-  /// entry as "no chip" rather than as a delta.
   final Map<String, int> previousRanks;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final loc = AppLocalizations.of(context)!;
     final myId = ref.watch(currentUserIdProvider);
     final myStats = ref.watch(myStatsProvider);
     final myRank = ref.watch(myRankProvider);
@@ -152,18 +146,13 @@ class _Body extends ConsumerWidget {
         AppTheme.space7,
       ),
       children: [
-        const _Masthead(),
+        const TournamentHeader(),
         const SizedBox(height: AppTheme.space6),
-
-        // ── Your stats receipt ──
-        _SectionLabel(l10n.leaderboardYouSection),
+        _SectionEyebrow('§ 01 · ${loc.tournamentYouSection}'),
         const SizedBox(height: AppTheme.space3),
-        _MyStatsCard(stats: myStats),
-
+        TournamentMyStatsCard(stats: myStats),
         const SizedBox(height: AppTheme.space6),
-
-        // ── Top 10 ──
-        _SectionLabel(l10n.leaderboardTopSection),
+        _SectionEyebrow('§ 02 · ${loc.tournamentTopSection}'),
         const SizedBox(height: AppTheme.space3),
         if (top.isEmpty)
           const _EmptyTop()
@@ -175,7 +164,7 @@ class _Body extends ConsumerWidget {
                   padding: EdgeInsets.only(
                     bottom: i == top.length - 1 ? 0 : AppTheme.space2,
                   ),
-                  child: _LeaderRow(
+                  child: TournamentLeaderRow(
                     rank: i + 1,
                     stats: top[i],
                     isMe: top[i].playerId == myId,
@@ -191,19 +180,19 @@ class _Body extends ConsumerWidget {
                 ),
             ],
           ),
-
         if (myRank != null && myRank > 10) ...[
           const SizedBox(height: AppTheme.space5),
           _YourRankFooter(rank: myRank, stats: myStats!),
         ],
-
         const SizedBox(height: AppTheme.space6),
-        Center(
+        const Center(
           child: Text(
             '— FIN —',
-            style: GoogleFonts.jetBrainsMono(
+            style: TextStyle(
+              fontFamily: MerakiFonts.geistMonoFamily,
               fontSize: 9,
-              letterSpacing: 3,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 1.6,
               color: AppTheme.inkFaint,
             ),
           ),
@@ -213,49 +202,42 @@ class _Body extends ConsumerWidget {
   }
 }
 
-class _Masthead extends StatelessWidget {
-  const _Masthead();
+/// Editorial header — Fraunces title + italic-Fraunces subtitle.
+/// Replaces the kafeneio masthead.
+class TournamentHeader extends StatelessWidget {
+  const TournamentHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final loc = AppLocalizations.of(context)!;
+    final tokens = MerakiTokens.of(context);
+    final scheme = Theme.of(context).colorScheme;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Center(
-          child: Text(
-            'VOL. I · APR 2026 · KAFENEIO',
-            style: GoogleFonts.jetBrainsMono(
-              fontSize: 9,
-              letterSpacing: 3,
-              color: AppTheme.inkSoft,
-            ),
+        Text(
+          '§ ${loc.tournamentSection}',
+          style: tokens.eyebrow.copyWith(color: scheme.primary),
+        ),
+        const SizedBox(height: AppTheme.space3),
+        Text(
+          loc.leaderboardTitle,
+          style: GoogleFonts.fraunces(
+            fontSize: 44,
+            fontWeight: FontWeight.w400,
+            color: scheme.onSurface,
+            letterSpacing: -0.6,
+            height: 1.0,
           ),
         ),
-        const SizedBox(height: 6),
-        Container(height: 1.5, color: AppTheme.ink),
-        const SizedBox(height: 2),
-        Container(height: 0.5, color: AppTheme.ink),
-        const SizedBox(height: AppTheme.space4),
-        Center(
-          child: Text(
-            l10n.leaderboardTitle,
-            style: GoogleFonts.gloock(
-              fontSize: 44,
-              color: AppTheme.ink,
-              letterSpacing: -0.6,
-              height: 1.0,
-            ),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Center(
-          child: Text(
-            l10n.leaderboardSubtitle,
-            style: GoogleFonts.caveat(
-              fontSize: 20,
-              color: AppTheme.terra,
-            ),
+        const SizedBox(height: AppTheme.space2),
+        Text(
+          loc.leaderboardSubtitle,
+          style: GoogleFonts.fraunces(
+            fontSize: 17,
+            fontStyle: FontStyle.italic,
+            color: AppTheme.inkSoft,
+            height: 1.4,
           ),
         ),
       ],
@@ -263,49 +245,40 @@ class _Masthead extends StatelessWidget {
   }
 }
 
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel(this.text);
+class _SectionEyebrow extends StatelessWidget {
+  const _SectionEyebrow(this.text);
+
   final String text;
 
   @override
   Widget build(BuildContext context) {
+    final tokens = MerakiTokens.of(context);
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          text,
-          style: GoogleFonts.jetBrainsMono(
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 3,
-            color: AppTheme.terra,
-          ),
-        ),
+        Text(text, style: tokens.eyebrow.copyWith(color: scheme.primary)),
         const SizedBox(width: AppTheme.space2),
-        Expanded(
-          child: Container(height: 0.5, color: AppTheme.border),
+        const Expanded(
+          child: Divider(thickness: 1, color: AppTheme.border, height: 1),
         ),
       ],
     );
   }
 }
 
-class _MyStatsCard extends StatelessWidget {
-  const _MyStatsCard({required this.stats});
+class TournamentMyStatsCard extends StatelessWidget {
+  const TournamentMyStatsCard({super.key, required this.stats});
 
   final LeaderboardEntry? stats;
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     if (stats == null) {
-      return Container(
+      return VirgilCard(
+        variant: VirgilCardVariant.hero,
         padding: const EdgeInsets.all(AppTheme.space4),
-        decoration: BoxDecoration(
-          color: AppTheme.paper,
-          borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-          border: Border.all(color: AppTheme.border),
-          boxShadow: AppTheme.shadowSm,
-        ),
         child: Row(
           children: [
             const Icon(
@@ -315,13 +288,30 @@ class _MyStatsCard extends StatelessWidget {
             ),
             const SizedBox(width: AppTheme.space3),
             Expanded(
-              child: Text(
-                'κανένα κλειστό παιχνίδι ακόμη.\nξεκίνα ένα για να μπεις στην κατάταξη.',
-                style: GoogleFonts.kalam(
-                  fontSize: 14,
-                  color: AppTheme.inkSoft,
-                  height: 1.4,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    loc.tournamentNoGamesTitle,
+                    style: GoogleFonts.fraunces(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w400,
+                      color: AppTheme.ink,
+                      height: 1.1,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    loc.tournamentNoGamesBody,
+                    style: GoogleFonts.fraunces(
+                      fontSize: 14,
+                      fontStyle: FontStyle.italic,
+                      color: AppTheme.inkSoft,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -333,20 +323,19 @@ class _MyStatsCard extends StatelessWidget {
     final accuracyPct =
         s.accuracy == null ? '—' : '${(s.accuracy! * 100).round()}%';
 
-    return Container(
+    return VirgilCard(
+      variant: VirgilCardVariant.hero,
       padding: const EdgeInsets.all(AppTheme.space4),
-      decoration: BoxDecoration(
-        color: AppTheme.paper,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        border: Border.all(color: AppTheme.border),
-        boxShadow: AppTheme.shadowSm,
-      ),
       child: Row(
         children: [
-          _StatCell(label: 'GAMES', value: '${s.gamesPlayed}'),
-          _StatCell(label: 'WINS', value: '${s.wins}', highlight: true),
-          _StatCell(label: 'ACCURACY', value: accuracyPct),
-          _StatCell(label: 'POINTS', value: '${s.lifetimePoints}'),
+          _StatCell(label: loc.tournamentStatGames, value: '${s.gamesPlayed}'),
+          _StatCell(
+            label: loc.tournamentStatWins,
+            value: '${s.wins}',
+            highlight: true,
+          ),
+          _StatCell(label: loc.tournamentStatAccuracy, value: accuracyPct),
+          _StatCell(label: loc.tournamentStatPoints, value: '${s.lifetimePoints}'),
         ],
       ),
     );
@@ -366,36 +355,33 @@ class _StatCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = MerakiTokens.of(context);
+    final scheme = Theme.of(context).colorScheme;
     return Expanded(
       child: Column(
         children: [
           Text(
             value,
-            style: GoogleFonts.gloock(
-              fontSize: 26,
-              color: highlight ? AppTheme.terra : AppTheme.ink,
+            style: GoogleFonts.fraunces(
+              fontSize: 28,
+              fontWeight: FontWeight.w500,
+              color: highlight ? scheme.primary : scheme.onSurface,
               letterSpacing: -0.5,
               height: 1.0,
+              fontFeatures: const [FontFeature.oldstyleFigures()],
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: GoogleFonts.jetBrainsMono(
-              fontSize: 9,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 2,
-              color: AppTheme.inkFaint,
-            ),
-          ),
+          Text(label, style: tokens.eyebrow.copyWith(fontSize: 9)),
         ],
       ),
     );
   }
 }
 
-class _LeaderRow extends StatelessWidget {
-  const _LeaderRow({
+class TournamentLeaderRow extends StatelessWidget {
+  const TournamentLeaderRow({
+    super.key,
     required this.rank,
     required this.stats,
     required this.isMe,
@@ -405,46 +391,49 @@ class _LeaderRow extends StatelessWidget {
   final int rank;
   final LeaderboardEntry stats;
   final bool isMe;
-
-  /// 1-indexed rank from the previous visit, or null if this player wasn't
-  /// in the snapshot we last persisted (new entrant, or first-ever visit).
   final int? previousRank;
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final tokens = MerakiTokens.of(context);
+    final scheme = Theme.of(context).colorScheme;
+
+    // Top three get the deck's "ochre advancement" colour. Below that, ranks
+    // sit on a faint ink — pure typography, no medals.
+    final isTopThree = rank <= 3;
+    final rankColor = isTopThree ? tokens.ochre : AppTheme.inkFaint;
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.space4,
         vertical: AppTheme.space3,
       ),
       decoration: BoxDecoration(
-        color: AppTheme.paper,
+        color: tokens.bone,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         border: Border.all(
-          color: isMe
-              ? AppTheme.terra.withValues(alpha: 0.55)
-              : AppTheme.border,
+          color: isMe ? scheme.primary : AppTheme.border,
           width: isMe ? 1.4 : 1,
         ),
-        boxShadow: AppTheme.shadowSm,
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Rank — Gloock numeral
+          // Rank — Fraunces oldstyle numeral. The deck shows ranking as
+          // pure typography; no medals, no badges.
           SizedBox(
-            width: 30,
+            width: 36,
             child: Text(
               '$rank',
               textAlign: TextAlign.center,
-              style: GoogleFonts.gloock(
-                fontSize: 22,
-                color: rank == 1
-                    ? AppTheme.terra
-                    : rank <= 3
-                        ? AppTheme.ink
-                        : AppTheme.inkFaint,
+              style: GoogleFonts.fraunces(
+                fontSize: 26,
+                fontWeight: FontWeight.w500,
+                color: rankColor,
                 height: 1.0,
                 letterSpacing: -0.5,
+                fontFeatures: const [FontFeature.oldstyleFigures()],
               ),
             ),
           ),
@@ -459,34 +448,20 @@ class _LeaderRow extends StatelessWidget {
                       child: Text(
                         stats.username,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.caveat(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: isMe ? AppTheme.terra : AppTheme.ink,
+                        style: GoogleFonts.fraunces(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400,
+                          color: isMe ? scheme.primary : scheme.onSurface,
+                          letterSpacing: -0.2,
                           height: 1.1,
                         ),
                       ),
                     ),
                     if (isMe) ...[
                       const SizedBox(width: AppTheme.space2),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 1,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppTheme.terraMuted,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                        child: Text(
-                          AppLocalizations.of(context)!.leaderboardYouBadge,
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 8,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 2,
-                            color: AppTheme.terra,
-                          ),
-                        ),
+                      VirgilChip(
+                        label: loc.leaderboardYouBadge,
+                        variant: VirgilChipVariant.accent,
                       ),
                     ],
                     if (_RankDeltaChip.shouldShow(previousRank, rank)) ...[
@@ -500,9 +475,15 @@ class _LeaderRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 1),
                 Text(
-                  '${stats.gamesPlayed} παιχνίδια · ${stats.lifetimePoints} π.',
-                  style: GoogleFonts.kalam(
-                    fontSize: 12,
+                  loc.tournamentGamesPointsLabel(
+                    stats.gamesPlayed,
+                    stats.lifetimePoints,
+                  ),
+                  style: const TextStyle(
+                    fontFamily: MerakiFonts.geistMonoFamily,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 0.4,
                     color: AppTheme.inkFaint,
                   ),
                 ),
@@ -510,27 +491,25 @@ class _LeaderRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppTheme.space3),
-          // Wins block — Gloock numeral
+          // Wins block — Fraunces oldstyle.
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 '${stats.wins}',
-                style: GoogleFonts.gloock(
+                style: GoogleFonts.fraunces(
                   fontSize: 24,
-                  color: AppTheme.terra,
+                  fontWeight: FontWeight.w500,
+                  color: isTopThree ? tokens.ochre : scheme.primary,
                   height: 1.0,
                   letterSpacing: -0.4,
+                  fontFeatures: const [FontFeature.oldstyleFigures()],
                 ),
               ),
+              const SizedBox(height: 2),
               Text(
-                'WINS',
-                style: GoogleFonts.jetBrainsMono(
-                  fontSize: 8,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: 2,
-                  color: AppTheme.inkFaint,
-                ),
+                loc.tournamentStatWins,
+                style: tokens.eyebrow.copyWith(fontSize: 8),
               ),
             ],
           ),
@@ -545,30 +524,28 @@ class _EmptyTop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final loc = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+    return VirgilCard(
+      variant: VirgilCardVariant.hero,
       padding: const EdgeInsets.all(AppTheme.space5),
-      decoration: BoxDecoration(
-        color: AppTheme.paper,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        border: Border.all(color: AppTheme.border),
-        boxShadow: AppTheme.shadowSm,
-      ),
       child: Column(
         children: [
           Text(
-            AppLocalizations.of(context)!.leaderboardEmptyTitle,
-            style: GoogleFonts.gloock(
+            loc.tournamentEmptyTitle,
+            style: GoogleFonts.fraunces(
               fontSize: 24,
-              color: AppTheme.ink,
+              fontWeight: FontWeight.w400,
+              color: scheme.onSurface,
               height: 1.0,
             ),
           ),
           const SizedBox(height: AppTheme.space3),
           Text(
-            AppLocalizations.of(context)!.leaderboardEmptyBody,
+            loc.tournamentEmptyBody,
             textAlign: TextAlign.center,
-            style: GoogleFonts.kalam(
-              fontSize: 14,
+            style: GoogleFonts.inter(
+              fontSize: 15,
               color: AppTheme.inkSoft,
               height: 1.5,
             ),
@@ -579,10 +556,9 @@ class _EmptyTop extends StatelessWidget {
   }
 }
 
-/// Inline ↑N / ↓N pill showing how a player's rank moved since the
-/// previous visit. Olive for "moved up", danger for "moved down". Hidden
-/// when there's no previous data or the rank hasn't moved — silence is the
-/// right signal in those cases.
+/// Inline ↑N / ↓N pill showing how a player's rank moved since the previous
+/// visit. Myrtle for "moved up", danger for "moved down". Hidden when there's
+/// no previous data or the rank hasn't moved.
 class _RankDeltaChip extends StatelessWidget {
   const _RankDeltaChip({
     required this.previousRank,
@@ -592,31 +568,30 @@ class _RankDeltaChip extends StatelessWidget {
   final int previousRank;
   final int currentRank;
 
-  /// Static gate: callers use this to decide whether to mount the chip at
-  /// all (avoids constructing a hidden widget every paint).
   static bool shouldShow(int? previousRank, int currentRank) {
     return previousRank != null && previousRank != currentRank;
   }
 
   @override
   Widget build(BuildContext context) {
-    // Lower rank number = better. Up arrow when moved up the leaderboard.
+    final scheme = Theme.of(context).colorScheme;
     final movedUp = currentRank < previousRank;
     final magnitude = (previousRank - currentRank).abs();
-    final color = movedUp ? AppTheme.olive : AppTheme.danger;
+    final color = movedUp ? scheme.secondary : AppTheme.danger;
     final glyph = movedUp ? '↑' : '↓';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(AppTheme.radiusSm),
       ),
       child: Text(
         '$glyph$magnitude',
-        style: GoogleFonts.jetBrainsMono(
-          fontSize: 8,
+        style: TextStyle(
+          fontFamily: MerakiFonts.geistMonoFamily,
+          fontSize: 9,
           fontWeight: FontWeight.w600,
-          letterSpacing: 1.5,
+          letterSpacing: 1.0,
           color: color,
         ),
       ),
@@ -632,53 +607,45 @@ class _YourRankFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final tokens = MerakiTokens.of(context);
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppTheme.space4),
       decoration: BoxDecoration(
-        color: AppTheme.paper,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        border: Border.all(color: AppTheme.terra, width: 1.2),
-        boxShadow: AppTheme.shadowSm,
+        border: Border.all(color: scheme.primary, width: 1.2),
       ),
       child: Row(
         children: [
-          const Icon(
-            Icons.bookmark_outline,
-            color: AppTheme.terra,
-            size: 22,
-          ),
+          Icon(Icons.bookmark_outline, color: scheme.primary, size: 22),
           const SizedBox(width: AppTheme.space3),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppLocalizations.of(context)!.leaderboardYourPosition,
-                  style: GoogleFonts.kalam(
-                    fontSize: 12,
-                    color: AppTheme.inkFaint,
-                  ),
+                  loc.tournamentYouAreHere,
+                  style: tokens.eyebrow,
                 ),
                 Text(
                   '#$rank',
-                  style: GoogleFonts.gloock(
-                    fontSize: 28,
-                    color: AppTheme.terra,
+                  style: GoogleFonts.fraunces(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w500,
+                    color: scheme.primary,
                     height: 1.0,
                     letterSpacing: -0.5,
+                    fontFeatures: const [FontFeature.oldstyleFigures()],
                   ),
                 ),
               ],
             ),
           ),
           Text(
-            '${stats.wins} WINS',
-            style: GoogleFonts.jetBrainsMono(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 2,
-              color: AppTheme.terra,
-            ),
+            '${stats.wins} ${loc.tournamentStatWins}',
+            style: tokens.eyebrow.copyWith(color: scheme.primary, fontSize: 11),
           ),
         ],
       ),
