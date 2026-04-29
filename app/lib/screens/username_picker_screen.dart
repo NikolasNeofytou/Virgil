@@ -54,10 +54,25 @@ class _UsernamePickerScreenState extends ConsumerState<UsernamePickerScreen> {
     });
     try {
       final userId = SupabaseBootstrap.client.auth.currentUser!.id;
-      await SupabaseBootstrap.client
+      // .select() so we get the affected rows back. A successful update
+      // returns the row; an RLS rejection or missing row returns []. We
+      // need to detect the 0-row case explicitly because the Supabase
+      // client does NOT throw on it — without this check we'd
+      // optimistically invalidate the profile provider and the screen
+      // would stay stuck on the picker with no error shown.
+      //
+      // The 0-row path most commonly happens after a `supabase db reset`
+      // wiped `auth.users` while the simulator's Keychain still holds
+      // the old JWT — server-side `auth.uid()` is null, so RLS rejects.
+      final result = await SupabaseBootstrap.client
           .from('players')
           .update({'username': username})
-          .eq('id', userId);
+          .eq('id', userId)
+          .select('id');
+      if (result.isEmpty) {
+        _setError('η σύνδεση έληξε · συνδέσου ξανά');
+        return;
+      }
       ref.invalidate(currentPlayerProfileProvider);
     } on Object catch (e) {
       if (mounted) {
