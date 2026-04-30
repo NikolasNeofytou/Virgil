@@ -9,6 +9,7 @@ import '../../../providers/auth_providers.dart';
 import '../../../providers/estimation_providers.dart';
 import '../../../services/estimation_service.dart';
 import '../../../theme/app_theme.dart';
+import '../../../theme/meraki_motion.dart';
 import 'game_over_panel.dart' show AppSectionLabelMono;
 import '../../../theme/meraki_fonts.dart';
 
@@ -46,9 +47,9 @@ class MomentsSection extends ConsumerWidget {
                 authorName: usernames[moments[i].authorId] ?? '???',
                 isMine: moments[i].authorId == myId,
               ).animate().fadeIn(
-                    duration: 280.ms,
+                    duration: MerakiMotion.normal,
                     delay: (i * 60).ms,
-                    curve: Curves.easeOut,
+                    curve: MerakiMotion.entrance,
                   ),
             ),
         const SizedBox(height: AppTheme.space3),

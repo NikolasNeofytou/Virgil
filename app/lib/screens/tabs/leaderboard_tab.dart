@@ -9,6 +9,7 @@ import '../../providers/auth_providers.dart';
 import '../../providers/leaderboard_providers.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/meraki_fonts.dart';
+import '../../theme/meraki_motion.dart';
 import '../../theme/meraki_tokens.dart';
 import '../../widgets/virgil_card.dart';
 import '../../widgets/virgil_chip.dart';
@@ -172,11 +173,15 @@ class _Body extends ConsumerWidget {
                   )
                       .animate()
                       .fadeIn(
-                        duration: 280.ms,
+                        duration: MerakiMotion.normal,
                         delay: (i * 50).ms,
-                        curve: Curves.easeOut,
+                        curve: MerakiMotion.entrance,
                       )
-                      .slideY(begin: 0.15, end: 0, duration: 280.ms),
+                      .slideY(
+                        begin: 0.15,
+                        end: 0,
+                        duration: MerakiMotion.normal,
+                      ),
                 ),
             ],
           ),
