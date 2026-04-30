@@ -314,6 +314,54 @@ abstract class AppLocalizations {
   /// **'Γλώσσα'**
   String get profileLanguageLabel;
 
+  /// No description provided for @profileIconLabel.
+  ///
+  /// In el, this message translates to:
+  /// **'Εικονίδιο'**
+  String get profileIconLabel;
+
+  /// No description provided for @profileIconAegean.
+  ///
+  /// In el, this message translates to:
+  /// **'Αιγαίο'**
+  String get profileIconAegean;
+
+  /// No description provided for @profileIconAegeanRole.
+  ///
+  /// In el, this message translates to:
+  /// **'ΒΑΣΙΚΟ'**
+  String get profileIconAegeanRole;
+
+  /// No description provided for @profileIconCoral.
+  ///
+  /// In el, this message translates to:
+  /// **'Κοράλλι'**
+  String get profileIconCoral;
+
+  /// No description provided for @profileIconCoralRole.
+  ///
+  /// In el, this message translates to:
+  /// **'ΤΟΥΡΝΟΥΑ'**
+  String get profileIconCoralRole;
+
+  /// No description provided for @profileIconOchre.
+  ///
+  /// In el, this message translates to:
+  /// **'Ώχρα'**
+  String get profileIconOchre;
+
+  /// No description provided for @profileIconOchreRole.
+  ///
+  /// In el, this message translates to:
+  /// **'ΒΑΘΜΙΔΑ'**
+  String get profileIconOchreRole;
+
+  /// No description provided for @profileIconError.
+  ///
+  /// In el, this message translates to:
+  /// **'δεν άλλαξε το εικονίδιο'**
+  String get profileIconError;
+
   /// No description provided for @profileSignOut.
   ///
   /// In el, this message translates to:

@@ -4,13 +4,16 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/player_profile.dart';
+import '../../providers/app_icon_provider.dart';
 import '../../providers/auth_providers.dart';
 import '../../providers/stats_providers.dart';
+import '../../services/app_icon_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/supabase_client.dart';
 import '../../theme/app_background.dart';
 import '../../theme/app_route.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/meraki_tokens.dart';
 import '../history/game_history_screen.dart';
 import '../../theme/meraki_fonts.dart';
 
@@ -171,6 +174,9 @@ class _ProfileBody extends ConsumerWidget {
             ],
           ),
         ),
+
+        const SizedBox(height: AppTheme.space3),
+        const _IconPicker(),
 
         const SizedBox(height: AppTheme.space5),
 
@@ -424,6 +430,160 @@ class _SettingsCard extends StatelessWidget {
         boxShadow: AppTheme.shadowSm,
       ),
       child: child,
+    );
+  }
+}
+
+// ── App icon picker ───────────────────────────────────────────────────────────
+
+/// Dynamic-icon picker for the three Meraki variants from deck §04.B.
+/// iOS-only — hidden entirely on Android (and on iOS builds whose
+/// Info.plist doesn't declare CFBundleAlternateIcons). The picker is a
+/// second tile inside the §03 Settings section, sitting under the
+/// language toggle.
+class _IconPicker extends ConsumerWidget {
+  const _IconPicker();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final supportedAsync = ref.watch(appIconSupportedProvider);
+    final supported = supportedAsync.valueOrNull ?? false;
+    if (!supported) return const SizedBox.shrink();
+
+    final loc = AppLocalizations.of(context)!;
+    final current =
+        ref.watch(currentAppIconProvider).valueOrNull ?? AppIconVariant.aegean;
+
+    Future<void> pick(AppIconVariant v) async {
+      if (v == current) return;
+      try {
+        await AppIconService().setVariant(v);
+        ref.invalidate(currentAppIconProvider);
+      } on Object {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(loc.profileIconError)),
+        );
+      }
+    }
+
+    return _SettingsCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            loc.profileIconLabel,
+            style: GoogleFonts.fraunces(
+              fontStyle: FontStyle.italic,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.ink,
+            ),
+          ),
+          const SizedBox(height: AppTheme.space3),
+          Row(
+            children: [
+              Expanded(
+                child: _IconChoice(
+                  variant: AppIconVariant.aegean,
+                  name: loc.profileIconAegean,
+                  role: loc.profileIconAegeanRole,
+                  selected: current == AppIconVariant.aegean,
+                  onTap: () => pick(AppIconVariant.aegean),
+                ),
+              ),
+              Expanded(
+                child: _IconChoice(
+                  variant: AppIconVariant.coral,
+                  name: loc.profileIconCoral,
+                  role: loc.profileIconCoralRole,
+                  selected: current == AppIconVariant.coral,
+                  onTap: () => pick(AppIconVariant.coral),
+                ),
+              ),
+              Expanded(
+                child: _IconChoice(
+                  variant: AppIconVariant.ochre,
+                  name: loc.profileIconOchre,
+                  role: loc.profileIconOchreRole,
+                  selected: current == AppIconVariant.ochre,
+                  onTap: () => pick(AppIconVariant.ochre),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IconChoice extends StatelessWidget {
+  const _IconChoice({
+    required this.variant,
+    required this.name,
+    required this.role,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final AppIconVariant variant;
+  final String name;
+  final String role;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = MerakiTokens.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final ringColor = selected ? scheme.primary : AppTheme.border;
+    final ringWidth = selected ? 2.0 : 1.0;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      splashColor: tokens.coralMuted,
+      highlightColor: Colors.transparent,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppTheme.space2),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: ringColor, width: ringWidth),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(11),
+                child: Image.asset(variant.assetName, fit: BoxFit.cover),
+              ),
+            ),
+            const SizedBox(height: AppTheme.space2),
+            Text(
+              name,
+              style: GoogleFonts.fraunces(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: AppTheme.ink,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 1),
+            Text(
+              role,
+              style: tokens.eyebrow.copyWith(
+                fontSize: 9,
+                letterSpacing: 1.0,
+                color: AppTheme.inkFaint,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
