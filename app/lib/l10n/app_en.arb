@@ -85,6 +85,13 @@
   "lobbyChipLive": "live",
   "lobbyChipSoon": "soon",
 
+  "pareaSharedGames": "{count, plural, =1 {1 game · 30d} other {{count} games · 30d}}",
+  "@pareaSharedGames": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
   "pareaTitle": "Parea",
   "pareaSubtitle": "your company",
   "pareaAddPrompt": "Add a friend",

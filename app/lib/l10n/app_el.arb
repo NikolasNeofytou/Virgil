@@ -85,6 +85,13 @@
   "lobbyChipLive": "live",
   "lobbyChipSoon": "σύντομα",
 
+  "pareaSharedGames": "{count, plural, =1 {1 παρτίδα · 30 μέρες} other {{count} παρτίδες · 30 μέρες}}",
+  "@pareaSharedGames": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
   "pareaTitle": "Παρέα",
   "pareaSubtitle": "η παρέα σου",
   "pareaAddPrompt": "Πρόσθεσε φίλο",

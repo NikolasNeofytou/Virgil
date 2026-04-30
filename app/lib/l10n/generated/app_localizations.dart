@@ -494,6 +494,12 @@ abstract class AppLocalizations {
   /// **'σύντομα'**
   String get lobbyChipSoon;
 
+  /// No description provided for @pareaSharedGames.
+  ///
+  /// In el, this message translates to:
+  /// **'{count, plural, =1 {1 παρτίδα · 30 μέρες} other {{count} παρτίδες · 30 μέρες}}'**
+  String pareaSharedGames(int count);
+
   /// No description provided for @pareaTitle.
   ///
   /// In el, this message translates to:

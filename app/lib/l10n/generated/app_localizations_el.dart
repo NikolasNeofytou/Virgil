@@ -216,6 +216,17 @@ class AppLocalizationsEl extends AppLocalizations {
   String get lobbyChipSoon => 'σύντομα';
 
   @override
+  String pareaSharedGames(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count παρτίδες · 30 μέρες',
+      one: '1 παρτίδα · 30 μέρες',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get pareaTitle => 'Παρέα';
 
   @override
