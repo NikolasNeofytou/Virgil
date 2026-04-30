@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../models/friendship.dart';
 import '../../providers/auth_providers.dart';
+import '../../providers/friend_closeness_provider.dart';
 import '../../providers/friends_providers.dart';
 import '../../services/friends_service.dart';
 import '../../theme/app_theme.dart';
@@ -17,10 +18,10 @@ import '../../widgets/virgil_card.dart';
 /// Three sections drive the same friendship state machine the kafeneio
 /// version did: INBOX → YOURS → SENT.
 ///
-/// "Sort by closeness — games shared, last 30 days" from the deck waits on
-/// presence + co-game data we don't track yet; for now rows render in the
-/// order Supabase returns them. Restyling first; sorting follows when the
-/// data lands.
+/// Accepted friends are sorted by deck §05 SCREEN 03 closeness — games
+/// shared in the last 30 days, descending; alphabetical username for ties.
+/// The shared-games count surfaces as a quiet GeistMono caption under each
+/// name when > 0; suppressed when the parea has no co-game history yet.
 class FriendsTab extends ConsumerStatefulWidget {
   const FriendsTab({super.key});
 
@@ -78,6 +79,24 @@ class _FriendsTabState extends ConsumerState<FriendsTab> {
     final outbound = ref.watch(outboundPendingProvider);
     final names =
         ref.watch(friendUsernamesProvider).valueOrNull ?? const {};
+    final closeness =
+        ref.watch(friendClosenessProvider).valueOrNull ?? const {};
+
+    // Sort accepted friends by closeness desc, alphabetical username asc
+    // for ties. Done in build() so the original provider order is
+    // preserved for the inbound / outbound sections.
+    final sortedAccepted = me == null
+        ? accepted
+        : ([...accepted]..sort((a, b) {
+            final aId = a.otherParty(me);
+            final bId = b.otherParty(me);
+            final byScore =
+                (closeness[bId] ?? 0).compareTo(closeness[aId] ?? 0);
+            if (byScore != 0) return byScore;
+            final aName = (names[aId] ?? '').toLowerCase();
+            final bName = (names[bId] ?? '').toLowerCase();
+            return aName.compareTo(bName);
+          }));
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -117,10 +136,11 @@ class _FriendsTabState extends ConsumerState<FriendsTab> {
           if (accepted.isEmpty)
             _EmptyHint(loc.pareaYoursEmpty)
           else if (me != null)
-            ...accepted.map(
+            ...sortedAccepted.map(
               (f) => _FriendRow(
                 friendship: f,
                 name: names[f.otherParty(me)] ?? '…',
+                sharedGames: closeness[f.otherParty(me)] ?? 0,
                 service: _service,
               ),
             ),
@@ -327,22 +347,30 @@ class _EmptyHint extends StatelessWidget {
 }
 
 /// Base parea row — VirgilCard standard with a Fraunces name, optional
-/// italic Fraunces subtitle, and a list of trailing action widgets.
+/// GeistMono caption (closeness etc.), optional italic Fraunces subtitle,
+/// and a list of trailing action widgets.
 class _PareaRow extends StatelessWidget {
   const _PareaRow({
     required this.name,
     required this.children,
     this.subtitle,
+    this.caption,
     this.dim = false,
   });
 
   final String name;
   final List<Widget> children;
   final String? subtitle;
+
+  /// Quiet GeistMono caption rendered between the name and any italic
+  /// subtitle. Used for the closeness count ("12 παρτίδες · 30 μέρες").
+  final String? caption;
+
   final bool dim;
 
   @override
   Widget build(BuildContext context) {
+    final tokens = MerakiTokens.of(context);
     final scheme = Theme.of(context).colorScheme;
     final nameColor = dim ? AppTheme.inkSoft : scheme.onSurface;
     return Padding(
@@ -370,6 +398,17 @@ class _PareaRow extends StatelessWidget {
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
+                  if (caption != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        caption!,
+                        style: tokens.eyebrow.copyWith(
+                          letterSpacing: 0.6,
+                          color: AppTheme.inkFaint,
+                        ),
+                      ),
+                    ),
                   if (subtitle != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
@@ -438,18 +477,22 @@ class _FriendRow extends StatelessWidget {
   const _FriendRow({
     required this.friendship,
     required this.name,
+    required this.sharedGames,
     required this.service,
   });
 
   final Friendship friendship;
   final String name;
+  final int sharedGames;
   final FriendsService service;
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final scheme = Theme.of(context).colorScheme;
     return _PareaRow(
       name: name,
+      caption: sharedGames > 0 ? loc.pareaSharedGames(sharedGames) : null,
       children: [
         Icon(Icons.check_circle, size: 16, color: scheme.secondary),
         IconButton(
