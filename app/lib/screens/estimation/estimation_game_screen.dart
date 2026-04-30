@@ -7,6 +7,7 @@ import '../../providers/estimation_providers.dart';
 import '../../services/estimation_service.dart';
 import '../../theme/app_background.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/meraki_motion.dart';
 import 'widgets/game_over_panel.dart';
 import 'widgets/live_scoreboard_sheet.dart';
 import 'widgets/playing_phase.dart';
@@ -85,9 +86,9 @@ class EstimationGameScreen extends ConsumerWidget {
                           );
                         }
                         return AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 240),
-                          switchInCurve: Curves.easeOut,
-                          switchOutCurve: Curves.easeIn,
+                          duration: MerakiMotion.normal,
+                          switchInCurve: MerakiMotion.entrance,
+                          switchOutCurve: MerakiMotion.exit,
                           child: KeyedSubtree(
                             key: ValueKey(
                               '${game.phase}-${game.currentRound}-${game.status}',

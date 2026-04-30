@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../../theme/meraki_motion.dart';
 
 /// Horizontal grid of number tiles. Selected tile gets a terracotta stamp
 /// ring — overshooting at 2.4× and settling to 1.0× in 250ms, per the
@@ -87,8 +88,8 @@ class _NumberTile extends StatelessWidget {
                 TweenAnimationBuilder<double>(
                   key: ValueKey('stamp-$number'),
                   tween: Tween(begin: 0, end: 1),
-                  duration: const Duration(milliseconds: 260),
-                  curve: Curves.easeOutCubic,
+                  duration: MerakiMotion.normal,
+                  curve: MerakiMotion.entrance,
                   builder: (context, t, _) {
                     // Scale: 2.4 → 1.0, opacity: ink → settled terra
                     final scale = 2.4 - 1.4 * t;

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'meraki_motion.dart';
+
 /// Global helper for building screen-to-screen page transitions.
 ///
 /// Replaces `MaterialPageRoute(builder: ...)` with a fade + 12px upward
@@ -12,20 +14,19 @@ import 'package:flutter/material.dart';
 class AppRoute {
   AppRoute._();
 
-  static const _duration = Duration(milliseconds: 220);
   static const _slidePixels = 12.0;
 
   /// Forward route with the standard transition.
   static PageRouteBuilder<T> build<T>(WidgetBuilder builder) {
     return PageRouteBuilder<T>(
-      transitionDuration: _duration,
-      reverseTransitionDuration: _duration,
+      transitionDuration: MerakiMotion.normal,
+      reverseTransitionDuration: MerakiMotion.normal,
       pageBuilder: (context, _, __) => builder(context),
       transitionsBuilder: (context, animation, secondary, child) {
         final eased = CurvedAnimation(
           parent: animation,
-          curve: Curves.easeOutCubic,
-          reverseCurve: Curves.easeIn,
+          curve: MerakiMotion.entrance,
+          reverseCurve: MerakiMotion.exit,
         );
         return FadeTransition(
           opacity: eased,
