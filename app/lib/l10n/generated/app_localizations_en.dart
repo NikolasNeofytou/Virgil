@@ -120,6 +120,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLanguageLabel => 'Language';
 
   @override
+  String get profileIconLabel => 'Icon';
+
+  @override
+  String get profileIconAegean => 'Aegean';
+
+  @override
+  String get profileIconAegeanRole => 'DEFAULT';
+
+  @override
+  String get profileIconCoral => 'Coral';
+
+  @override
+  String get profileIconCoralRole => 'TOURNAMENTS';
+
+  @override
+  String get profileIconOchre => 'Ochre';
+
+  @override
+  String get profileIconOchreRole => 'RANKED';
+
+  @override
+  String get profileIconError => 'couldn\'t change the icon';
+
+  @override
   String get profileSignOut => 'Sign out';
 
   @override

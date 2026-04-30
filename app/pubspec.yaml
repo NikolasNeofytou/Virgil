@@ -65,6 +65,11 @@ dependencies:
   # Per-device "last seen" leaderboard ranks (rank-change delta chips)
   shared_preferences: ^2.3.0
 
+  # Dynamic app icon — manual Aegean / Coral / Ochre picker on Profile.
+  # iOS only; Android dynamic icons need a different mechanism and are
+  # explicitly out of scope for the rebrand v2.
+  flutter_dynamic_icon_plus: ^1.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -94,6 +99,7 @@ flutter:
     - assets/images/
     - assets/cards/
     - assets/fonts/
+    - assets/icon/
   fonts:
     - family: GeistMono
       fonts:

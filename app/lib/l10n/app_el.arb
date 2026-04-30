@@ -47,6 +47,14 @@
   "leaderboardEmptyBody": "γίνε ο πρώτος που θα μπει στην κατάταξη.\nένα κλειστό παιχνίδι αρκεί.",
 
   "profileLanguageLabel": "Γλώσσα",
+  "profileIconLabel": "Εικονίδιο",
+  "profileIconAegean": "Αιγαίο",
+  "profileIconAegeanRole": "ΒΑΣΙΚΟ",
+  "profileIconCoral": "Κοράλλι",
+  "profileIconCoralRole": "ΤΟΥΡΝΟΥΑ",
+  "profileIconOchre": "Ώχρα",
+  "profileIconOchreRole": "ΒΑΘΜΙΔΑ",
+  "profileIconError": "δεν άλλαξε το εικονίδιο",
   "profileSignOut": "Αποσύνδεση",
 
   "lobbyGreetingMorning": "Καλημέρα",

@@ -121,6 +121,30 @@ class AppLocalizationsEl extends AppLocalizations {
   String get profileLanguageLabel => 'Γλώσσα';
 
   @override
+  String get profileIconLabel => 'Εικονίδιο';
+
+  @override
+  String get profileIconAegean => 'Αιγαίο';
+
+  @override
+  String get profileIconAegeanRole => 'ΒΑΣΙΚΟ';
+
+  @override
+  String get profileIconCoral => 'Κοράλλι';
+
+  @override
+  String get profileIconCoralRole => 'ΤΟΥΡΝΟΥΑ';
+
+  @override
+  String get profileIconOchre => 'Ώχρα';
+
+  @override
+  String get profileIconOchreRole => 'ΒΑΘΜΙΔΑ';
+
+  @override
+  String get profileIconError => 'δεν άλλαξε το εικονίδιο';
+
+  @override
   String get profileSignOut => 'Αποσύνδεση';
 
   @override

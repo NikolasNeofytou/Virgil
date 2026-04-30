@@ -47,6 +47,14 @@
   "leaderboardEmptyBody": "be the first one on the board.\none finished game is enough.",
 
   "profileLanguageLabel": "Language",
+  "profileIconLabel": "Icon",
+  "profileIconAegean": "Aegean",
+  "profileIconAegeanRole": "DEFAULT",
+  "profileIconCoral": "Coral",
+  "profileIconCoralRole": "TOURNAMENTS",
+  "profileIconOchre": "Ochre",
+  "profileIconOchreRole": "RANKED",
+  "profileIconError": "couldn't change the icon",
   "profileSignOut": "Sign out",
 
   "lobbyGreetingMorning": "Good morning",
