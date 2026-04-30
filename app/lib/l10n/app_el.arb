@@ -69,6 +69,12 @@
       "round": { "type": "int" }
     }
   },
+  "lobbyParcaInPlaySection": "ΠΑΡΕΑ · IN PLAY",
+  "lobbyParcaResting": "η παρέα ξεκουράζεται",
+  "lobbyFriendStatusWaiting": "καθιστά",
+  "lobbyFriendStatusActive": "παίζει",
+  "lobbyFriendJoinError": "δεν μπόρεσα να μπω",
+
   "lobbyGamesSection": "ΠΑΙΧΝΙΔΙΑ · GAMES",
   "lobbyGamePilotta": "Πιλόττα",
   "lobbyGamePilottaTagline": "Η Κυπριακή κλασική του καφενείου.",

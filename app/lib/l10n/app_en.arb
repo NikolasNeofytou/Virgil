@@ -69,6 +69,12 @@
       "round": { "type": "int" }
     }
   },
+  "lobbyParcaInPlaySection": "PAREA · IN PLAY",
+  "lobbyParcaResting": "the parea is resting",
+  "lobbyFriendStatusWaiting": "waiting",
+  "lobbyFriendStatusActive": "playing",
+  "lobbyFriendJoinError": "couldn't join",
+
   "lobbyGamesSection": "GAMES",
   "lobbyGamePilotta": "Pilotta",
   "lobbyGamePilottaTagline": "Cypriot living-room classic.",

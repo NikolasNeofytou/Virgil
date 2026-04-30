@@ -4,11 +4,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../models/friend_in_play.dart';
 import '../../providers/active_game_provider.dart';
 import '../../providers/auth_providers.dart';
+import '../../providers/friends_in_play_provider.dart';
+import '../../providers/friends_providers.dart';
+import '../../services/estimation_service.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/meraki_fonts.dart';
 import '../../theme/meraki_tokens.dart';
+import '../../widgets/virgil_avatar.dart';
 import '../../widgets/virgil_button.dart';
 import '../../widgets/virgil_card.dart';
 import '../../widgets/virgil_chip.dart';
@@ -81,9 +86,155 @@ class PlayTab extends ConsumerWidget {
               orElse: () => const SizedBox.shrink(),
             ),
             const SizedBox(height: AppTheme.space6),
+            const FriendsInPlaySection(),
+            const SizedBox(height: AppTheme.space6),
             GamesSection(onEstimationTap: openCreate),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Quiet presence — initial avatars on tonal grounds for any accepted
+/// friend currently sitting at an estimation table. Tiered empty state
+/// (deck §05 SCREEN 01 cue B):
+///   0 accepted friends    → section hidden entirely (no parea to surface)
+///   has friends, 0 in play → eyebrow + italic "η παρέα ξεκουράζεται"
+///   ≥1 friend in play     → eyebrow + horizontal wrap of friend cells
+///
+/// Tap behaviour: room code shown by default under the status word, so
+/// the avatar IS the affordance — tap to sit when status='waiting'; inert
+/// (and dimmed) when status='active'.
+class FriendsInPlaySection extends ConsumerWidget {
+  const FriendsInPlaySection({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasAnyFriends = ref.watch(acceptedFriendsProvider).isNotEmpty;
+    if (!hasAnyFriends) return const SizedBox.shrink();
+
+    final loc = AppLocalizations.of(context)!;
+    final tokens = MerakiTokens.of(context);
+    final scheme = Theme.of(context).colorScheme;
+
+    final inPlayAsync = ref.watch(friendsInPlayProvider);
+    final friends = inPlayAsync.valueOrNull ?? const <FriendInPlay>[];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '§ 03 · ${loc.lobbyParcaInPlaySection}',
+          style: tokens.eyebrow.copyWith(color: scheme.primary),
+        ),
+        const SizedBox(height: AppTheme.space3),
+        if (friends.isEmpty)
+          Text(
+            loc.lobbyParcaResting,
+            style: tokens.italicVerb.copyWith(color: AppTheme.inkFaint),
+          )
+        else
+          Wrap(
+            spacing: AppTheme.space5,
+            runSpacing: AppTheme.space4,
+            children: [
+              for (final f in friends) _FriendCell(friend: f),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class _FriendCell extends ConsumerStatefulWidget {
+  const _FriendCell({required this.friend});
+
+  final FriendInPlay friend;
+
+  @override
+  ConsumerState<_FriendCell> createState() => _FriendCellState();
+}
+
+class _FriendCellState extends ConsumerState<_FriendCell> {
+  bool _joining = false;
+
+  Future<void> _sit() async {
+    if (_joining || widget.friend.isActive) return;
+    setState(() => _joining = true);
+    try {
+      final gameId = await EstimationService()
+          .joinGameByCode(widget.friend.roomCode);
+      if (!mounted) return;
+      // Refresh the active-game card so Continue picks this up too.
+      ref.invalidate(activeEstimationGameProvider);
+      Navigator.of(context).push<void>(
+        AppRoute.build((_) => RoomLobbyScreen(gameId: gameId)),
+      );
+    } on Object catch (e) {
+      if (!mounted) return;
+      final loc = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${loc.lobbyFriendJoinError} · '
+            '${e.toString().replaceFirst('Bad state: ', '').toLowerCase()}',
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _joining = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final tokens = MerakiTokens.of(context);
+    final f = widget.friend;
+    final statusWord =
+        f.isWaiting ? loc.lobbyFriendStatusWaiting : loc.lobbyFriendStatusActive;
+
+    return SizedBox(
+      width: 64,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          VirgilAvatar(
+            label: f.username,
+            size: 44,
+            dim: f.isActive,
+            onTap: f.isWaiting ? _sit : null,
+          ),
+          const SizedBox(height: AppTheme.space2),
+          Text(
+            statusWord,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: tokens.italicVerb.copyWith(
+              fontSize: 13,
+              color: AppTheme.inkFaint,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            f.roomCode,
+            textAlign: TextAlign.center,
+            style: tokens.eyebrow.copyWith(
+              fontSize: 10,
+              color: AppTheme.inkFaint,
+            ),
+          ),
+          if (_joining) ...[
+            const SizedBox(height: AppTheme.space2),
+            const SizedBox(
+              height: 10,
+              width: 10,
+              child: CircularProgressIndicator(strokeWidth: 1.4),
+            ),
+          ],
+        ],
       ),
     );
   }
