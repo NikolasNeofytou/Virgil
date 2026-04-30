@@ -63,7 +63,7 @@ import 'app_localizations_en.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -86,16 +86,16 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('el'),
-    Locale('en')
+    Locale('en'),
   ];
 
   /// No description provided for @appTitle.
@@ -410,6 +410,36 @@ abstract class AppLocalizations {
   /// **'Γύρος {round}'**
   String lobbyInProgressRound(int round);
 
+  /// No description provided for @lobbyParcaInPlaySection.
+  ///
+  /// In el, this message translates to:
+  /// **'ΠΑΡΕΑ · IN PLAY'**
+  String get lobbyParcaInPlaySection;
+
+  /// No description provided for @lobbyParcaResting.
+  ///
+  /// In el, this message translates to:
+  /// **'η παρέα ξεκουράζεται'**
+  String get lobbyParcaResting;
+
+  /// No description provided for @lobbyFriendStatusWaiting.
+  ///
+  /// In el, this message translates to:
+  /// **'καθιστά'**
+  String get lobbyFriendStatusWaiting;
+
+  /// No description provided for @lobbyFriendStatusActive.
+  ///
+  /// In el, this message translates to:
+  /// **'παίζει'**
+  String get lobbyFriendStatusActive;
+
+  /// No description provided for @lobbyFriendJoinError.
+  ///
+  /// In el, this message translates to:
+  /// **'δεν μπόρεσα να μπω'**
+  String get lobbyFriendJoinError;
+
   /// No description provided for @lobbyGamesSection.
   ///
   /// In el, this message translates to:
@@ -702,8 +732,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }

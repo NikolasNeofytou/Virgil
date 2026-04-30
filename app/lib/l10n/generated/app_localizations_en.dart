@@ -171,6 +171,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get lobbyParcaInPlaySection => 'PAREA · IN PLAY';
+
+  @override
+  String get lobbyParcaResting => 'the parea is resting';
+
+  @override
+  String get lobbyFriendStatusWaiting => 'waiting';
+
+  @override
+  String get lobbyFriendStatusActive => 'playing';
+
+  @override
+  String get lobbyFriendJoinError => 'couldn\'t join';
+
+  @override
   String get lobbyGamesSection => 'GAMES';
 
   @override

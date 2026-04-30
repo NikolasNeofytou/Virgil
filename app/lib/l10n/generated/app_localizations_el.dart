@@ -172,6 +172,21 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
+  String get lobbyParcaInPlaySection => 'ΠΑΡΕΑ · IN PLAY';
+
+  @override
+  String get lobbyParcaResting => 'η παρέα ξεκουράζεται';
+
+  @override
+  String get lobbyFriendStatusWaiting => 'καθιστά';
+
+  @override
+  String get lobbyFriendStatusActive => 'παίζει';
+
+  @override
+  String get lobbyFriendJoinError => 'δεν μπόρεσα να μπω';
+
+  @override
   String get lobbyGamesSection => 'ΠΑΙΧΝΙΔΙΑ · GAMES';
 
   @override
