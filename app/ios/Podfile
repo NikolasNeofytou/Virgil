@@ -29,6 +29,18 @@ flutter_ios_podfile_setup
 
 target 'Runner' do
   use_frameworks!
+  # Required so SwiftTryCatch's Obj-C +try:catch:finally: bridges into
+  # Swift as SwiftTryCatch.try { ... } catch: { ... } finally: { ... },
+  # which is how flutter_dynamic_icon_plus calls it.
+  use_modular_headers!
+
+  # SwiftTryCatch is a transitive dep of flutter_dynamic_icon_plus. The
+  # CocoaPods trunk spec points to github.com/cfr/SwiftTryCatch (deleted)
+  # and every public fork ships a header without NS_SWIFT_NAME, which
+  # makes Swift hide the +try:catch:finally: method (try is a reserved
+  # keyword). We vendor a patched copy with the annotation in
+  # local_pods/SwiftTryCatch/.
+  pod 'SwiftTryCatch', :path => 'local_pods/SwiftTryCatch'
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
