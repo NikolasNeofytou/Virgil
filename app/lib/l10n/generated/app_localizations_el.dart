@@ -87,6 +87,15 @@ class AppLocalizationsEl extends AppLocalizations {
   String get gameOverShare => 'Κοινοποίηση';
 
   @override
+  String get gameOverSaveToPhotos => 'Αποθήκευση στις φωτογραφίες';
+
+  @override
+  String get gameOverSavedToPhotos => 'αποθηκεύτηκε στις φωτογραφίες';
+
+  @override
+  String get gameOverSaveError => 'δεν αποθηκεύτηκε · έλεγξε τα δικαιώματα';
+
+  @override
   String get gameOverBackToMenu => 'Πίσω στο μενού';
 
   @override

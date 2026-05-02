@@ -34,6 +34,9 @@
   },
   "gameOverRematch": "Νέο παιχνίδι",
   "gameOverShare": "Κοινοποίηση",
+  "gameOverSaveToPhotos": "Αποθήκευση στις φωτογραφίες",
+  "gameOverSavedToPhotos": "αποθηκεύτηκε στις φωτογραφίες",
+  "gameOverSaveError": "δεν αποθηκεύτηκε · έλεγξε τα δικαιώματα",
   "gameOverBackToMenu": "Πίσω στο μενού",
 
   "leaderboardTitle": "Κατάταξη",

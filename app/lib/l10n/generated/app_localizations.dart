@@ -248,6 +248,24 @@ abstract class AppLocalizations {
   /// **'Κοινοποίηση'**
   String get gameOverShare;
 
+  /// No description provided for @gameOverSaveToPhotos.
+  ///
+  /// In el, this message translates to:
+  /// **'Αποθήκευση στις φωτογραφίες'**
+  String get gameOverSaveToPhotos;
+
+  /// No description provided for @gameOverSavedToPhotos.
+  ///
+  /// In el, this message translates to:
+  /// **'αποθηκεύτηκε στις φωτογραφίες'**
+  String get gameOverSavedToPhotos;
+
+  /// No description provided for @gameOverSaveError.
+  ///
+  /// In el, this message translates to:
+  /// **'δεν αποθηκεύτηκε · έλεγξε τα δικαιώματα'**
+  String get gameOverSaveError;
+
   /// No description provided for @gameOverBackToMenu.
   ///
   /// In el, this message translates to:

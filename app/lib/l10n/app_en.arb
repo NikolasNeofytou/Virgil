@@ -34,6 +34,9 @@
   },
   "gameOverRematch": "New game",
   "gameOverShare": "Share",
+  "gameOverSaveToPhotos": "Save to Photos",
+  "gameOverSavedToPhotos": "saved to your photos",
+  "gameOverSaveError": "could not save · check Photos permission",
   "gameOverBackToMenu": "Back to menu",
 
   "leaderboardTitle": "Leaderboard",
