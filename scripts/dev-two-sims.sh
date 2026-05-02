@@ -61,6 +61,14 @@ else
   supabase start
 fi
 
+# Apply any pending migrations. `supabase start` resumes the DB from a
+# snapshot and does NOT run migrations newer than that snapshot — pulling
+# a branch with new RPCs would otherwise leave the local DB stale and
+# callers fail with "function does not exist". Idempotent: prints "up to
+# date" when there's nothing to apply.
+echo "→ Applying any pending migrations..."
+supabase migration up --local
+
 # ── 2. Mailpit (magic-link inbox) ──────────────────────────────────────────
 # Opens the local email viewer where Supabase delivers OTP / magic-link
 # emails. Same URL re-opened in an existing tab just focuses it.
