@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/estimation_moment.dart';
 import '../../../providers/auth_providers.dart';
 import '../../../providers/estimation_providers.dart';
@@ -32,7 +33,7 @@ class MomentsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const AppSectionLabelMono('ΣΤΙΓΜΕΣ · MOMENTS'),
+        AppSectionLabelMono(AppLocalizations.of(context)!.gameOverMomentsLabel),
         const SizedBox(height: AppTheme.space3),
         if (moments.isEmpty)
           _EmptyHint()
@@ -182,20 +183,21 @@ class _MomentCard extends ConsumerWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Διαγραφή στιγμής;'),
-        content: const Text('Θα αφαιρεθεί από το σύνολο.'),
+        title: Text(l10n.momentsDeleteTitle),
+        content: Text(l10n.momentsDeleteBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Άκυρο'),
+            child: Text(l10n.momentsDeleteCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
-            child: const Text('Διέγραψε'),
+            child: Text(l10n.momentsDeleteConfirm),
           ),
         ],
       ),
@@ -206,7 +208,7 @@ class _MomentCard extends ConsumerWidget {
     } on Object catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Σφάλμα διαγραφής: $e')),
+          SnackBar(content: Text(l10n.momentsDeleteError(e.toString()))),
         );
       }
     }
@@ -222,7 +224,7 @@ class _AddMomentButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
       icon: const Icon(Icons.add, size: 16),
-      label: const Text('Πρόσθεσε στιγμή'),
+      label: Text(AppLocalizations.of(context)!.momentsAddPrompt),
       onPressed: () => _openSheet(context),
     );
   }
@@ -280,7 +282,11 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
       if (mounted) {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Σφάλμα: $e')),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.momentsSaveError(e.toString()),
+            ),
+          ),
         );
       }
     }
@@ -292,6 +298,7 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
     final game =
         ref.watch(estimationGameStreamProvider(widget.gameId)).valueOrNull;
     final totalRounds = game?.totalRounds ?? 0;
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: EdgeInsets.only(bottom: viewInsets.bottom),
       child: Padding(
@@ -306,7 +313,7 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Πρόσθεσε στιγμή',
+              l10n.momentsAddPrompt,
               style: GoogleFonts.fraunces(
                 fontSize: 24,
                 color: AppTheme.ink,
@@ -316,7 +323,7 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
             ),
             const SizedBox(height: 4),
             Text(
-              'μια φράση για να θυμάστε αυτό το παιχνίδι',
+              l10n.momentsAddSubtitle,
               style: GoogleFonts.inter(
                 fontSize: 14,
                 color: AppTheme.inkSoft,
@@ -337,7 +344,7 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
                 height: 1.4,
               ),
               decoration: InputDecoration(
-                hintText: 'π.χ. Ο Caesar κάλεσε 5, πήρε 0. Ωραία βραδιά.',
+                hintText: l10n.momentsHintExample,
                 hintStyle: GoogleFonts.inter(
                   fontSize: 16,
                   color: AppTheme.inkFaint,
@@ -348,9 +355,9 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
             ),
             if (totalRounds > 0) ...[
               const SizedBox(height: AppTheme.space4),
-              const Text(
-                'ΓΥΡΟΣ · ROUND',
-                style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+              Text(
+                l10n.gameRoundEyebrow,
+                style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
                   letterSpacing: 3,
@@ -363,7 +370,7 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
                 runSpacing: AppTheme.space1,
                 children: [
                   _RoundChip(
-                    label: 'ΌΛΟ',
+                    label: l10n.momentsRoundChipAll,
                     selected: _selectedRound == null,
                     onTap: () => setState(() => _selectedRound = null),
                   ),
@@ -386,7 +393,7 @@ class _AddMomentSheetState extends ConsumerState<_AddMomentSheet> {
                       width: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Αποθήκευση'),
+                  : Text(l10n.momentsSaveButton),
             ),
           ],
         ),

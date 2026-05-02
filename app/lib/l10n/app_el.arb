@@ -10,45 +10,37 @@
 
   "signInTitle": "Καλώς ήρθες",
   "signInSubtitle": "συνδέσου για να μπεις στο τραπέζι",
+  "signInPasswordLabel": "Κωδικός",
+  "signInSubmitPassword": "Σύνδεση",
+  "signInSubmitOtp": "Αποστολή κωδικού",
+  "signInToggleToOtp": "Σύνδεση με email OTP",
+  "signInToggleToPassword": "Σύνδεση με κωδικό",
+  "signInOtpSection": "ΕΛΕΓΞΕ ΤΟ EMAIL",
+  "signInOtpSent": "σου στείλαμε κωδικό",
+  "signInOtpVerify": "Επιβεβαίωση",
+  "signInBack": "Πίσω",
 
-  "usernamePickerSection": "§ 01 · ΟΝΟΜΑ · NAME",
+  "usernamePickerSection": "§ 01 · ΟΝΟΜΑ",
   "usernamePickerTitle": "Διάλεξε όνομα",
   "usernamePickerSubtitle": "το όνομά σου στο τραπέζι",
   "usernamePickerHint": "3–24 χαρακτήρες · γράμματα, αριθμοί, _",
+  "usernamePickerInputHint": "όνομα…",
   "usernamePickerSubmit": "Συνέχεια",
   "usernamePickerErrorInvalid": "3–24 χαρακτήρες · γράμματα, αριθμοί, _",
   "usernamePickerErrorTaken": "αυτό το όνομα υπάρχει ήδη",
   "usernamePickerErrorSession": "η σύνδεση έληξε · συνδέσου ξανά",
   "usernamePickerErrorGeneric": "σφάλμα · δοκίμασε ξανά",
 
-  "gameOverWinnerLabel": "ΝΙΚΗΤΗΣ · WINNER",
-  "gameOverFinalLabel": "ΚΑΤΑΤΑΞΗ · FINAL",
-  "gameOverNarrationLabel": "ΝΑΡΡΗΣΗ · NIGHT NOTE",
-  "gameOverAwardsLabel": "ΒΡΑΒΕΙΑ · AWARDS",
-  "gameOverMomentsLabel": "ΣΤΙΓΜΕΣ · MOMENTS",
-  "gameOverPoints": "{score} πόντοι",
-  "@gameOverPoints": {
+  "profileTitle": "Προφίλ",
+  "profileLoadError": "σφάλμα · {error}",
+  "@profileLoadError": {
     "placeholders": {
-      "score": { "type": "int" }
+      "error": { "type": "String" }
     }
   },
-  "gameOverRematch": "Νέο παιχνίδι",
-  "gameOverShare": "Κοινοποίηση",
-  "gameOverSaveToPhotos": "Αποθήκευση στις φωτογραφίες",
-  "gameOverSavedToPhotos": "αποθηκεύτηκε στις φωτογραφίες",
-  "gameOverSaveError": "δεν αποθηκεύτηκε · έλεγξε τα δικαιώματα",
-  "gameOverBackToMenu": "Πίσω στο μενού",
-
-  "leaderboardTitle": "Κατάταξη",
-  "leaderboardSubtitle": "τα σκορ του τραπεζιού",
-  "leaderboardYouSection": "§ 01 · ΟΙ ΣΤΑΤΙΣΤΙΚΕΣ ΣΟΥ · YOU",
-  "leaderboardTopSection": "§ 02 · TOP 10 · LEADERS",
-  "leaderboardYouBadge": "ΕΣΥ",
-  "leaderboardWinsLabel": "WINS",
-  "leaderboardYourPosition": "η θέση σου",
-  "leaderboardEmptyTitle": "κενό φύλλο",
-  "leaderboardEmptyBody": "γίνε ο πρώτος που θα μπει στην κατάταξη.\nένα κλειστό παιχνίδι αρκεί.",
-
+  "profileStatsSection": "§ 01 · ΣΤΑΤΙΣΤΙΚΑ",
+  "profileHistorySection": "§ 02 · ΤΑ ΠΑΙΧΝΙΔΙΑ ΜΟΥ",
+  "profileSettingsSection": "§ 03 · ΡΥΘΜΙΣΕΙΣ",
   "profileLanguageLabel": "Γλώσσα",
   "profileIconLabel": "Εικονίδιο",
   "profileIconAegean": "Αιγαίο",
@@ -60,19 +52,184 @@
   "profileIconError": "δεν άλλαξε το εικονίδιο",
   "profileSignOut": "Αποσύνδεση",
 
+  "historyTitle": "Τα παιχνίδια μου",
+  "historySummaryTitle": "Σύνοψη",
+
+  "createRoomTitle": "Νέο δωμάτιο",
+  "createRoomPlayersSection": "§ 01 · ΠΑΙΚΤΕΣ",
+  "createRoomLengthSection": "§ 02 · ΓΥΡΟΙ",
+  "createRoomCreateButton": "Δημιούργησε δωμάτιο",
+
+  "joinRoomTitle": "Μπες σε δωμάτιο",
+  "joinRoomCodeSection": "§ 01 · ΚΩΔΙΚΟΣ",
+  "joinRoomPasteChip": "επικόλληση",
+  "joinRoomJoinButton": "Συμμετοχή",
+
+  "roomLobbyTitle": "Δωμάτιο",
+  "roomLobbyError": "Σφάλμα: {error}",
+  "@roomLobbyError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "roomLobbyExitTitle": "Αποχώρηση;",
+  "roomLobbyExitBody": "Θα βγεις από το δωμάτιο.",
+  "roomLobbyExitCancel": "Άκυρο",
+  "roomLobbyExitConfirm": "Βγες",
+  "roomLobbyPlayersSection": "ΠΑΙΚΤΕΣ",
+  "roomLobbyRoomCodeSection": "ΚΩΔΙΚΟΣ",
+  "roomLobbySessionNameHint": "όνομα παιχνιδιού (προαιρετικό)",
+  "roomLobbyStartGame": "Ξεκίνα το παιχνίδι",
+  "roomLobbyWaitingPlayers": "Περιμένω παίκτες…",
+  "roomLobbyCopiedSnack": "αντιγράφτηκε",
+
+  "gameTitle": "Παιχνίδι",
+  "gameLiveLeaderboardTooltip": "Ζωντανή κατάταξη",
+  "gameLoadError": "Σφάλμα: {error}",
+  "@gameLoadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "gameNotFound": "Το παιχνίδι δεν βρέθηκε",
+  "gameUnknownPhase": "Άγνωστη φάση: {phase}",
+  "@gameUnknownPhase": {
+    "placeholders": {
+      "phase": { "type": "String" }
+    }
+  },
+  "gameLeaveTitle": "Αποχώρηση;",
+  "gameLeaveBody": "Θα βγεις από το παιχνίδι.",
+  "gameLeaveCancel": "Άκυρο",
+  "gameLeaveConfirm": "Βγες",
+
+  "gameRoundEyebrow": "ΓΥΡΟΣ",
+  "gameCardsThisRound": "{count, plural, =1 {1 κάρτα} other {{count} κάρτες}}",
+  "@gameCardsThisRound": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "predictionLockButton": "Κλείδωμα",
+  "predictionMyLockedTitle": "Η πρόβλεψή σου κλειδώθηκε",
+  "predictionWaitingTitle": "αναμονή…",
+  "predictionTurnOf": "σειρά του {name}",
+  "@predictionTurnOf": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "predictionBidOrderSection": "ΣΕΙΡΑ",
+
+  "playingPastSection": "ΠΡΟΗΓΟΥΜΕΝΕΣ",
+  "playingPastEmpty": "καμιά μπάζα ακόμα",
+  "playingMistakeButton": "Λάθος",
+  "playingConfirmButton": "Επιβεβαίωση",
+  "playingProposalSection": "ΠΡΟΤΑΣΗ",
+  "playingProposalBy": "από {name}",
+  "@playingProposalBy": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "playingConfirmationCount": "συμφωνίες {count} / {threshold}",
+  "@playingConfirmationCount": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "threshold": { "type": "int" }
+    }
+  },
+  "playingProposerWaiting": "αναμονή για τους υπόλοιπους…",
+  "playingTrickEyebrow": "ΜΠΑΖΑ",
+  "roundHeaderLeadsLabel": "ΞΕΚΙΝΑ",
+  "roundHeaderDealerLabel": "ΜΟΙΡΑΖΕΙ",
+  "scoreTallySection": "ΣΚΟΡ",
+  "liveScoreboardTitle": "ΖΩΝΤΑΝΗ ΚΑΤΑΤΑΞΗ",
+  "liveScoreboardChartTitle": "ΕΞΕΛΙΞΗ ΣΚΟΡ",
+  "shortStrawTitle": "ΤΡΑΒΟΥΜΕ ΚΛΗΡΟ",
+  "predictionRoundEyebrow": "ΓΥΡΟΣ ΠΡΟΒΛΕΨΕΩΝ",
+
+  "validatingResultsSection": "Αποτελέσματα",
+  "validatingConfirmedChip": "Επιβεβαιώθηκε",
+  "validatingConfirmButton": "Επιβεβαίωση αποτελεσμάτων",
+  "validatingChallengeTooltip": "Αμφισβήτηση",
+
+  "gameOverWinnerLabel": "ΝΙΚΗΤΗΣ",
+  "gameOverFinalLabel": "ΚΑΤΑΤΑΞΗ",
+  "gameOverNarrationLabel": "ΝΑΡΡΗΣΗ",
+  "gameOverAwardsLabel": "ΒΡΑΒΕΙΑ",
+  "gameOverMomentsLabel": "ΣΤΙΓΜΕΣ",
+  "gameOverPoints": "{score} πόντοι",
+  "@gameOverPoints": {
+    "placeholders": {
+      "score": { "type": "int" }
+    }
+  },
+  "gameOverRematch": "Νέο παιχνίδι",
+  "gameOverShare": "Κοινοποίηση",
+  "gameOverShareError": "Σφάλμα κοινοποίησης: {error}",
+  "@gameOverShareError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "gameOverSaveToPhotos": "Αποθήκευση στις φωτογραφίες",
+  "gameOverSavedToPhotos": "αποθηκεύτηκε στις φωτογραφίες",
+  "gameOverSaveError": "δεν αποθηκεύτηκε · έλεγξε τα δικαιώματα",
+  "gameOverGenericError": "Σφάλμα: {error}",
+  "@gameOverGenericError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "gameOverBackToMenu": "Πίσω στο μενού",
+
+  "momentsAddPrompt": "Πρόσθεσε στιγμή",
+  "momentsAddSubtitle": "μια φράση για να θυμάστε αυτό το παιχνίδι",
+  "momentsHintExample": "π.χ. Ο Caesar κάλεσε 5, πήρε 0. Ωραία βραδιά.",
+  "momentsRoundChipAll": "ΌΛΟ",
+  "momentsSaveButton": "Αποθήκευση",
+  "momentsSaveError": "Σφάλμα: {error}",
+  "@momentsSaveError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "momentsDeleteTitle": "Διαγραφή στιγμής;",
+  "momentsDeleteBody": "Θα αφαιρεθεί από το σύνολο.",
+  "momentsDeleteCancel": "Άκυρο",
+  "momentsDeleteConfirm": "Διέγραψε",
+  "momentsDeleteError": "Σφάλμα διαγραφής: {error}",
+  "@momentsDeleteError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+
+  "leaderboardTitle": "Κατάταξη",
+  "leaderboardSubtitle": "τα σκορ του τραπεζιού",
+  "leaderboardYouSection": "§ 01 · ΟΙ ΣΤΑΤΙΣΤΙΚΕΣ ΣΟΥ",
+  "leaderboardTopSection": "§ 02 · ΚΟΡΥΦΑΙΟΙ",
+  "leaderboardYouBadge": "ΕΣΥ",
+  "leaderboardWinsLabel": "WINS",
+  "leaderboardYourPosition": "η θέση σου",
+  "leaderboardEmptyTitle": "κενό φύλλο",
+  "leaderboardEmptyBody": "γίνε ο πρώτος που θα μπει στην κατάταξη.\nένα κλειστό παιχνίδι αρκεί.",
+
   "lobbyGreetingMorning": "Καλημέρα",
   "lobbyGreetingAfternoon": "Καλησπέρα",
   "lobbyGreetingEvening": "Καλό βράδυ",
   "lobbyGreetingFallback": "Καλώς ήρθες",
   "lobbyHeroTitle": "Στρώθηκε τραπέζι για εσένα.",
   "lobbyTodayLabel": "ΣΗΜΕΡΑ",
-  "lobbyTonightSection": "ΑΠΟΨΕ · TONIGHT",
+  "lobbyTonightSection": "ΑΠΟΨΕ",
   "lobbyEstimationName": "Πρόβλεψη",
   "lobbyEstimationDescription": "Πες πόσες μπάζες θα πάρεις. Δες ποιος ξέρει τα χαρτιά του.",
   "lobbyTakeYourSeat": "Πιάσε θέση",
   "lobbyJoin": "Μπες",
   "lobbyContinueLabel": "Συνέχισε",
-  "lobbyInProgressSection": "ΣΕ ΕΞΕΛΙΞΗ · IN PROGRESS",
+  "lobbyInProgressSection": "ΣΕ ΕΞΕΛΙΞΗ",
   "lobbyInProgressLobby": "στο δωμάτιο",
   "lobbyInProgressRound": "Γύρος {round}",
   "@lobbyInProgressRound": {
@@ -80,13 +237,13 @@
       "round": { "type": "int" }
     }
   },
-  "lobbyParcaInPlaySection": "ΠΑΡΕΑ · IN PLAY",
+  "lobbyParcaInPlaySection": "ΠΑΡΕΑ",
   "lobbyParcaResting": "η παρέα ξεκουράζεται",
   "lobbyFriendStatusWaiting": "καθιστά",
   "lobbyFriendStatusActive": "παίζει",
   "lobbyFriendJoinError": "δεν μπόρεσα να μπω",
 
-  "lobbyGamesSection": "ΠΑΙΧΝΙΔΙΑ · GAMES",
+  "lobbyGamesSection": "ΠΑΙΧΝΙΔΙΑ",
   "lobbyGamePilotta": "Πιλόττα",
   "lobbyGamePilottaTagline": "Η Κυπριακή κλασική του καφενείου.",
   "lobbyGameTavli": "Ταβλί",
@@ -115,14 +272,14 @@
     }
   },
   "pareaAddErrorGeneric": "σφάλμα · δοκίμασε ξανά",
-  "pareaInboxSection": "ΑΙΤΗΣΕΙΣ · INBOX",
+  "pareaInboxSection": "ΑΙΤΗΣΕΙΣ",
   "pareaInboxEmpty": "δεν έχεις αιτήσεις αυτή τη στιγμή",
   "pareaInboxWantsToBeFriends": "θέλει να γίνει φίλος σου",
   "pareaInboxAccept": "Δέξου",
   "pareaInboxDecline": "Απόρριψη",
-  "pareaYoursSection": "ΦΙΛΟΙ · YOURS",
+  "pareaYoursSection": "ΦΙΛΟΙ",
   "pareaYoursEmpty": "πρόσθεσε τον πρώτο σου φίλο πιο πάνω",
-  "pareaSentSection": "ΣΕ ΑΝΑΜΟΝΗ · SENT",
+  "pareaSentSection": "ΣΕ ΑΝΑΜΟΝΗ",
   "pareaSentEmpty": "καμία αίτηση σε αναμονή",
   "pareaSentLabel": "αναμονή επιβεβαίωσης",
   "pareaSentCancel": "Ακύρωση",
@@ -136,9 +293,9 @@
   "pareaUnfriendConfirm": "Αφαίρεσε",
   "pareaUnfriendCancel": "Άκυρο",
 
-  "tournamentSection": "ΤΟΥΡΝΟΥΑ · TOURNAMENT",
-  "tournamentTopSection": "ΚΟΡΥΦΗ · TOP 10",
-  "tournamentYouSection": "ΕΣΥ · YOU",
+  "tournamentSection": "ΤΟΥΡΝΟΥΑ",
+  "tournamentTopSection": "ΚΟΡΥΦΗ",
+  "tournamentYouSection": "ΕΣΥ",
   "tournamentStatGames": "GAMES",
   "tournamentStatWins": "WINS",
   "tournamentStatAccuracy": "ACCURACY",

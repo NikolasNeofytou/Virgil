@@ -27,15 +27,16 @@ class ProfileTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(currentPlayerProfileProvider);
 
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: AppBar(title: const Text('Προφίλ')),
+      appBar: AppBar(title: Text(l10n.profileTitle)),
       body: profile.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: Text(
-            'σφάλμα · $e',
-            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
+            l10n.profileLoadError(e.toString()),
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic,
               color: AppTheme.danger,
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -61,6 +62,7 @@ class _ProfileBody extends ConsumerWidget {
     final p = profile;
     final email = SupabaseBootstrap.client.auth.currentUser?.email;
     final statsAsync = ref.watch(estimationStatsProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -113,7 +115,7 @@ class _ProfileBody extends ConsumerWidget {
         const SizedBox(height: AppTheme.space6),
 
         // ── Stats ──
-        const AppSectionLabel('§ 01 · ΣΤΑΤΙΣΤΙΚΑ · STATS', showRule: true),
+        AppSectionLabel(l10n.profileStatsSection, showRule: true),
         const SizedBox(height: AppTheme.space3),
         statsAsync.when(
           loading: () => const _StatsSkeleton(),
@@ -124,10 +126,7 @@ class _ProfileBody extends ConsumerWidget {
         const SizedBox(height: AppTheme.space6),
 
         // ── History ──
-        const AppSectionLabel(
-          '§ 02 · ΤΑ ΠΑΙΧΝΙΔΙΑ ΜΟΥ · HISTORY',
-          showRule: true,
-        ),
+        AppSectionLabel(l10n.profileHistorySection, showRule: true),
         const SizedBox(height: AppTheme.space3),
         _HistoryEntry(
           onTap: () => Navigator.of(context).push<void>(
@@ -138,14 +137,14 @@ class _ProfileBody extends ConsumerWidget {
         const SizedBox(height: AppTheme.space6),
 
         // ── Settings ──
-        const AppSectionLabel('§ 03 · ΡΥΘΜΙΣΕΙΣ · SETTINGS', showRule: true),
+        AppSectionLabel(l10n.profileSettingsSection, showRule: true),
         const SizedBox(height: AppTheme.space3),
         _SettingsCard(
           child: Row(
             children: [
               Expanded(
                 child: Text(
-                  AppLocalizations.of(context)!.profileLanguageLabel,
+                  l10n.profileLanguageLabel,
                   style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -188,7 +187,7 @@ class _ProfileBody extends ConsumerWidget {
               color: AppTheme.danger.withValues(alpha: 0.5),
             ),
           ),
-          child: const Text('Αποσύνδεση'),
+          child: Text(l10n.profileSignOut),
         ),
       ],
     );

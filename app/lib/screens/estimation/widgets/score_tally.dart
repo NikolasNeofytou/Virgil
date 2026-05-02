@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../providers/auth_providers.dart';
 import '../../../providers/estimation_providers.dart';
 import '../../../theme/app_theme.dart';
@@ -46,9 +47,9 @@ class ScoreTally extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'ΣΚΟΡ · SCORE',
-            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+          Text(
+            AppLocalizations.of(context)!.scoreTallySection,
+            style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
               fontSize: 9,
               letterSpacing: 3,
               color: AppTheme.terra,

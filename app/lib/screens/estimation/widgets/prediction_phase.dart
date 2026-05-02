@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/estimation_player.dart';
 import '../../../models/estimation_round.dart';
 import '../../../providers/auth_providers.dart';
@@ -149,6 +150,7 @@ class _PredictionPhaseState extends ConsumerState<PredictionPhase> {
     final starterName = _seatName(players, usernames, game.roundStarterSeat);
     final currentBidderName =
         _seatName(players, usernames, currentBidderSeat);
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.all(AppTheme.space5),
@@ -187,19 +189,19 @@ class _PredictionPhaseState extends ConsumerState<PredictionPhase> {
                       width: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Κλείδωμα'),
+                  : Text(l10n.predictionLockButton),
             ),
           ] else
             _WaitingCard(
               title: currentBidderSeat == mySeat
-                  ? 'Η πρόβλεψή σου κλειδώθηκε'
+                  ? l10n.predictionMyLockedTitle
                   : currentBidderName == null
-                      ? 'αναμονή…'
-                      : 'σειρά του $currentBidderName',
+                      ? l10n.predictionWaitingTitle
+                      : l10n.predictionTurnOf(currentBidderName),
             ),
 
           const SizedBox(height: AppTheme.space5),
-          const AppSectionLabel('ΣΕΙΡΑ · BID ORDER', showRule: true),
+          AppSectionLabel(l10n.predictionBidOrderSection, showRule: true),
           const SizedBox(height: AppTheme.space3),
           Expanded(
             child: ListView.builder(
@@ -278,9 +280,9 @@ class _WaitingCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'ΓΥΡΟΣ ΠΡΟΒΛΕΨΕΩΝ',
-            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+          Text(
+            AppLocalizations.of(context)!.predictionRoundEyebrow,
+            style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
               fontSize: 10,
               fontWeight: FontWeight.w500,
               letterSpacing: 3,

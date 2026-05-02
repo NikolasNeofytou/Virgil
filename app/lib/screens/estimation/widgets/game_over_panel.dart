@@ -85,7 +85,11 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
       if (!mounted) return;
       setState(() => _starting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Σφάλμα: $e')),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.gameOverGenericError(e.toString()),
+          ),
+        ),
       );
     }
   }
@@ -172,7 +176,11 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
     } on Object catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Σφάλμα κοινοποίησης: $e')),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.gameOverShareError(e.toString()),
+            ),
+          ),
         );
       }
     } finally {
@@ -203,7 +211,11 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
     } on Object catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Σφάλμα: $e')),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.gameOverGenericError(e.toString()),
+            ),
+          ),
         );
       }
     } finally {

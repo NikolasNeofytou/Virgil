@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../theme/app_background.dart';
 import '../estimation/widgets/game_over_panel.dart';
 
@@ -17,7 +18,9 @@ class GameSummaryScreen extends StatelessWidget {
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(title: const Text('Σύνοψη')),
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.historySummaryTitle),
+        ),
         body: SafeArea(
           child: Center(
             child: ConstrainedBox(

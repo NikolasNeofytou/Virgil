@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../services/estimation_service.dart';
 import '../../theme/app_background.dart';
 import '../../theme/app_route.dart';
@@ -99,10 +100,11 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(title: const Text('Μπες σε δωμάτιο')),
+        appBar: AppBar(title: Text(l10n.joinRoomTitle)),
         body: SafeArea(
           child: Center(
             child: ConstrainedBox(
@@ -116,8 +118,8 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
                     _MiniMasthead(),
                     const SizedBox(height: AppTheme.space6),
 
-                    const AppSectionLabel(
-                      '§ 01 · ΚΩΔΙΚΟΣ · CODE',
+                    AppSectionLabel(
+                      l10n.joinRoomCodeSection,
                       showRule: true,
                     ),
                     const SizedBox(height: AppTheme.space4),
@@ -133,7 +135,7 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
                       child: TextButton.icon(
                         onPressed: _pasteFromClipboard,
                         icon: const Icon(Icons.content_paste, size: 14),
-                        label: const Text('επικόλληση'),
+                        label: Text(l10n.joinRoomPasteChip),
                       ),
                     ),
 
@@ -149,7 +151,7 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> {
                               width: 18,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('Συμμετοχή'),
+                          : Text(l10n.joinRoomJoinButton),
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: AppTheme.space3),

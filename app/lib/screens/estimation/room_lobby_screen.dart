@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/auth_providers.dart';
 import '../../services/estimation_service.dart';
 import '../../services/supabase_client.dart';
@@ -166,7 +167,11 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
     } on Object catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Σφάλμα: $e')),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.roomLobbyError(e.toString()),
+            ),
+          ),
         );
       }
     } finally {
@@ -200,15 +205,16 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
   }
 
   void _showLeaveDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Αποχώρηση;'),
-        content: const Text('Θα βγεις από το δωμάτιο.'),
+        title: Text(l10n.roomLobbyExitTitle),
+        content: Text(l10n.roomLobbyExitBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Άκυρο'),
+            child: Text(l10n.roomLobbyExitCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -216,7 +222,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
               _leaveRoom();
             },
             style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
-            child: const Text('Βγες'),
+            child: Text(l10n.roomLobbyExitConfirm),
           ),
         ],
       ),
@@ -234,7 +240,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: const Text('Δωμάτιο'),
+            title: Text(AppLocalizations.of(context)!.roomLobbyTitle),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: _showLeaveDialog,
@@ -285,7 +291,7 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                             // ── Players header ──
                             Row(
                               children: [
-                                const AppSectionLabel('ΠΑΙΚΤΕΣ · SEATED'),
+                                AppSectionLabel(AppLocalizations.of(context)!.roomLobbyPlayersSection),
                                 const Spacer(),
                                 Text(
                                   '${_visibleSeats.length} / $playerCount',
@@ -364,8 +370,8 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                   height: 1.1,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'όνομα παιχνιδιού (προαιρετικό)',
-                  hintStyle: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
+                  hintText: AppLocalizations.of(context)!.roomLobbySessionNameHint,
+                  hintStyle: GoogleFonts.fraunces(fontStyle: FontStyle.italic,
                     fontSize: 20,
                     color: AppTheme.inkFaint,
                     fontWeight: FontWeight.w400,
@@ -430,7 +436,11 @@ class _RoomLobbyScreenState extends ConsumerState<RoomLobbyScreen> {
                 width: 18,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : Text(_isFull ? 'Ξεκίνα το παιχνίδι' : 'Περιμένω παίκτες…'),
+            : Text(
+                _isFull
+                    ? AppLocalizations.of(context)!.roomLobbyStartGame
+                    : AppLocalizations.of(context)!.roomLobbyWaitingPlayers,
+              ),
       );
     }
     return Container(
@@ -615,9 +625,9 @@ class _RoomCodeCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'ROOM · ΚΩΔΙΚΟΣ',
-            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+          Text(
+            AppLocalizations.of(context)!.roomLobbyRoomCodeSection,
+            style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
               fontSize: 10,
               fontWeight: FontWeight.w500,
               letterSpacing: 3,
@@ -632,9 +642,11 @@ class _RoomCodeCard extends StatelessWidget {
               onTap: () {
                 Clipboard.setData(ClipboardData(text: code));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('αντιγράφτηκε'),
-                    duration: Duration(seconds: 1),
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context)!.roomLobbyCopiedSnack,
+                    ),
+                    duration: const Duration(seconds: 1),
                   ),
                 );
               },

@@ -298,7 +298,7 @@ class _UsernameFieldState extends State<_UsernameField> {
               ],
               decoration: InputDecoration(
                 counterText: '',
-                hintText: 'όνομα…',
+                hintText: AppLocalizations.of(context)!.usernamePickerInputHint,
                 hintStyle: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                   fontSize: 24,
                   fontWeight: FontWeight.w700,

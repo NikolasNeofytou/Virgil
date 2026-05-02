@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/game_award.dart';
 import '../../../theme/app_theme.dart';
 import '../../../theme/meraki_fonts.dart';
@@ -33,6 +34,7 @@ class EstimationShareCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: 360,
       decoration: const BoxDecoration(color: AppTheme.paper),
@@ -50,7 +52,7 @@ class EstimationShareCard extends StatelessWidget {
             child: Text(
               sessionLabel,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+              style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
                 fontSize: 10,
                 fontWeight: FontWeight.w500,
                 letterSpacing: 2.5,
@@ -61,7 +63,7 @@ class EstimationShareCard extends StatelessWidget {
           const SizedBox(height: AppTheme.space5),
           _WinnerBlock(name: winnerName, score: winnerScore),
           const SizedBox(height: AppTheme.space6),
-          const _SectionLabel('ΚΑΤΑΤΑΞΗ · FINAL'),
+          _SectionLabel(l10n.gameOverFinalLabel),
           const SizedBox(height: AppTheme.space3),
           for (var i = 0; i < standings.length; i++)
             _StandingRow(
@@ -72,13 +74,13 @@ class EstimationShareCard extends StatelessWidget {
             ),
           if (narration != null) ...[
             const SizedBox(height: AppTheme.space5),
-            const _SectionLabel('ΝΑΡΡΗΣΗ · NIGHT NOTE'),
+            _SectionLabel(l10n.gameOverNarrationLabel),
             const SizedBox(height: AppTheme.space3),
             _NarrationCard(text: narration!),
           ],
           if (awards.isNotEmpty) ...[
             const SizedBox(height: AppTheme.space5),
-            const _SectionLabel('ΒΡΑΒΕΙΑ · AWARDS'),
+            _SectionLabel(l10n.gameOverAwardsLabel),
             const SizedBox(height: AppTheme.space3),
             for (var i = 0; i < awards.length; i++)
               Padding(
@@ -90,7 +92,7 @@ class EstimationShareCard extends StatelessWidget {
           ],
           if (moments.isNotEmpty) ...[
             const SizedBox(height: AppTheme.space5),
-            const _SectionLabel('ΣΤΙΓΜΕΣ · MOMENTS'),
+            _SectionLabel(l10n.gameOverMomentsLabel),
             const SizedBox(height: AppTheme.space3),
             for (var i = 0; i < moments.length; i++)
               Padding(
@@ -171,12 +173,13 @@ class _WinnerBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
-        const Text(
-          'ΝΙΚΗΤΗΣ · WINNER',
+        Text(
+          l10n.gameOverWinnerLabel,
           textAlign: TextAlign.center,
-          style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+          style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
             fontSize: 10,
             fontWeight: FontWeight.w500,
             letterSpacing: 3,
@@ -201,7 +204,7 @@ class _WinnerBlock extends StatelessWidget {
           decoration: const BoxDecoration(color: AppTheme.terra),
           alignment: Alignment.center,
           child: Text(
-            '$score πόντοι',
+            l10n.gameOverPoints(score),
             style: GoogleFonts.fraunces(
               fontSize: 16,
               color: AppTheme.paper,
@@ -460,8 +463,8 @@ class _MomentShareCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                   child: Text(
-                    'ΓΥΡΟΣ ${moment.roundNumber}',
-                    style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+                    '${AppLocalizations.of(context)!.gameRoundEyebrow} ${moment.roundNumber}',
+                    style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
                       fontSize: 8,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 2,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/live_player_stats.dart';
 import '../../../providers/auth_providers.dart';
 import '../../../providers/estimation_providers.dart';
@@ -87,10 +88,10 @@ class _LiveScoreboardSheet extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Center(
+                    Center(
                       child: Text(
-                        'ΖΩΝΤΑΝΗ ΚΑΤΑΤΑΞΗ · LIVE',
-                        style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+                        AppLocalizations.of(context)!.liveScoreboardTitle,
+                        style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
                           fontSize: 9,
                           letterSpacing: 3,
                           color: AppTheme.terra,
@@ -133,9 +134,9 @@ class _LiveScoreboardSheet extends ConsumerWidget {
                         ),
                       if (anyScored) ...[
                         const SizedBox(height: AppTheme.space5),
-                        const Text(
-                          'ΕΞΕΛΙΞΗ ΣΚΟΡ · CHART',
-                          style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+                        Text(
+                          AppLocalizations.of(context)!.liveScoreboardChartTitle,
+                          style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
                             fontSize: 9,
                             letterSpacing: 3,
                             color: AppTheme.inkFaint,

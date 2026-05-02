@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../services/estimation_service.dart';
 import '../../theme/app_background.dart';
 import '../../theme/app_route.dart';
@@ -51,10 +52,11 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
     final maxCards = math.min(7, 52 ~/ _playerCount);
     final totalRounds = 2 * maxCards;
 
+    final l10n = AppLocalizations.of(context)!;
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(title: const Text('Νέο δωμάτιο')),
+        appBar: AppBar(title: Text(l10n.createRoomTitle)),
         body: SafeArea(
           child: Center(
             child: ConstrainedBox(
@@ -68,8 +70,8 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                     _MiniMasthead(),
                     const SizedBox(height: AppTheme.space6),
 
-                    const AppSectionLabel(
-                      '§ 01 · ΠΑΙΚΤΕΣ · PLAYERS',
+                    AppSectionLabel(
+                      l10n.createRoomPlayersSection,
                       showRule: true,
                     ),
                     const SizedBox(height: AppTheme.space3),
@@ -89,8 +91,8 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                     ),
 
                     const SizedBox(height: AppTheme.space6),
-                    const AppSectionLabel(
-                      '§ 02 · ΓΥΡΟΙ · LENGTH',
+                    AppSectionLabel(
+                      l10n.createRoomLengthSection,
                       showRule: true,
                     ),
                     const SizedBox(height: AppTheme.space3),
@@ -109,7 +111,7 @@ class _CreateRoomScreenState extends State<CreateRoomScreen> {
                               width: 18,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('Δημιούργησε δωμάτιο'),
+                          : Text(l10n.createRoomCreateButton),
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: AppTheme.space3),

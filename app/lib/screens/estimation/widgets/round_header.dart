@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../theme/app_theme.dart';
 import '../../../theme/meraki_fonts.dart';
 
@@ -24,6 +25,7 @@ class RoundHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.space4,
@@ -45,9 +47,9 @@ class RoundHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'ΓΥΡΟΣ · ROUND',
-                      style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+                    Text(
+                      l10n.gameRoundEyebrow,
+                      style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
                         fontSize: 9,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 3,
@@ -80,7 +82,7 @@ class RoundHeader extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '$cardsThisRound ${cardsThisRound == 1 ? 'κάρτα' : 'κάρτες'}',
+                      l10n.gameCardsThisRound(cardsThisRound),
                       style: GoogleFonts.inter(
                         fontSize: 13,
                         color: AppTheme.inkSoft,
@@ -97,7 +99,7 @@ class RoundHeader extends StatelessWidget {
                   children: [
                     if (starterName != null) ...[
                       _HeaderLine(
-                        label: 'ΞΕΚΙΝΑ · LEADS',
+                        label: l10n.roundHeaderLeadsLabel,
                         value: starterName!,
                         accent: AppTheme.terra,
                       ),
@@ -106,7 +108,7 @@ class RoundHeader extends StatelessWidget {
                       const SizedBox(height: 6),
                     if (dealerName != null)
                       _HeaderLine(
-                        label: 'ΜΟΙΡΑΖΕΙ · DEALER',
+                        label: l10n.roundHeaderDealerLabel,
                         value: dealerName!,
                         accent: AppTheme.inkSoft,
                       ),

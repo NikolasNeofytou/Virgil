@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../theme/app_background.dart';
 import '../theme/app_theme.dart';
@@ -292,9 +293,9 @@ class _PrimaryForm extends StatelessWidget {
           TextField(
             controller: passwordController,
             obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'Κωδικός',
-              prefixIcon: Icon(Icons.lock_outline, size: 18),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.signInPasswordLabel,
+              prefixIcon: const Icon(Icons.lock_outline, size: 18),
             ),
           ),
         ],
@@ -307,13 +308,19 @@ class _PrimaryForm extends StatelessWidget {
                   width: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Text(useOtp ? 'Αποστολή κωδικού' : 'Σύνδεση'),
+              : Text(
+                  useOtp
+                      ? AppLocalizations.of(context)!.signInSubmitOtp
+                      : AppLocalizations.of(context)!.signInSubmitPassword,
+                ),
         ),
         const SizedBox(height: AppTheme.space3),
         TextButton(
           onPressed: onToggleMode,
           child: Text(
-            useOtp ? 'Σύνδεση με κωδικό' : 'Σύνδεση με email OTP',
+            useOtp
+                ? AppLocalizations.of(context)!.signInToggleToPassword
+                : AppLocalizations.of(context)!.signInToggleToOtp,
           ),
         ),
       ],
@@ -376,10 +383,10 @@ class _OtpFormState extends State<_OtpForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Eyebrow stamp
-        const Center(
+        Center(
           child: Text(
-            'ΕΛΕΓΞΕ ΤΟ EMAIL · CHECK YOUR EMAIL',
-            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+            AppLocalizations.of(context)!.signInOtpSection,
+            style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
               fontSize: 10,
               fontWeight: FontWeight.w500,
               letterSpacing: 3,
@@ -390,8 +397,8 @@ class _OtpFormState extends State<_OtpForm> {
         const SizedBox(height: AppTheme.space3),
         Center(
           child: Text(
-            'σου στείλαμε κωδικό',
-            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
+            AppLocalizations.of(context)!.signInOtpSent,
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic,
               fontSize: 22,
               color: AppTheme.ink,
               height: 1.0,
@@ -426,10 +433,13 @@ class _OtpFormState extends State<_OtpForm> {
                   width: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Επιβεβαίωση'),
+              : Text(AppLocalizations.of(context)!.signInOtpVerify),
         ),
         const SizedBox(height: AppTheme.space2),
-        TextButton(onPressed: widget.onBack, child: const Text('Πίσω')),
+        TextButton(
+          onPressed: widget.onBack,
+          child: Text(AppLocalizations.of(context)!.signInBack),
+        ),
       ],
     );
   }

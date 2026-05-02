@@ -33,6 +33,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signInSubtitle => 'sign in to take a seat';
 
   @override
+  String get signInPasswordLabel => 'Password';
+
+  @override
+  String get signInSubmitPassword => 'Sign in';
+
+  @override
+  String get signInSubmitOtp => 'Send code';
+
+  @override
+  String get signInToggleToOtp => 'Sign in with email OTP';
+
+  @override
+  String get signInToggleToPassword => 'Sign in with a password';
+
+  @override
+  String get signInOtpSection => 'CHECK YOUR EMAIL';
+
+  @override
+  String get signInOtpSent => 'we sent you a code';
+
+  @override
+  String get signInOtpVerify => 'Verify';
+
+  @override
+  String get signInBack => 'Back';
+
+  @override
   String get usernamePickerSection => '§ 01 · NAME';
 
   @override
@@ -43,6 +70,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usernamePickerHint => '3–24 chars · letters, numbers, _';
+
+  @override
+  String get usernamePickerInputHint => 'name…';
 
   @override
   String get usernamePickerSubmit => 'Continue';
@@ -60,70 +90,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usernamePickerErrorGeneric => 'error · try again';
 
   @override
-  String get gameOverWinnerLabel => 'WINNER';
+  String get profileTitle => 'Profile';
 
   @override
-  String get gameOverFinalLabel => 'FINAL';
-
-  @override
-  String get gameOverNarrationLabel => 'NIGHT NOTE';
-
-  @override
-  String get gameOverAwardsLabel => 'AWARDS';
-
-  @override
-  String get gameOverMomentsLabel => 'MOMENTS';
-
-  @override
-  String gameOverPoints(int score) {
-    return '$score points';
+  String profileLoadError(String error) {
+    return 'error · $error';
   }
 
   @override
-  String get gameOverRematch => 'New game';
+  String get profileStatsSection => '§ 01 · STATS';
 
   @override
-  String get gameOverShare => 'Share';
+  String get profileHistorySection => '§ 02 · HISTORY';
 
   @override
-  String get gameOverSaveToPhotos => 'Save to Photos';
-
-  @override
-  String get gameOverSavedToPhotos => 'saved to your photos';
-
-  @override
-  String get gameOverSaveError => 'could not save · check Photos permission';
-
-  @override
-  String get gameOverBackToMenu => 'Back to menu';
-
-  @override
-  String get leaderboardTitle => 'Leaderboard';
-
-  @override
-  String get leaderboardSubtitle => 'the scores at the table';
-
-  @override
-  String get leaderboardYouSection => '§ 01 · YOU';
-
-  @override
-  String get leaderboardTopSection => '§ 02 · TOP 10 · LEADERS';
-
-  @override
-  String get leaderboardYouBadge => 'YOU';
-
-  @override
-  String get leaderboardWinsLabel => 'WINS';
-
-  @override
-  String get leaderboardYourPosition => 'your position';
-
-  @override
-  String get leaderboardEmptyTitle => 'empty page';
-
-  @override
-  String get leaderboardEmptyBody =>
-      'be the first one on the board.\none finished game is enough.';
+  String get profileSettingsSection => '§ 03 · SETTINGS';
 
   @override
   String get profileLanguageLabel => 'Language';
@@ -154,6 +135,314 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSignOut => 'Sign out';
+
+  @override
+  String get historyTitle => 'My games';
+
+  @override
+  String get historySummaryTitle => 'Summary';
+
+  @override
+  String get createRoomTitle => 'New room';
+
+  @override
+  String get createRoomPlayersSection => '§ 01 · PLAYERS';
+
+  @override
+  String get createRoomLengthSection => '§ 02 · LENGTH';
+
+  @override
+  String get createRoomCreateButton => 'Create room';
+
+  @override
+  String get joinRoomTitle => 'Join a room';
+
+  @override
+  String get joinRoomCodeSection => '§ 01 · CODE';
+
+  @override
+  String get joinRoomPasteChip => 'paste';
+
+  @override
+  String get joinRoomJoinButton => 'Join';
+
+  @override
+  String get roomLobbyTitle => 'Room';
+
+  @override
+  String roomLobbyError(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get roomLobbyExitTitle => 'Leave?';
+
+  @override
+  String get roomLobbyExitBody => 'You will leave the room.';
+
+  @override
+  String get roomLobbyExitCancel => 'Cancel';
+
+  @override
+  String get roomLobbyExitConfirm => 'Leave';
+
+  @override
+  String get roomLobbyPlayersSection => 'SEATED';
+
+  @override
+  String get roomLobbyRoomCodeSection => 'ROOM CODE';
+
+  @override
+  String get roomLobbySessionNameHint => 'session name (optional)';
+
+  @override
+  String get roomLobbyStartGame => 'Start the game';
+
+  @override
+  String get roomLobbyWaitingPlayers => 'Waiting for players…';
+
+  @override
+  String get roomLobbyCopiedSnack => 'copied';
+
+  @override
+  String get gameTitle => 'Game';
+
+  @override
+  String get gameLiveLeaderboardTooltip => 'Live standings';
+
+  @override
+  String gameLoadError(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get gameNotFound => 'Game not found';
+
+  @override
+  String gameUnknownPhase(String phase) {
+    return 'Unknown phase: $phase';
+  }
+
+  @override
+  String get gameLeaveTitle => 'Leave?';
+
+  @override
+  String get gameLeaveBody => 'You will leave the game.';
+
+  @override
+  String get gameLeaveCancel => 'Cancel';
+
+  @override
+  String get gameLeaveConfirm => 'Leave';
+
+  @override
+  String get gameRoundEyebrow => 'ROUND';
+
+  @override
+  String gameCardsThisRound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cards',
+      one: '1 card',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get predictionLockButton => 'Lock in';
+
+  @override
+  String get predictionMyLockedTitle => 'Your call is locked in';
+
+  @override
+  String get predictionWaitingTitle => 'waiting…';
+
+  @override
+  String predictionTurnOf(String name) {
+    return '$name\'s turn';
+  }
+
+  @override
+  String get predictionBidOrderSection => 'BID ORDER';
+
+  @override
+  String get playingPastSection => 'PAST';
+
+  @override
+  String get playingPastEmpty => 'no tricks yet';
+
+  @override
+  String get playingMistakeButton => 'Mistake';
+
+  @override
+  String get playingConfirmButton => 'Confirm';
+
+  @override
+  String get playingProposalSection => 'PROPOSED WINNER';
+
+  @override
+  String playingProposalBy(String name) {
+    return 'by $name';
+  }
+
+  @override
+  String playingConfirmationCount(int count, int threshold) {
+    return 'agreed $count / $threshold';
+  }
+
+  @override
+  String get playingProposerWaiting => 'waiting for the others…';
+
+  @override
+  String get playingTrickEyebrow => 'TRICK';
+
+  @override
+  String get roundHeaderLeadsLabel => 'LEADS';
+
+  @override
+  String get roundHeaderDealerLabel => 'DEALER';
+
+  @override
+  String get scoreTallySection => 'SCORE';
+
+  @override
+  String get liveScoreboardTitle => 'LIVE STANDINGS';
+
+  @override
+  String get liveScoreboardChartTitle => 'SCORE CHART';
+
+  @override
+  String get shortStrawTitle => 'DRAWING LOTS';
+
+  @override
+  String get predictionRoundEyebrow => 'PREDICTION ROUND';
+
+  @override
+  String get validatingResultsSection => 'Results';
+
+  @override
+  String get validatingConfirmedChip => 'Confirmed';
+
+  @override
+  String get validatingConfirmButton => 'Confirm results';
+
+  @override
+  String get validatingChallengeTooltip => 'Dispute';
+
+  @override
+  String get gameOverWinnerLabel => 'WINNER';
+
+  @override
+  String get gameOverFinalLabel => 'FINAL';
+
+  @override
+  String get gameOverNarrationLabel => 'NIGHT NOTE';
+
+  @override
+  String get gameOverAwardsLabel => 'AWARDS';
+
+  @override
+  String get gameOverMomentsLabel => 'MOMENTS';
+
+  @override
+  String gameOverPoints(int score) {
+    return '$score points';
+  }
+
+  @override
+  String get gameOverRematch => 'New game';
+
+  @override
+  String get gameOverShare => 'Share';
+
+  @override
+  String gameOverShareError(String error) {
+    return 'Share error: $error';
+  }
+
+  @override
+  String get gameOverSaveToPhotos => 'Save to Photos';
+
+  @override
+  String get gameOverSavedToPhotos => 'saved to your photos';
+
+  @override
+  String get gameOverSaveError => 'could not save · check Photos permission';
+
+  @override
+  String gameOverGenericError(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get gameOverBackToMenu => 'Back to menu';
+
+  @override
+  String get momentsAddPrompt => 'Add a moment';
+
+  @override
+  String get momentsAddSubtitle => 'a line to remember this game by';
+
+  @override
+  String get momentsHintExample =>
+      'e.g. Caesar called 5, took 0. Lovely night.';
+
+  @override
+  String get momentsRoundChipAll => 'ALL';
+
+  @override
+  String get momentsSaveButton => 'Save';
+
+  @override
+  String momentsSaveError(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get momentsDeleteTitle => 'Delete moment?';
+
+  @override
+  String get momentsDeleteBody => 'It will be removed from the set.';
+
+  @override
+  String get momentsDeleteCancel => 'Cancel';
+
+  @override
+  String get momentsDeleteConfirm => 'Delete';
+
+  @override
+  String momentsDeleteError(String error) {
+    return 'Delete error: $error';
+  }
+
+  @override
+  String get leaderboardTitle => 'Leaderboard';
+
+  @override
+  String get leaderboardSubtitle => 'the scores at the table';
+
+  @override
+  String get leaderboardYouSection => '§ 01 · YOU';
+
+  @override
+  String get leaderboardTopSection => '§ 02 · LEADERS';
+
+  @override
+  String get leaderboardYouBadge => 'YOU';
+
+  @override
+  String get leaderboardWinsLabel => 'WINS';
+
+  @override
+  String get leaderboardYourPosition => 'your position';
+
+  @override
+  String get leaderboardEmptyTitle => 'empty page';
+
+  @override
+  String get leaderboardEmptyBody =>
+      'be the first one on the board.\none finished game is enough.';
 
   @override
   String get lobbyGreetingMorning => 'Good morning';
@@ -204,7 +493,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get lobbyParcaInPlaySection => 'PAREA · IN PLAY';
+  String get lobbyParcaInPlaySection => 'IN PLAY';
 
   @override
   String get lobbyParcaResting => 'the parea is resting';

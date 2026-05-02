@@ -33,7 +33,34 @@ class AppLocalizationsEl extends AppLocalizations {
   String get signInSubtitle => 'συνδέσου για να μπεις στο τραπέζι';
 
   @override
-  String get usernamePickerSection => '§ 01 · ΟΝΟΜΑ · NAME';
+  String get signInPasswordLabel => 'Κωδικός';
+
+  @override
+  String get signInSubmitPassword => 'Σύνδεση';
+
+  @override
+  String get signInSubmitOtp => 'Αποστολή κωδικού';
+
+  @override
+  String get signInToggleToOtp => 'Σύνδεση με email OTP';
+
+  @override
+  String get signInToggleToPassword => 'Σύνδεση με κωδικό';
+
+  @override
+  String get signInOtpSection => 'ΕΛΕΓΞΕ ΤΟ EMAIL';
+
+  @override
+  String get signInOtpSent => 'σου στείλαμε κωδικό';
+
+  @override
+  String get signInOtpVerify => 'Επιβεβαίωση';
+
+  @override
+  String get signInBack => 'Πίσω';
+
+  @override
+  String get usernamePickerSection => '§ 01 · ΟΝΟΜΑ';
 
   @override
   String get usernamePickerTitle => 'Διάλεξε όνομα';
@@ -43,6 +70,9 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get usernamePickerHint => '3–24 χαρακτήρες · γράμματα, αριθμοί, _';
+
+  @override
+  String get usernamePickerInputHint => 'όνομα…';
 
   @override
   String get usernamePickerSubmit => 'Συνέχεια';
@@ -61,70 +91,21 @@ class AppLocalizationsEl extends AppLocalizations {
   String get usernamePickerErrorGeneric => 'σφάλμα · δοκίμασε ξανά';
 
   @override
-  String get gameOverWinnerLabel => 'ΝΙΚΗΤΗΣ · WINNER';
+  String get profileTitle => 'Προφίλ';
 
   @override
-  String get gameOverFinalLabel => 'ΚΑΤΑΤΑΞΗ · FINAL';
-
-  @override
-  String get gameOverNarrationLabel => 'ΝΑΡΡΗΣΗ · NIGHT NOTE';
-
-  @override
-  String get gameOverAwardsLabel => 'ΒΡΑΒΕΙΑ · AWARDS';
-
-  @override
-  String get gameOverMomentsLabel => 'ΣΤΙΓΜΕΣ · MOMENTS';
-
-  @override
-  String gameOverPoints(int score) {
-    return '$score πόντοι';
+  String profileLoadError(String error) {
+    return 'σφάλμα · $error';
   }
 
   @override
-  String get gameOverRematch => 'Νέο παιχνίδι';
+  String get profileStatsSection => '§ 01 · ΣΤΑΤΙΣΤΙΚΑ';
 
   @override
-  String get gameOverShare => 'Κοινοποίηση';
+  String get profileHistorySection => '§ 02 · ΤΑ ΠΑΙΧΝΙΔΙΑ ΜΟΥ';
 
   @override
-  String get gameOverSaveToPhotos => 'Αποθήκευση στις φωτογραφίες';
-
-  @override
-  String get gameOverSavedToPhotos => 'αποθηκεύτηκε στις φωτογραφίες';
-
-  @override
-  String get gameOverSaveError => 'δεν αποθηκεύτηκε · έλεγξε τα δικαιώματα';
-
-  @override
-  String get gameOverBackToMenu => 'Πίσω στο μενού';
-
-  @override
-  String get leaderboardTitle => 'Κατάταξη';
-
-  @override
-  String get leaderboardSubtitle => 'τα σκορ του τραπεζιού';
-
-  @override
-  String get leaderboardYouSection => '§ 01 · ΟΙ ΣΤΑΤΙΣΤΙΚΕΣ ΣΟΥ · YOU';
-
-  @override
-  String get leaderboardTopSection => '§ 02 · TOP 10 · LEADERS';
-
-  @override
-  String get leaderboardYouBadge => 'ΕΣΥ';
-
-  @override
-  String get leaderboardWinsLabel => 'WINS';
-
-  @override
-  String get leaderboardYourPosition => 'η θέση σου';
-
-  @override
-  String get leaderboardEmptyTitle => 'κενό φύλλο';
-
-  @override
-  String get leaderboardEmptyBody =>
-      'γίνε ο πρώτος που θα μπει στην κατάταξη.\nένα κλειστό παιχνίδι αρκεί.';
+  String get profileSettingsSection => '§ 03 · ΡΥΘΜΙΣΕΙΣ';
 
   @override
   String get profileLanguageLabel => 'Γλώσσα';
@@ -157,6 +138,314 @@ class AppLocalizationsEl extends AppLocalizations {
   String get profileSignOut => 'Αποσύνδεση';
 
   @override
+  String get historyTitle => 'Τα παιχνίδια μου';
+
+  @override
+  String get historySummaryTitle => 'Σύνοψη';
+
+  @override
+  String get createRoomTitle => 'Νέο δωμάτιο';
+
+  @override
+  String get createRoomPlayersSection => '§ 01 · ΠΑΙΚΤΕΣ';
+
+  @override
+  String get createRoomLengthSection => '§ 02 · ΓΥΡΟΙ';
+
+  @override
+  String get createRoomCreateButton => 'Δημιούργησε δωμάτιο';
+
+  @override
+  String get joinRoomTitle => 'Μπες σε δωμάτιο';
+
+  @override
+  String get joinRoomCodeSection => '§ 01 · ΚΩΔΙΚΟΣ';
+
+  @override
+  String get joinRoomPasteChip => 'επικόλληση';
+
+  @override
+  String get joinRoomJoinButton => 'Συμμετοχή';
+
+  @override
+  String get roomLobbyTitle => 'Δωμάτιο';
+
+  @override
+  String roomLobbyError(String error) {
+    return 'Σφάλμα: $error';
+  }
+
+  @override
+  String get roomLobbyExitTitle => 'Αποχώρηση;';
+
+  @override
+  String get roomLobbyExitBody => 'Θα βγεις από το δωμάτιο.';
+
+  @override
+  String get roomLobbyExitCancel => 'Άκυρο';
+
+  @override
+  String get roomLobbyExitConfirm => 'Βγες';
+
+  @override
+  String get roomLobbyPlayersSection => 'ΠΑΙΚΤΕΣ';
+
+  @override
+  String get roomLobbyRoomCodeSection => 'ΚΩΔΙΚΟΣ';
+
+  @override
+  String get roomLobbySessionNameHint => 'όνομα παιχνιδιού (προαιρετικό)';
+
+  @override
+  String get roomLobbyStartGame => 'Ξεκίνα το παιχνίδι';
+
+  @override
+  String get roomLobbyWaitingPlayers => 'Περιμένω παίκτες…';
+
+  @override
+  String get roomLobbyCopiedSnack => 'αντιγράφτηκε';
+
+  @override
+  String get gameTitle => 'Παιχνίδι';
+
+  @override
+  String get gameLiveLeaderboardTooltip => 'Ζωντανή κατάταξη';
+
+  @override
+  String gameLoadError(String error) {
+    return 'Σφάλμα: $error';
+  }
+
+  @override
+  String get gameNotFound => 'Το παιχνίδι δεν βρέθηκε';
+
+  @override
+  String gameUnknownPhase(String phase) {
+    return 'Άγνωστη φάση: $phase';
+  }
+
+  @override
+  String get gameLeaveTitle => 'Αποχώρηση;';
+
+  @override
+  String get gameLeaveBody => 'Θα βγεις από το παιχνίδι.';
+
+  @override
+  String get gameLeaveCancel => 'Άκυρο';
+
+  @override
+  String get gameLeaveConfirm => 'Βγες';
+
+  @override
+  String get gameRoundEyebrow => 'ΓΥΡΟΣ';
+
+  @override
+  String gameCardsThisRound(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count κάρτες',
+      one: '1 κάρτα',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get predictionLockButton => 'Κλείδωμα';
+
+  @override
+  String get predictionMyLockedTitle => 'Η πρόβλεψή σου κλειδώθηκε';
+
+  @override
+  String get predictionWaitingTitle => 'αναμονή…';
+
+  @override
+  String predictionTurnOf(String name) {
+    return 'σειρά του $name';
+  }
+
+  @override
+  String get predictionBidOrderSection => 'ΣΕΙΡΑ';
+
+  @override
+  String get playingPastSection => 'ΠΡΟΗΓΟΥΜΕΝΕΣ';
+
+  @override
+  String get playingPastEmpty => 'καμιά μπάζα ακόμα';
+
+  @override
+  String get playingMistakeButton => 'Λάθος';
+
+  @override
+  String get playingConfirmButton => 'Επιβεβαίωση';
+
+  @override
+  String get playingProposalSection => 'ΠΡΟΤΑΣΗ';
+
+  @override
+  String playingProposalBy(String name) {
+    return 'από $name';
+  }
+
+  @override
+  String playingConfirmationCount(int count, int threshold) {
+    return 'συμφωνίες $count / $threshold';
+  }
+
+  @override
+  String get playingProposerWaiting => 'αναμονή για τους υπόλοιπους…';
+
+  @override
+  String get playingTrickEyebrow => 'ΜΠΑΖΑ';
+
+  @override
+  String get roundHeaderLeadsLabel => 'ΞΕΚΙΝΑ';
+
+  @override
+  String get roundHeaderDealerLabel => 'ΜΟΙΡΑΖΕΙ';
+
+  @override
+  String get scoreTallySection => 'ΣΚΟΡ';
+
+  @override
+  String get liveScoreboardTitle => 'ΖΩΝΤΑΝΗ ΚΑΤΑΤΑΞΗ';
+
+  @override
+  String get liveScoreboardChartTitle => 'ΕΞΕΛΙΞΗ ΣΚΟΡ';
+
+  @override
+  String get shortStrawTitle => 'ΤΡΑΒΟΥΜΕ ΚΛΗΡΟ';
+
+  @override
+  String get predictionRoundEyebrow => 'ΓΥΡΟΣ ΠΡΟΒΛΕΨΕΩΝ';
+
+  @override
+  String get validatingResultsSection => 'Αποτελέσματα';
+
+  @override
+  String get validatingConfirmedChip => 'Επιβεβαιώθηκε';
+
+  @override
+  String get validatingConfirmButton => 'Επιβεβαίωση αποτελεσμάτων';
+
+  @override
+  String get validatingChallengeTooltip => 'Αμφισβήτηση';
+
+  @override
+  String get gameOverWinnerLabel => 'ΝΙΚΗΤΗΣ';
+
+  @override
+  String get gameOverFinalLabel => 'ΚΑΤΑΤΑΞΗ';
+
+  @override
+  String get gameOverNarrationLabel => 'ΝΑΡΡΗΣΗ';
+
+  @override
+  String get gameOverAwardsLabel => 'ΒΡΑΒΕΙΑ';
+
+  @override
+  String get gameOverMomentsLabel => 'ΣΤΙΓΜΕΣ';
+
+  @override
+  String gameOverPoints(int score) {
+    return '$score πόντοι';
+  }
+
+  @override
+  String get gameOverRematch => 'Νέο παιχνίδι';
+
+  @override
+  String get gameOverShare => 'Κοινοποίηση';
+
+  @override
+  String gameOverShareError(String error) {
+    return 'Σφάλμα κοινοποίησης: $error';
+  }
+
+  @override
+  String get gameOverSaveToPhotos => 'Αποθήκευση στις φωτογραφίες';
+
+  @override
+  String get gameOverSavedToPhotos => 'αποθηκεύτηκε στις φωτογραφίες';
+
+  @override
+  String get gameOverSaveError => 'δεν αποθηκεύτηκε · έλεγξε τα δικαιώματα';
+
+  @override
+  String gameOverGenericError(String error) {
+    return 'Σφάλμα: $error';
+  }
+
+  @override
+  String get gameOverBackToMenu => 'Πίσω στο μενού';
+
+  @override
+  String get momentsAddPrompt => 'Πρόσθεσε στιγμή';
+
+  @override
+  String get momentsAddSubtitle => 'μια φράση για να θυμάστε αυτό το παιχνίδι';
+
+  @override
+  String get momentsHintExample =>
+      'π.χ. Ο Caesar κάλεσε 5, πήρε 0. Ωραία βραδιά.';
+
+  @override
+  String get momentsRoundChipAll => 'ΌΛΟ';
+
+  @override
+  String get momentsSaveButton => 'Αποθήκευση';
+
+  @override
+  String momentsSaveError(String error) {
+    return 'Σφάλμα: $error';
+  }
+
+  @override
+  String get momentsDeleteTitle => 'Διαγραφή στιγμής;';
+
+  @override
+  String get momentsDeleteBody => 'Θα αφαιρεθεί από το σύνολο.';
+
+  @override
+  String get momentsDeleteCancel => 'Άκυρο';
+
+  @override
+  String get momentsDeleteConfirm => 'Διέγραψε';
+
+  @override
+  String momentsDeleteError(String error) {
+    return 'Σφάλμα διαγραφής: $error';
+  }
+
+  @override
+  String get leaderboardTitle => 'Κατάταξη';
+
+  @override
+  String get leaderboardSubtitle => 'τα σκορ του τραπεζιού';
+
+  @override
+  String get leaderboardYouSection => '§ 01 · ΟΙ ΣΤΑΤΙΣΤΙΚΕΣ ΣΟΥ';
+
+  @override
+  String get leaderboardTopSection => '§ 02 · ΚΟΡΥΦΑΙΟΙ';
+
+  @override
+  String get leaderboardYouBadge => 'ΕΣΥ';
+
+  @override
+  String get leaderboardWinsLabel => 'WINS';
+
+  @override
+  String get leaderboardYourPosition => 'η θέση σου';
+
+  @override
+  String get leaderboardEmptyTitle => 'κενό φύλλο';
+
+  @override
+  String get leaderboardEmptyBody =>
+      'γίνε ο πρώτος που θα μπει στην κατάταξη.\nένα κλειστό παιχνίδι αρκεί.';
+
+  @override
   String get lobbyGreetingMorning => 'Καλημέρα';
 
   @override
@@ -175,7 +464,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get lobbyTodayLabel => 'ΣΗΜΕΡΑ';
 
   @override
-  String get lobbyTonightSection => 'ΑΠΟΨΕ · TONIGHT';
+  String get lobbyTonightSection => 'ΑΠΟΨΕ';
 
   @override
   String get lobbyEstimationName => 'Πρόβλεψη';
@@ -194,7 +483,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get lobbyContinueLabel => 'Συνέχισε';
 
   @override
-  String get lobbyInProgressSection => 'ΣΕ ΕΞΕΛΙΞΗ · IN PROGRESS';
+  String get lobbyInProgressSection => 'ΣΕ ΕΞΕΛΙΞΗ';
 
   @override
   String get lobbyInProgressLobby => 'στο δωμάτιο';
@@ -205,7 +494,7 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String get lobbyParcaInPlaySection => 'ΠΑΡΕΑ · IN PLAY';
+  String get lobbyParcaInPlaySection => 'ΠΑΡΕΑ';
 
   @override
   String get lobbyParcaResting => 'η παρέα ξεκουράζεται';
@@ -220,7 +509,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get lobbyFriendJoinError => 'δεν μπόρεσα να μπω';
 
   @override
-  String get lobbyGamesSection => 'ΠΑΙΧΝΙΔΙΑ · GAMES';
+  String get lobbyGamesSection => 'ΠΑΙΧΝΙΔΙΑ';
 
   @override
   String get lobbyGamePilotta => 'Πιλόττα';
@@ -283,7 +572,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get pareaAddErrorGeneric => 'σφάλμα · δοκίμασε ξανά';
 
   @override
-  String get pareaInboxSection => 'ΑΙΤΗΣΕΙΣ · INBOX';
+  String get pareaInboxSection => 'ΑΙΤΗΣΕΙΣ';
 
   @override
   String get pareaInboxEmpty => 'δεν έχεις αιτήσεις αυτή τη στιγμή';
@@ -298,13 +587,13 @@ class AppLocalizationsEl extends AppLocalizations {
   String get pareaInboxDecline => 'Απόρριψη';
 
   @override
-  String get pareaYoursSection => 'ΦΙΛΟΙ · YOURS';
+  String get pareaYoursSection => 'ΦΙΛΟΙ';
 
   @override
   String get pareaYoursEmpty => 'πρόσθεσε τον πρώτο σου φίλο πιο πάνω';
 
   @override
-  String get pareaSentSection => 'ΣΕ ΑΝΑΜΟΝΗ · SENT';
+  String get pareaSentSection => 'ΣΕ ΑΝΑΜΟΝΗ';
 
   @override
   String get pareaSentEmpty => 'καμία αίτηση σε αναμονή';
@@ -330,13 +619,13 @@ class AppLocalizationsEl extends AppLocalizations {
   String get pareaUnfriendCancel => 'Άκυρο';
 
   @override
-  String get tournamentSection => 'ΤΟΥΡΝΟΥΑ · TOURNAMENT';
+  String get tournamentSection => 'ΤΟΥΡΝΟΥΑ';
 
   @override
-  String get tournamentTopSection => 'ΚΟΡΥΦΗ · TOP 10';
+  String get tournamentTopSection => 'ΚΟΡΥΦΗ';
 
   @override
-  String get tournamentYouSection => 'ΕΣΥ · YOU';
+  String get tournamentYouSection => 'ΕΣΥ';
 
   @override
   String get tournamentStatGames => 'GAMES';

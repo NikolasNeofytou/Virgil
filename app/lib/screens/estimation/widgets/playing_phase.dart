@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/estimation_player.dart';
 import '../../../models/estimation_trick.dart';
 import '../../../providers/auth_providers.dart';
@@ -149,6 +150,7 @@ class _PlayingPhaseState extends ConsumerState<PlayingPhase> {
     final leaderName = _seatName(players, usernames, leaderSeat);
     final dealerName = _seatName(players, usernames, game.dealerSeat);
     final starterName = _seatName(players, usernames, game.roundStarterSeat);
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.all(AppTheme.space5),
@@ -193,13 +195,13 @@ class _PlayingPhaseState extends ConsumerState<PlayingPhase> {
             ),
 
           const SizedBox(height: AppTheme.space5),
-          const AppSectionLabel('ΠΡΟΗΓΟΥΜΕΝΕΣ · PAST', showRule: true),
+          AppSectionLabel(l10n.playingPastSection, showRule: true),
           const SizedBox(height: AppTheme.space3),
           Expanded(
             child: pastTricks.isEmpty
                 ? Center(
                     child: Text(
-                      'καμιά μπάζα ακόμα',
+                      l10n.playingPastEmpty,
                       style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
                         fontSize: 18,
                         color: AppTheme.inkFaint,
@@ -255,6 +257,7 @@ class _TrickHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.space4,
@@ -271,9 +274,9 @@ class _TrickHeader extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'ΜΠΑΖΑ · TRICK',
-                style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+              Text(
+                l10n.playingTrickEyebrow,
+                style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
                   fontSize: 9,
                   letterSpacing: 3,
                   color: AppTheme.inkSoft,
@@ -479,6 +482,7 @@ class _ProposalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final proposedName = _nameFor(trick.proposedWinnerId);
     final proposedByName = _nameFor(trick.proposedById);
     final iConfirmed =
@@ -499,9 +503,9 @@ class _ProposalCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'ΠΡΟΤΑΣΗ · PROPOSED WINNER',
-            style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+          Text(
+            l10n.playingProposalSection,
+            style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
               fontSize: 10,
               fontWeight: FontWeight.w500,
               letterSpacing: 3,
@@ -526,16 +530,19 @@ class _ProposalCard extends StatelessWidget {
           ),
           const SizedBox(height: AppTheme.space2),
           Text(
-            'από ${proposedByName ?? '…'}',
-            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
+            l10n.playingProposalBy(proposedByName ?? '…'),
+            style: GoogleFonts.fraunces(fontStyle: FontStyle.italic,
               fontSize: 18,
               color: AppTheme.inkSoft,
             ),
           ),
           const SizedBox(height: AppTheme.space4),
           Text(
-            'συμφωνίες ${trick.confirmedByIds.length} / $threshold',
-            style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+            l10n.playingConfirmationCount(
+              trick.confirmedByIds.length,
+              threshold,
+            ),
+            style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
               fontSize: 10,
               letterSpacing: 2,
               color: AppTheme.inkSoft,
@@ -544,8 +551,8 @@ class _ProposalCard extends StatelessWidget {
           const SizedBox(height: AppTheme.space4),
           if (iProposed)
             Text(
-              'αναμονή για τους υπόλοιπους…',
-              style: GoogleFonts.fraunces(fontStyle: FontStyle.italic, 
+              l10n.playingProposerWaiting,
+              style: GoogleFonts.fraunces(fontStyle: FontStyle.italic,
                 fontSize: 18,
                 color: AppTheme.inkSoft,
               ),
@@ -562,14 +569,14 @@ class _ProposalCard extends StatelessWidget {
                         color: AppTheme.danger.withValues(alpha: 0.5),
                       ),
                     ),
-                    child: const Text('Λάθος'),
+                    child: Text(l10n.playingMistakeButton),
                   ),
                 ),
                 const SizedBox(width: AppTheme.space3),
                 Expanded(
                   child: FilledButton(
                     onPressed: busy || iConfirmed ? null : onConfirm,
-                    child: Text(iConfirmed ? 'OK ✓' : 'Επιβεβαίωση'),
+                    child: Text(iConfirmed ? 'OK ✓' : l10n.playingConfirmButton),
                   ),
                 ),
               ],
