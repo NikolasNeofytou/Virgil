@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/estimation_round.dart';
 import '../../../providers/auth_providers.dart';
 import '../../../providers/estimation_providers.dart';
@@ -128,6 +129,7 @@ class _ValidatingPhaseState extends ConsumerState<ValidatingPhase> {
     final dealerName = dealerPlayer.isNotEmpty
         ? usernames[dealerPlayer.first.playerId]
         : null;
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.all(AppTheme.space5),
@@ -183,7 +185,7 @@ class _ValidatingPhaseState extends ConsumerState<ValidatingPhase> {
           ),
           const SizedBox(height: AppTheme.space5),
 
-          const AppSectionLabel('Αποτελέσματα'),
+          AppSectionLabel(l10n.validatingResultsSection),
           const SizedBox(height: AppTheme.space2),
 
           Expanded(
@@ -234,14 +236,14 @@ class _ValidatingPhaseState extends ConsumerState<ValidatingPhase> {
                   color: AppTheme.success.withValues(alpha: 0.3),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.check_circle, color: AppTheme.success, size: 18),
-                  SizedBox(width: AppTheme.space2),
+                  const Icon(Icons.check_circle, color: AppTheme.success, size: 18),
+                  const SizedBox(width: AppTheme.space2),
                   Text(
-                    'Επιβεβαιώθηκε',
-                    style: TextStyle(
+                    l10n.validatingConfirmedChip,
+                    style: const TextStyle(
                       color: AppTheme.success,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
@@ -263,7 +265,7 @@ class _ValidatingPhaseState extends ConsumerState<ValidatingPhase> {
                       width: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Επιβεβαίωση αποτελεσμάτων'),
+                  : Text(l10n.validatingConfirmButton),
             ),
         ],
       ),
@@ -491,7 +493,7 @@ class _ResultRowState extends State<_ResultRow>
                             visualDensity: VisualDensity.compact,
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
-                            tooltip: 'Αμφισβήτηση',
+                            tooltip: AppLocalizations.of(context)!.validatingChallengeTooltip,
                           )
                         : const SizedBox.shrink(),
               ),

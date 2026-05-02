@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/estimation_game.dart';
 import '../../providers/estimation_providers.dart';
 import '../../services/estimation_service.dart';
@@ -31,6 +32,7 @@ class EstimationGameScreen extends ConsumerWidget {
     final revealDismissed =
         ref.watch(dealerRevealDismissedProvider(gameId));
 
+    final l10n = AppLocalizations.of(context)!;
     return AppBackground(
       child: PopScope(
         canPop: false,
@@ -40,14 +42,14 @@ class EstimationGameScreen extends ConsumerWidget {
         child: Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: const Text('Παιχνίδι'),
+            title: Text(l10n.gameTitle),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () => _showExitDialog(context),
             ),
             actions: [
               IconButton(
-                tooltip: 'Ζωντανή κατάταξη',
+                tooltip: l10n.gameLiveLeaderboardTooltip,
                 icon: const Icon(Icons.leaderboard_outlined),
                 onPressed: () =>
                     showLiveScoreboardSheet(context, gameId: gameId),
@@ -71,17 +73,17 @@ class EstimationGameScreen extends ConsumerWidget {
                           const Center(child: CircularProgressIndicator()),
                       error: (e, _) => Center(
                         child: Text(
-                          'Σφάλμα: $e',
+                          l10n.gameLoadError(e.toString()),
                           style: const TextStyle(color: AppTheme.danger),
                         ),
                       ),
                       data: (game) {
                         if (game == null) {
-                          return const Center(
+                          return Center(
                             child: Text(
-                              'Το παιχνίδι δεν βρέθηκε',
+                              l10n.gameNotFound,
                               style:
-                                  TextStyle(color: AppTheme.textSecondary),
+                                  const TextStyle(color: AppTheme.textSecondary),
                             ),
                           );
                         }
@@ -161,7 +163,13 @@ class EstimationGameScreen extends ConsumerWidget {
       case 'validating':
         return ValidatingPhase(gameId: gameId);
       default:
-        return Center(child: Text('Άγνωστη φάση: ${game.phase}'));
+        return Builder(
+          builder: (context) => Center(
+            child: Text(
+              AppLocalizations.of(context)!.gameUnknownPhase(game.phase),
+            ),
+          ),
+        );
     }
   }
 
@@ -201,15 +209,16 @@ class EstimationGameScreen extends ConsumerWidget {
   }
 
   void _showExitDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Αποχώρηση;'),
-        content: const Text('Θα βγεις από το παιχνίδι.'),
+        title: Text(l10n.gameLeaveTitle),
+        content: Text(l10n.gameLeaveBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Άκυρο'),
+            child: Text(l10n.gameLeaveCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -217,7 +226,7 @@ class EstimationGameScreen extends ConsumerWidget {
               Navigator.of(context).pop();
             },
             style: FilledButton.styleFrom(backgroundColor: AppTheme.danger),
-            child: const Text('Βγες'),
+            child: Text(l10n.gameLeaveConfirm),
           ),
         ],
       ),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import '../../l10n/generated/app_localizations.dart';
 import '../../providers/game_history_provider.dart';
 import '../../theme/app_background.dart';
 import '../../theme/app_route.dart';
@@ -24,7 +25,7 @@ class GameHistoryScreen extends ConsumerWidget {
     return AppBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(title: const Text('Τα παιχνίδια μου')),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.historyTitle)),
         body: SafeArea(
           child: RefreshIndicator(
             onRefresh: () => ref.refresh(pastEstimationGamesProvider.future),

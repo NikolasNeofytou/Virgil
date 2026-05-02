@@ -10,16 +10,150 @@
 
   "signInTitle": "Welcome",
   "signInSubtitle": "sign in to take a seat",
+  "signInPasswordLabel": "Password",
+  "signInSubmitPassword": "Sign in",
+  "signInSubmitOtp": "Send code",
+  "signInToggleToOtp": "Sign in with email OTP",
+  "signInToggleToPassword": "Sign in with a password",
+  "signInOtpSection": "CHECK YOUR EMAIL",
+  "signInOtpSent": "we sent you a code",
+  "signInOtpVerify": "Verify",
+  "signInBack": "Back",
 
   "usernamePickerSection": "§ 01 · NAME",
   "usernamePickerTitle": "Pick a name",
   "usernamePickerSubtitle": "your name at the table",
   "usernamePickerHint": "3–24 chars · letters, numbers, _",
+  "usernamePickerInputHint": "name…",
   "usernamePickerSubmit": "Continue",
   "usernamePickerErrorInvalid": "3–24 chars · letters, numbers, _",
   "usernamePickerErrorTaken": "that name is already taken",
   "usernamePickerErrorSession": "session expired · sign in again",
   "usernamePickerErrorGeneric": "error · try again",
+
+  "profileTitle": "Profile",
+  "profileLoadError": "error · {error}",
+  "@profileLoadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "profileStatsSection": "§ 01 · STATS",
+  "profileHistorySection": "§ 02 · HISTORY",
+  "profileSettingsSection": "§ 03 · SETTINGS",
+  "profileLanguageLabel": "Language",
+  "profileIconLabel": "Icon",
+  "profileIconAegean": "Aegean",
+  "profileIconAegeanRole": "DEFAULT",
+  "profileIconCoral": "Coral",
+  "profileIconCoralRole": "TOURNAMENTS",
+  "profileIconOchre": "Ochre",
+  "profileIconOchreRole": "RANKED",
+  "profileIconError": "couldn't change the icon",
+  "profileSignOut": "Sign out",
+
+  "historyTitle": "My games",
+  "historySummaryTitle": "Summary",
+
+  "createRoomTitle": "New room",
+  "createRoomPlayersSection": "§ 01 · PLAYERS",
+  "createRoomLengthSection": "§ 02 · LENGTH",
+  "createRoomCreateButton": "Create room",
+
+  "joinRoomTitle": "Join a room",
+  "joinRoomCodeSection": "§ 01 · CODE",
+  "joinRoomPasteChip": "paste",
+  "joinRoomJoinButton": "Join",
+
+  "roomLobbyTitle": "Room",
+  "roomLobbyError": "Error: {error}",
+  "@roomLobbyError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "roomLobbyExitTitle": "Leave?",
+  "roomLobbyExitBody": "You will leave the room.",
+  "roomLobbyExitCancel": "Cancel",
+  "roomLobbyExitConfirm": "Leave",
+  "roomLobbyPlayersSection": "SEATED",
+  "roomLobbyRoomCodeSection": "ROOM CODE",
+  "roomLobbySessionNameHint": "session name (optional)",
+  "roomLobbyStartGame": "Start the game",
+  "roomLobbyWaitingPlayers": "Waiting for players…",
+  "roomLobbyCopiedSnack": "copied",
+
+  "gameTitle": "Game",
+  "gameLiveLeaderboardTooltip": "Live standings",
+  "gameLoadError": "Error: {error}",
+  "@gameLoadError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "gameNotFound": "Game not found",
+  "gameUnknownPhase": "Unknown phase: {phase}",
+  "@gameUnknownPhase": {
+    "placeholders": {
+      "phase": { "type": "String" }
+    }
+  },
+  "gameLeaveTitle": "Leave?",
+  "gameLeaveBody": "You will leave the game.",
+  "gameLeaveCancel": "Cancel",
+  "gameLeaveConfirm": "Leave",
+
+  "gameRoundEyebrow": "ROUND",
+  "gameCardsThisRound": "{count, plural, =1 {1 card} other {{count} cards}}",
+  "@gameCardsThisRound": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "predictionLockButton": "Lock in",
+  "predictionMyLockedTitle": "Your call is locked in",
+  "predictionWaitingTitle": "waiting…",
+  "predictionTurnOf": "{name}'s turn",
+  "@predictionTurnOf": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "predictionBidOrderSection": "BID ORDER",
+
+  "playingPastSection": "PAST",
+  "playingPastEmpty": "no tricks yet",
+  "playingMistakeButton": "Mistake",
+  "playingConfirmButton": "Confirm",
+  "playingProposalSection": "PROPOSED WINNER",
+  "playingProposalBy": "by {name}",
+  "@playingProposalBy": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "playingConfirmationCount": "agreed {count} / {threshold}",
+  "@playingConfirmationCount": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "threshold": { "type": "int" }
+    }
+  },
+  "playingProposerWaiting": "waiting for the others…",
+  "playingTrickEyebrow": "TRICK",
+  "roundHeaderLeadsLabel": "LEADS",
+  "roundHeaderDealerLabel": "DEALER",
+  "scoreTallySection": "SCORE",
+  "liveScoreboardTitle": "LIVE STANDINGS",
+  "liveScoreboardChartTitle": "SCORE CHART",
+  "shortStrawTitle": "DRAWING LOTS",
+  "predictionRoundEyebrow": "PREDICTION ROUND",
+
+  "validatingResultsSection": "Results",
+  "validatingConfirmedChip": "Confirmed",
+  "validatingConfirmButton": "Confirm results",
+  "validatingChallengeTooltip": "Dispute",
 
   "gameOverWinnerLabel": "WINNER",
   "gameOverFinalLabel": "FINAL",
@@ -34,31 +168,54 @@
   },
   "gameOverRematch": "New game",
   "gameOverShare": "Share",
+  "gameOverShareError": "Share error: {error}",
+  "@gameOverShareError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
   "gameOverSaveToPhotos": "Save to Photos",
   "gameOverSavedToPhotos": "saved to your photos",
   "gameOverSaveError": "could not save · check Photos permission",
+  "gameOverGenericError": "Error: {error}",
+  "@gameOverGenericError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
   "gameOverBackToMenu": "Back to menu",
+
+  "momentsAddPrompt": "Add a moment",
+  "momentsAddSubtitle": "a line to remember this game by",
+  "momentsHintExample": "e.g. Caesar called 5, took 0. Lovely night.",
+  "momentsRoundChipAll": "ALL",
+  "momentsSaveButton": "Save",
+  "momentsSaveError": "Error: {error}",
+  "@momentsSaveError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "momentsDeleteTitle": "Delete moment?",
+  "momentsDeleteBody": "It will be removed from the set.",
+  "momentsDeleteCancel": "Cancel",
+  "momentsDeleteConfirm": "Delete",
+  "momentsDeleteError": "Delete error: {error}",
+  "@momentsDeleteError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
 
   "leaderboardTitle": "Leaderboard",
   "leaderboardSubtitle": "the scores at the table",
   "leaderboardYouSection": "§ 01 · YOU",
-  "leaderboardTopSection": "§ 02 · TOP 10 · LEADERS",
+  "leaderboardTopSection": "§ 02 · LEADERS",
   "leaderboardYouBadge": "YOU",
   "leaderboardWinsLabel": "WINS",
   "leaderboardYourPosition": "your position",
   "leaderboardEmptyTitle": "empty page",
   "leaderboardEmptyBody": "be the first one on the board.\none finished game is enough.",
-
-  "profileLanguageLabel": "Language",
-  "profileIconLabel": "Icon",
-  "profileIconAegean": "Aegean",
-  "profileIconAegeanRole": "DEFAULT",
-  "profileIconCoral": "Coral",
-  "profileIconCoralRole": "TOURNAMENTS",
-  "profileIconOchre": "Ochre",
-  "profileIconOchreRole": "RANKED",
-  "profileIconError": "couldn't change the icon",
-  "profileSignOut": "Sign out",
 
   "lobbyGreetingMorning": "Good morning",
   "lobbyGreetingAfternoon": "Good afternoon",
@@ -80,7 +237,7 @@
       "round": { "type": "int" }
     }
   },
-  "lobbyParcaInPlaySection": "PAREA · IN PLAY",
+  "lobbyParcaInPlaySection": "IN PLAY",
   "lobbyParcaResting": "the parea is resting",
   "lobbyFriendStatusWaiting": "waiting",
   "lobbyFriendStatusActive": "playing",

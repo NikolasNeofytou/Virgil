@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../theme/app_theme.dart';
 import '../../../theme/meraki_fonts.dart';
 
@@ -148,9 +149,9 @@ class _Reveal extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
-          'ΤΡΑΒΟΥΜΕ ΚΛΗΡΟ · DRAWING LOTS',
-          style: TextStyle(fontFamily: MerakiFonts.geistMonoFamily, 
+        Text(
+          AppLocalizations.of(context)!.shortStrawTitle,
+          style: const TextStyle(fontFamily: MerakiFonts.geistMonoFamily,
             fontSize: 10,
             fontWeight: FontWeight.w500,
             letterSpacing: 3,
