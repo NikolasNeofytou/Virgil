@@ -5,6 +5,9 @@ PODS:
   - flutter_dynamic_icon_plus (1.0.0):
     - Flutter
     - SwiftTryCatch
+  - gal (1.0.0):
+    - Flutter
+    - FlutterMacOS
   - share_plus (0.0.1):
     - Flutter
   - shared_preferences_foundation (0.0.1):
@@ -18,6 +21,7 @@ DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
   - Flutter (from `Flutter`)
   - flutter_dynamic_icon_plus (from `.symlinks/plugins/flutter_dynamic_icon_plus/ios`)
+  - gal (from `.symlinks/plugins/gal/darwin`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - SwiftTryCatch (from `local_pods/SwiftTryCatch`)
@@ -30,6 +34,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_dynamic_icon_plus:
     :path: ".symlinks/plugins/flutter_dynamic_icon_plus/ios"
+  gal:
+    :path: ".symlinks/plugins/gal/darwin"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
@@ -43,6 +49,7 @@ SPEC CHECKSUMS:
   app_links: 3dbc685f76b1693c66a6d9dd1e9ab6f73d97dc0a
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_dynamic_icon_plus: 3ddd12bc2316b98ffdd4048e9cdd3cf51e02095d
+  gal: baecd024ebfd13c441269ca7404792a7152fde89
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
   SwiftTryCatch: c6570b0e62cee60d5055451ac0a10c9978e65b83

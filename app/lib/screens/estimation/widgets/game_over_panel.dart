@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gal/gal.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -50,6 +51,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
   final _service = EstimationService();
   bool _starting = false;
   bool _sharing = false;
+  bool _saving = false;
   late final ConfettiController _confetti;
 
   @override
@@ -88,10 +90,12 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
     }
   }
 
-  Future<void> _share() async {
-    if (_sharing) return;
-    setState(() => _sharing = true);
-
+  /// Gathers the live game state, captures the share card to PNG bytes,
+  /// and returns the bytes alongside the game id and the caption used by
+  /// share/save callers. Returns null when the game stream hasn't resolved
+  /// yet (caller should bail silently).
+  Future<({Uint8List bytes, String gameId, String caption})?>
+      _renderShareBytes() async {
     final players =
         ref.read(estimationPlayersStreamProvider(widget.gameId)).valueOrNull ??
             [];
@@ -105,10 +109,7 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
         ref.read(estimationMomentsStreamProvider(widget.gameId)).valueOrNull ??
             [];
 
-    if (game == null || players.isEmpty) {
-      setState(() => _sharing = false);
-      return;
-    }
+    if (game == null || players.isEmpty) return null;
 
     final sorted = [...players]
       ..sort((a, b) => b.totalScore.compareTo(a.totalScore));
@@ -117,39 +118,56 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
         ? game.sessionName!
         : 'παιχνίδι ${DateFormat('d MMM').format(game.createdAt.toLocal())}';
 
+    final bytes = await _captureShareCard(
+      sessionLabel: sessionLabel,
+      winnerName: winnerName,
+      winnerScore: sorted.first.totalScore,
+      standings: sorted
+          .map(
+            (p) => EstimationStanding(
+              name: usernames[p.playerId] ?? '???',
+              score: p.totalScore,
+            ),
+          )
+          .toList(),
+      awards: awards,
+      narration: narration,
+      moments: moments
+          .map(
+            (m) => EstimationShareMoment(
+              authorName: usernames[m.authorId] ?? '???',
+              body: m.body,
+              roundNumber: m.roundNumber,
+            ),
+          )
+          .toList(),
+      gameDate: game.createdAt,
+    );
+    return (
+      bytes: bytes,
+      gameId: game.id,
+      caption: 'Virgil · $winnerName ${sorted.first.totalScore} πόντοι',
+    );
+  }
+
+  Future<void> _share() async {
+    if (_sharing) return;
+    setState(() => _sharing = true);
     try {
-      final bytes = await _captureShareCard(
-        sessionLabel: sessionLabel,
-        winnerName: winnerName,
-        winnerScore: sorted.first.totalScore,
-        standings: sorted
-            .map(
-              (p) => EstimationStanding(
-                name: usernames[p.playerId] ?? '???',
-                score: p.totalScore,
-              ),
-            )
-            .toList(),
-        awards: awards,
-        narration: narration,
-        moments: moments
-            .map(
-              (m) => EstimationShareMoment(
-                authorName: usernames[m.authorId] ?? '???',
-                body: m.body,
-                roundNumber: m.roundNumber,
-              ),
-            )
-            .toList(),
-        gameDate: game.createdAt,
-      );
+      final result = await _renderShareBytes();
+      if (result == null) return;
       final tmp = await getTemporaryDirectory();
       final file = await File(
-        '${tmp.path}/virgil-${game.id}.png',
-      ).writeAsBytes(bytes);
+        '${tmp.path}/virgil-${result.gameId}.png',
+      ).writeAsBytes(result.bytes);
+      // iOS only labels the share as "1 Image" (and surfaces Save to Photos
+      // / image-aware Messages and Mail handlers) when the activity items
+      // are image-only. Passing `text:` here pins the bundle as "Plain Text
+      // and 1 Document" and hides those actions. Caption rides along as the
+      // Mail subject instead.
       await Share.shareXFiles(
         [XFile(file.path, mimeType: 'image/png')],
-        text: 'Virgil · $winnerName ${sorted.first.totalScore} πόντοι',
+        subject: result.caption,
       );
     } on Object catch (e) {
       if (mounted) {
@@ -159,6 +177,37 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
       }
     } finally {
       if (mounted) setState(() => _sharing = false);
+    }
+  }
+
+  Future<void> _saveToPhotos() async {
+    if (_saving) return;
+    setState(() => _saving = true);
+    try {
+      final result = await _renderShareBytes();
+      if (result == null) return;
+      await Gal.putImageBytes(result.bytes, name: 'virgil-${result.gameId}');
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.gameOverSavedToPhotos)),
+        );
+      }
+    } on GalException catch (_) {
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.gameOverSaveError)),
+        );
+      }
+    } on Object catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Σφάλμα: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
   }
 
@@ -335,6 +384,17 @@ class _GameOverPanelState extends ConsumerState<GameOverPanel> {
                 ),
                 const SizedBox(height: AppTheme.space2),
               ],
+              OutlinedButton(
+                onPressed: _saving ? null : _saveToPhotos,
+                child: _saving
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.gameOverSaveToPhotos),
+              ),
+              const SizedBox(height: AppTheme.space2),
               OutlinedButton(
                 onPressed: _sharing ? null : _share,
                 child: _sharing

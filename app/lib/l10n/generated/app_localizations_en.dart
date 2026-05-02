@@ -86,6 +86,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameOverShare => 'Share';
 
   @override
+  String get gameOverSaveToPhotos => 'Save to Photos';
+
+  @override
+  String get gameOverSavedToPhotos => 'saved to your photos';
+
+  @override
+  String get gameOverSaveError => 'could not save · check Photos permission';
+
+  @override
   String get gameOverBackToMenu => 'Back to menu';
 
   @override
